@@ -1,3 +1,5 @@
+Taken from https://github.com/ThomasRobertFr/thesis
+
 # Improving Latent Representations of ConvNets for Visual Understanding
 
 **French title: Amélioration des représentations latentes des ConvNets pour l'interprétation de données visuelles**
