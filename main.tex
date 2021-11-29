@@ -35,9 +35,13 @@
 \let\oldleftmark=\leftmark
 
 \newboolean{skipIntro}
-\newboolean{skipSHADE}
-\newboolean{skipHN}
-\newboolean{skipDual}
+\newboolean{skipRelated}
+\newboolean{skipRegul}
+\newboolean{skipSegm}
+\newboolean{skipDyna}
+\newboolean{skipRepet}
+\newboolean{skipConclusion}
+\newboolean{skipAppendix}
 
 % By setting this to true, you skip the compiling of some chapters
 % \setboolean{skipIntro}{true}
@@ -45,62 +49,85 @@
 % \setboolean{skipHN}{true}
 % \setboolean{skipDual}{true}
 
-\mtcsetoffset{minitoc}{-0.80em}
+%\mtcsetoffset{minitoc}{-0.80em}
 \setlength{\mtcindent}{-0.80em}
 
 \begin{document}
 
-	\dominitoc
-	\selectlanguage{english}
+\dominitoc
+\selectlanguage{english}
 
-	\frontmatter
+\frontmatter
 
-	\input{00_frontmatter.tex}
-	\cleardoublepage
-	% \faketableofcontents
-	\input{00_accronyms.tex}
+\input{content/00_frontmatter.tex}
+\input{content/00b_resume.tex}
 
-	\mainmatter
-	
-	\input{01_introduction.tex}
-	\cleardoublepage
+\cleardoublepage
+% \faketableofcontents
+\input{content/00_accronyms.tex}
 
-	\acresetall
-	\input{02_shade.tex} 
-	\cleardoublepage
-	\let\leftmark=\oldleftmark
-	
-	\acresetall
-	\input{03_hybridnet.tex}
-	\cleardoublepage
-	\let\leftmark=\oldleftmark
+\mainmatter
 
-	\acresetall
-	\input{04_dualdis.tex}
-	\cleardoublepage
-	\let\leftmark=\oldleftmark
+\input{content/00_intro.tex}
+\cleardoublepage
 
-	\acresetall
-	\input{05_conclusion.tex}
-	\cleardoublepage
+\acresetall
+\input{content/01_related.tex}
+\cleardoublepage
+\let\leftmark=\oldleftmark
 
-	{
+\acresetall
+\input{content/02_regularization.tex}
+\cleardoublepage
+\let\leftmark=\oldleftmark
+
+\acresetall
+\input{content/03_segmentation.tex}
+\cleardoublepage
+\let\leftmark=\oldleftmark
+
+\acresetall
+\input{content/04_dynamic.tex}
+\cleardoublepage
+\let\leftmark=\oldleftmark
+
+\acresetall
+\input{content/05_spacedrepetition.tex}
+\cleardoublepage
+\let\leftmark=\oldleftmark
+
+\acresetall
+\input{content/06_conclusion.tex}
+\cleardoublepage
+\let\leftmark=\oldleftmark
+
+\acresetall
+\input{content/07_appendix.tex}
+\cleardoublepage
+\let\leftmark=\oldleftmark
+
+
+%\acresetall
+%\input{02_shade.tex}
+%\cleardoublepage
+%\let\leftmark=\oldleftmark
+
+{
 	\backmatter
-	\input{06_bibliography.tex}
-	\cleardoublepage
-	}
+	\renewcommand{\leftmark}{\spacedlowsmallcaps{\bibname}}
+	\renewcommand{\rightmark}{\spacedlowsmallcaps{\bibname}}
 
-	\appendix
-	\acresetall
-	\input{10_shade.tex}
+	\refstepcounter{dummy}
+	\addtocontents{toc}{\protect\vspace{\beforebibskip}} % to have the bib a bit from the rest in the toc
+	\addcontentsline{toc}{chapter}{\tocEntry{\bibname}}
+	\printbibliography
 	\cleardoublepage
+}
 
-	\acresetall
-	\input{11_hybridnet.tex}
-	\cleardoublepage
 
-	\acresetall
-	\input{12_dualdis.tex}
-	\cleardoublepage
+%\appendix
+%\acresetall
+%\input{10_shade.tex}
+%\cleardoublepage
 
 \end{document}
