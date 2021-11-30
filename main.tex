@@ -3,19 +3,32 @@
     fontsize=12pt,
     footinclude=true,
     headinclude=true
-]{scrbook}
+	]{scrbook}
 
-\usepackage{scrhack}
-\usepackage{silence}
-\WarningFilter{latex}{You have requested package}
-\usepackage{template/preamble}
-\setlength{\parskip}{0.3em}
+	\usepackage{scrhack}
+	\usepackage{silence}
+	\WarningFilter{latex}{You have requested package}
+	\usepackage{template/preamble}
+	\setlength{\parskip}{0.3em}
 
-\renewcommand{\bf}{\normalfont \bfseries}
+	\renewcommand{\bf}{\normalfont \bfseries}
 
-\bibliography{biblio.bib}
+	\bibliography{biblio.bib}
 
 \usepackage{ifthen}
+\usepackage{graphicx}
+\usepackage{comment}
+\usepackage{amsmath,amssymb} % define this before the line numbering.
+\usepackage{color, colortbl}
+\usepackage{xcolor}
+\usepackage{nicefrac}
+\usepackage{booktabs}
+\usepackage{placeins}
+\usepackage{pifont}
+\usepackage{subcaption}
+\usepackage{xspace}
+\usepackage{arydshln}
+\usepackage{nicefrac}
 
 \newcommand{\titlecaption}[3][]{\caption[#2]{\textbf{#2}\ifthenelse{\equal{#1}{}}{. }{ }#3}}
 
@@ -61,6 +74,8 @@
 %\mtcsetoffset{minitoc}{-0.80em}
 \setlength{\mtcindent}{-0.80em}
 
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
 
 
 \begin{document}
