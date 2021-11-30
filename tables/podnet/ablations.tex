@@ -1,0 +1,51 @@
+\captionsetup[table]{skip=0pt}
+\begin{table}[tb]
+    \caption{Ablation studies performed on CIFAR100 with 50 steps. We report the average incremental accuracy}
+    \setlength{\tabcolsep}{3.2pt}
+    \begin{subtable}[t]{.57\textwidth}
+        \centering
+        \caption{Comparison of the performance of the model when disabling parts of the complete PODNet loss\\~}
+        \label{tab:ablation_inc}
+        \begin{tabular}{@{}lccccc@{}}
+            \toprule
+            Classifier & POD-flat & POD-spatial & NME            & CNN            \\
+            \midrule
+            Cosine     &          &             & 40.76          & 37.93          \\
+            Cosine     & \OK      &             & 48.03          & 46.73          \\
+            Cosine     &          & \OK         & 54.32          & 57.27          \\
+            Cosine     & \OK      & \OK         & 56.69          & 55.72          \\
+            LSC-CE     & \OK      & \OK         & 59.86          & 57.45          \\
+            LSC        &          &             & 41.56          & 40.76          \\
+            LSC        & \OK      &             & 53.29          & 52.98          \\
+            LSC        &          & \OK         & \textbf{61.42} & 57.64          \\
+            LSC        & \OK      & \OK         & 61.40          & \textbf{57.98} \\
+            \bottomrule
+        \end{tabular}
+    \end{subtable}
+    %
+    \hfill
+    %
+    \begin{subtable}[t]{.42\textwidth}
+        \centering
+        \caption{Comparison of distillation losses based on intermediary features. All losses evaluated with POD-flat}
+        \label{tab:ablation_perceptual}
+        \begin{tabular}{@{}lcc@{}}
+            \toprule
+            Loss                                                       & NME            & CNN            \\
+            \midrule
+            \textit{None}                                              & 53.29          & 52.98          \\
+            POD-pixels                                                 & 49.74          & 52.34          \\
+            POD-channels                                               & 57.21          & 54.64          \\
+            POD-gap                                                    & 58.80          & 55.95          \\
+            POD-width                                                  & 60.92          & 57.51          \\
+            POD-height                                                 & 60.64          & 57.50          \\
+            POD-spatial                                                & \textbf{61.40} & \textbf{57.98} \\
+            \cmidrule{1-3}
+            GradCam~\cite{dhar2019learning_without_memorizing_gradcam} & 54.13          & 52.48          \\
+            Perceptual Style~\cite{johnson2016perceptual_losses}       & 51.01          & 52.25          \\
+            \bottomrule
+        \end{tabular}
+    \end{subtable}
+
+\end{table}
+\captionsetup[table]{skip=10pt}

@@ -1,0 +1,17 @@
+\begin{table}[t]
+    \centering
+    \caption{Effect of the memory size per class $M_{per}$ on the models performance. Results from CIFAR100 with 50 steps, we report the average incremental accuracy}
+    \label{tab:ablation_memorysize}
+    \begin{tabular}{@{}lccccccc@{}}
+        \toprule
+        $M_{per}$                                    & 5              & 10             & \textbf{20}    & 50             & 100            & 200            \\
+        \midrule
+        iCaRL \cite{rebuffi2017icarl}                & 16.44          & 28.57          & 44.20          & 48.29          & 54.10          & 57.82          \\
+        BiC \cite{wu2019bias_correction}             & 20.84          & 21.97          & 47.09          & 55.01          & 62.23          & \textbf{67.47} \\
+        UCIR\,{\scriptsize (NME)} \cite{hou2019ucir} & 21.81          & 41.92          & 48.57          & 56.09          & 60.31          & 64.24          \\
+        UCIR\,{\scriptsize (CNN)} \cite{hou2019ucir} & 22.17          & 42.70          & 49.30          & 57.02          & 61.37          & 65.99          \\
+        PODNet\,{\scriptsize (NME)}                  & \textbf{48.37} & \textbf{57.20} & \textbf{61.40} & \textbf{62.27} & \textbf{63.14} & 63.63          \\
+        PODNet\,{\scriptsize (CNN)}                  & \textbf{35.59} & \textbf{48.54} & \textbf{57.98} & \textbf{63.69} & \textbf{66.48} & \textbf{67.62} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
