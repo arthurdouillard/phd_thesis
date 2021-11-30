@@ -30,8 +30,53 @@
         "*.vrb",
         "*.mtc*",
         "*.maf",
-        "*.bcf",
         "*ilg"
     ],
-    "rewrap.wrappingColumn": 100
+    "rewrap.wrappingColumn": 100,
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "-outdir=%OUTDIR%",
+                "%DOC%"
+            ],
+            "env": {}
+        },
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ],
+            "env": {}
+        },
+        {
+            "name": "biber",
+            "command": "biber",
+            "args": [
+                "%DOCFILE%"
+            ],
+            "env": {}
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex ➞ biber ➞ pdflatex`×2",
+            "tools": [
+                "pdflatex",
+                "biber",
+                "pdflatex",
+                "pdflatex"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipe.default": "first"
 }

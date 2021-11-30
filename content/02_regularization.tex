@@ -1,13 +1,10 @@
 \chapter{Regularization-based Models}
 \label{chapter:regularization}
 
-% Shortcut
-\newcommand{\mcL}{\mathcal{L}}
-\newcommand{\vx}{\mathbf{x}}
-\newcommand{\vh}{\mathbf{h}}
-\newcommand{\vy}{\mathbf{y}}
-\newcommand{\vyh}{\hat\vy}
+% Shortcut \newcommand{\mcL}{\mathcal{L}} \newcommand{\vx}{\mathbf{x}} \newcommand{\vh}{\mathbf{h}}
+%\newcommand{\vy}{\mathbf{y}} \newcommand{\vyh}{\hat\vy}
 \newcommand{\pp}{\,\textit{p.p}}
+\newcommand{\mypm}{+}
 
 
 \begin{chapabstract}
@@ -47,6 +44,156 @@ hand, avoid pre-emptively forgetting by regularizing the feature space at locati
 classes are estimated to arrive to.
 
 \section{PODNet: reducing forgetting via intermediate feature statistics}
+
+Lifelong machine
+learning~\citep{robins1995catastrophicforgetting,french1999catastrophicforgetting,thrun1998lifelonglearning}
+focuses on models that accumulate and refine knowledge over large timespans. Incremental learning
+--\,the ability to aggregate different learning objectives seen over time into a coherent whole\,--
+is paramount to those models. To achieve incremental learning, models must fight
+\textit{catastrophic
+    forgetting}~\citep{robins1995catastrophicforgetting,french1999catastrophicforgetting} of previous
+knowledge. Lifelong and incremental learning have attracted much attention in the past few years,
+but existing works still struggle to preserve acquired knowledge over many cycles of short
+incremental learning steps.
+
+We will focus on image classifiers, which are ordinarily trained once on a fixed set of classes. In
+\textit{incremental learning}, however, the classifier must learn the classes by steps, in training
+cycles called \textit{tasks}. At each task, we expose the classifier to a new set of classes.
+Incremental learning would reduce trivially to ordinary classification if we were allowed to store
+all training samples, but we are imposed a limited \textit{memory}: a maximum number of samples for
+previously learned classes. This limitation is motivated by practical applications, in which privacy
+issues, or storage and computing limitations prevent us from simply retraining the entire model for
+each new task~\citep{li2018lwf,lomonaco2017core50}. Furthermore, incremental learning is different
+from transfer learning in that we aim to have good performance in both old and new classes.
+
+To overcome catastrophic forgetting, different approaches have been proposed: reusing a limited
+amount of previous training data~\citep{rebuffi2017icarl,castro2018end_to_end_inc_learn}; learning to
+generate the training data~\citep{kemker2018fearnet,shin2017deep_generative_replay}; extending the
+architecture for new phases of
+data~\citep{yoon2018dynamically_expandable_networks,li2019learning_to_grow}; using a sub-network for
+each phase~\citep{fernando2017path_net,golkar2019neural_pruning}; or constraining the model
+divergence as it
+evolves~\citep{kirkpatrick2017ewc,lopezpaz2017gem,aljundi2018MemoryAwareSynapses,li2018lwf,rebuffi2017icarl,castro2018end_to_end_inc_learn}.
+
+
+In this work, we propose PODNet, approaching incremental learning as representation learning, with a
+distillation loss that constrains the evolution of the representation. By carefully balancing the
+compromise between remembering the old classes and learning new ones, we learn a representation that
+fights catastrophic forgetting, remaining stable over long runs of small incremental tasks. Our
+model innovates on existing art with (1) an \textit{efficient spatial-based} distillation-loss
+applied \textit{throughout the model}; and (2) as a refinement, a representation comprising multiple
+proxy vectors for each class, resulting in a more flexible representation.
+
+In this paper, we first present the existing state of the art (\autoref{sec:related_work}), which we
+close by detailing our contributions. We then describe our model (\autoref{sec:model}), and evaluate
+it in an extensive set of experiments (\autoref{sec:expes}) on CIFAR100, ImageNet100, and
+ImageNet1000, including ablation studies assessing each contribution, and extensive comparisons with
+existing methods.
+
+\section{Related Work}
+\label{sec:related_work}
+
+To approach the problem of incremental learning, consider a single incremental task: one has a
+classifier already trained over a set of old classes and must adapt it to learn a set of new
+classes. To perform that single task, we will consider: (1) the data/class representation model; (2)
+the set of constraints to prevent catastrophic forgetting; (3) the experimental context (including
+the constraints over the memory for previous training data) for which to design the model.
+
+\paragraph{Data/class representation model} Representation learning was already implicitly present in
+iCaRL~\citep{rebuffi2017icarl}: it introduced the Nearest Mean Exemplars (NME) strategy which
+averages the outputs of the deep convolutional network to create a single proxy feature vector per
+class that are then used by a nearest-neighbor classifier predict the final classes. Hou et
+al.~\citep{hou2019ucir} adopted this method and also introduced another, named CNN, which uses the
+output class probabilities to classify incoming samples, freezing (during training) the classifier
+weights associated with old classes, and then fine-tuning them on an under-sampled dataset.
+
+Hou et al.~\citep{hou2019ucir}, in the method called here UCIR, made representation learning
+explicit, by noticing that the limited memory imposed a severe imbalance on the training samples
+available for the old and for the new classes. To overcome that difficulty, they designed a
+metric-learning model instead of a classification model. That strategy is often used in few-shot
+learning~\citep{gidaris2018fewshot_wo_forgetting} because of its robustness to few data. Because
+classical metric architectures require special training sampling (e.g., semi-hard sampling for
+triplets), Hou et al. chose instead to redesign the classifier's last layer of their model to use
+the cosine similarity~\citep{luo2018cosine_classifier}.
+
+\paragraph{Model constraints to prevent catastrophic forgetting} Constraining the model's evolution to
+prevent forgetting is a fruitful idea proposed by several
+methods~\citep{kirkpatrick2017ewc,lopezpaz2017gem,aljundi2018MemoryAwareSynapses,li2018lwf,rebuffi2017icarl,castro2018end_to_end_inc_learn}.
+
+%A loss function may constrain the weights directly~\citep{ewc}, the gradients~\citep{gem}, or the
+%output probabilities~\citep{lwf}.
+Preventing the model's parameters from diverging too much forces it to remember the old classes, but
+care must be taken to still allow it to learn the new ones. We call this balance the
+\textit{rigidity-plasticity trade-off}.
+
+Existing art on knowledge distillation/compression~\citep{hinton2015knowledge_distillation} was an
+important source of inspiration for constraints on models. The goal is to distill a large trained
+model (called teacher) into a new smaller model (called student). The distillation loss forces the
+features of the student to approach those of its teacher. In our case, the student is the current
+model and the teacher---with same capacity-- is its version at the previous task. Zagoruyko and
+Komodakis~\citep{komodakis2017attention_residual_distillation} investigated attention-based
+distillation for image classifiers, by pooling the intermediate features of convolutional networks
+into attention maps, then used in their distillation losses. Li and Hoiem~\citep{li2018lwf} —-\,and
+several authors after
+them~\citep{rebuffi2017icarl,castro2018end_to_end_inc_learn,wu2019bias_correction}\,—- used a binary
+cross-entropy between the output probabilities by the models. Hou et al.~\citep{hou2019ucir}, used
+instead \textit{Less-Forget}, a cosine-similarity constraint on the flat feature embeddings after
+the global average pooling. Dhar et al.~\citep{dhar2019learning_without_memorizing_gradcam} proposed
+to constrain the gradient-based attentions generated by GradCam~\citep{selvaraju2017gradcam}, a
+visualization method. Wu et al.~\citep{wu2019bias_correction} proposed BiC, an algorithm oriented
+towards large-scale datasets, which employs a small linear model learned on validation data to
+recalibrate the output probabilities before applying a distillation loss.
+
+\paragraph{Experimental context} A critical component of incremental learning is the convention used for
+the memory storing samples of previous data. An usual convention is to consider a fixed amount of
+samples allowed in that memory, as illustrated in \autoref{fig:protocol}.
+
+Still, there are two experimental protocols for such fixed-sample convention: we may either use the
+memory budget at will ($M_\mathrm{total}$), or add a constraint on the number of samples per class
+for the old classes ($M_\mathrm{per}$). When $M_\mathrm{total}=M_\mathrm{per}\times$\textit{\# of
+    classes}, both settings have equivalent \textit{final} memory size, but the latter, that we adopt,
+is much more challenging since early tasks cannot benefit from the full memory size. \textit{The
+    granularity of the increments} is another critical element: with a fixed number of classes,
+increasing the number of tasks decreases the number of classes per task. More tasks imply stronger
+forgetting of the earliest classes, and pushing that number creates a challenging protocol, so far
+unexplored by existing art. Hou et al. evaluate at most 10 tasks on CIFAR100, while we propose as
+much as 50 tasks.
+
+Finally, to score the experiments, Rebuffi et al.~\citep{rebuffi2017icarl} proposed a global metric
+that they called \textbf{average incremental accuracy}, taking into account the entire history of
+the run, averaging the accuracy at the end of each task (including the first).
+%\textit{The granularity of the increments} is another critical element. Hou et al.~\citep{ucir}
+%introduced a protocol where one starts by training the models on half the classes and then divides
+%the remaining classes equally among the remaining tasks. For example for 100 classes and 5 tasks,
+%one would have a starting task with 50 classes and perform 5 additional tasks of 10 classes.
+%Increasing the number of tasks decreases the number of classes per task. A high number of task is a
+%challenging protocol and yet so far unexplored: Hou et al. evaluates itself with at most 10 tasks
+%on CIFAR100 while we push this boundary to 50 tasks.
+
+\begin{figure}[tb]
+    \begin{center}
+        \includegraphics[width=0.8\linewidth]{images/podnet/protocol}
+    \end{center}
+    \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
+        new set of classes, and the model must retain knowledge about \textit{all} classes. The model is
+        allowed a \textit{limited} memory of samples of old classes.}
+    \label{fig:protocol}
+\end{figure}
+
+\paragraph{Contributions} As seen, associating representation learning to model constraints is a
+particularly fruitful idea for incremental learning, but requires carefully balancing the goals of
+rigidity (to avoid catastrophic forgetting) and plasticity (to learn new classes).
+
+Employing a distillation-based loss to constrain the evolution of the representation has also
+resulted in leading
+results~\citep{hou2019ucir,wu2019bias_correction,peng2019m2kd,dhar2019learning_without_memorizing_gradcam}.
+Our model improves existing art by employing a \textit{novel and efficient spatial-based}
+distillation loss, which we are able to apply \textit{throughout the model}.
+
+Implicit or explicit proxy vectors representing each class inside the models have lead to state of
+the art results~\citep{rebuffi2017icarl,hou2019ucir}. Our model extends that idea allowing for
+\textit{multiple proxy vectors} per class, resulting in a more flexible representation.
+
 
 Formally, we learn the model in $T$ \textit{tasks}, task $t$ comprising a set of new classes
 $C^t_N$, and a set of old classes $C^t_O$, and aiming at classifying all seen classes $C^t_O \cup
@@ -320,8 +467,7 @@ classes, randomly sampled from the original 1000.
     \item[ImageNet100] contains 224$\times$224-pixel images in 100 classes, with $\sim$128k images
           for training and $\sim$5k for testing.
     \item[ImageNet1000] contains 224$\times$224-pixel images in 1000 classes, with $\sim$1.28m
-          images for training and $\sim$50k for testing.
-\end{description}}
+          images for training and $\sim$50k for testing. \end{description}}
 
 \paragraph{Protocol} We validate our model and the compared baselines using the challenging protocol
 introduced by Hou et al.~\citep{hou2019ucir}: we start by training the models on half the classes

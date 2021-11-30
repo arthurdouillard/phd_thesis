@@ -34,6 +34,7 @@
 
 \let\oldleftmark=\leftmark
 
+
 \newboolean{skipIntro}
 \newboolean{skipRelated}
 \newboolean{skipRegul}
@@ -43,6 +44,14 @@
 \newboolean{skipConclusion}
 \newboolean{skipAppendix}
 
+\setboolean{skipIntro}{true}
+\setboolean{skipRelated}{true}
+\setboolean{skipRegul}{false}
+\setboolean{skipSegm}{true}
+\setboolean{skipDyna}{true}
+\setboolean{skipRepet}{true}
+\setboolean{skipConclusion}{true}
+\setboolean{skipAppendix}{true}
 % By setting this to true, you skip the compiling of some chapters
 % \setboolean{skipIntro}{true}
 % \setboolean{skipSHADE}{true}
