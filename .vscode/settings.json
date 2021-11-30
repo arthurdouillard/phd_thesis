@@ -69,6 +69,12 @@
     ],
     "latex-workshop.latex.recipes": [
         {
+            "name": "latexmk -f 🔃",
+            "tools": [
+                "latexmk"
+            ]
+        },
+        {
             "name": "pdflatex ➞ biber ➞ pdflatex`×2",
             "tools": [
                 "pdflatex",
@@ -78,5 +84,6 @@
             ]
         }
     ],
-    "latex-workshop.latex.recipe.default": "first"
+    "latex-workshop.latex.recipe.default": "first",
+    "latex-workshop.message.error.show": true
 }

@@ -1,0 +1,25 @@
+\begin{table}[t]
+    \centering
+    \caption{Rehearsal alternative on Pascal-VOC 2012 in Mean IoU (\%). Object/Patch-based methods with 10 objects/patches per class, and Image-based with 10 images per class. All experiments done with \ourslong.}
+    \vspace*{-0.3cm}
+    \label{tab:rehearsal_alternative}
+    \begin{tabular}{@{}llc|c|cc|r@{}}
+        \toprule
+                                &                 &                &                                & \multicolumn{2}{c}{\textbf{15-1} (6 tasks)}                         \\
+        \textbf{Type}           & \textbf{Mixing} & \textbf{Erase} & \textbf{Memory} $\downarrow$   & \textit{all}                                & \textit{avg}   &      \\
+        \midrule
+        \multirow{2}{*}{Image}  & Mixup           & ---            & \multirow{2}{*}{22.20}         & 61.77                                       & 69.88          & I    \\
+                                & \,\,\,\,\,---   & ---            &                                & 66.81                                       & \textbf{72.48} & II   \\
+        \hline
+        \multirow{3}{*}{Patch}  & Pasting         & All            & \multirow{3}{*}{4.50}          & 55.45                                       & 66.35          & III  \\
+                                & Pasting         & ---            &                                & 63.41                                       & 70.75          & IV   \\
+                                & Pasting         & Foreground     &                                & 66.28                                       & 71.66          & V    \\
+        \hline
+        \multirow{5}{*}{Object} & Mixup           & ---            & \multirow{5}{*}{\textbf{2.60}} & 63.25                                       & 70.91          & VI   \\
+                                & Mixup           & Foreground     &                                & 64.45                                       & 71.65          & VII  \\
+                                & Pasting         & All            &                                & 52.26                                       & 65.97          & VIII \\
+                                & Pasting         & ---            &                                & 63.12                                       & 70.52          & IX   \\
+                                & Pasting         & Foreground     &                                & \textbf{67.12}                              & \textbf{72.42} & X    \\
+        \bottomrule
+    \end{tabular}
+\end{table}

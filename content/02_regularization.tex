@@ -1,16 +1,25 @@
 \chapter{Regularization-based Models}
 \label{chapter:regularization}
 
-% Shortcut \newcommand{\mcL}{\mathcal{L}} \newcommand{\vx}{\mathbf{x}} \newcommand{\vh}{\mathbf{h}}
-%\newcommand{\vy}{\mathbf{y}} \newcommand{\vyh}{\hat\vy}
+%\newcommand{\mcL}{\mathcal{L}}
+%\newcommand{\vx}{\mathbf{x}}
+%\newcommand{\vh}{\mathbf{h}}
+%\newcommand{\vy}{\mathbf{y}}
+\newcommand{\tableindent}{\,\,\,\,}
+\newcommand{\vt}{\mathbf{t}}
+%\newcommand{\vyh}{\hat\vy}
 \newcommand{\pp}{\,\textit{p.p}}
-\newcommand{\mypm}{+}
+\newcommand{\std}{$\pm\,$}
+\newcommand{\clf}{\textit{clf}}
+\newcommand{\gray}[1]{{\color{darkgray}#1}}
 
 
 \begin{chapabstract}
     In this chapter, we propose an overview of regularization in Continual Learning. In particular,
     we discuss regularizations that are applied on the networks' outputs and discuss
 
+
+    TOD
     The work in this section has led to a publication to a conference paper and a workshop paper:
 
     \begin{itemize}
@@ -67,9 +76,9 @@ each new task~\citep{li2018lwf,lomonaco2017core50}. Furthermore, incremental lea
 from transfer learning in that we aim to have good performance in both old and new classes.
 
 To overcome catastrophic forgetting, different approaches have been proposed: reusing a limited
-amount of previous training data~\citep{rebuffi2017icarl,castro2018end_to_end_inc_learn}; learning to
-generate the training data~\citep{kemker2018fearnet,shin2017deep_generative_replay}; extending the
-architecture for new phases of
+amount of previous training data~\citep{rebuffi2017icarl,castro2018end_to_end_inc_learn}; learning
+to generate the training data~\citep{kemker2018fearnet,shin2017deep_generative_replay}; extending
+the architecture for new phases of
 data~\citep{yoon2018dynamically_expandable_networks,li2019learning_to_grow}; using a sub-network for
 each phase~\citep{fernando2017path_net,golkar2019neural_pruning}; or constraining the model
 divergence as it
@@ -99,8 +108,8 @@ classes. To perform that single task, we will consider: (1) the data/class repre
 the set of constraints to prevent catastrophic forgetting; (3) the experimental context (including
 the constraints over the memory for previous training data) for which to design the model.
 
-\paragraph{Data/class representation model} Representation learning was already implicitly present in
-iCaRL~\citep{rebuffi2017icarl}: it introduced the Nearest Mean Exemplars (NME) strategy which
+\paragraph{Data/class representation model} Representation learning was already implicitly present
+in iCaRL~\citep{rebuffi2017icarl}: it introduced the Nearest Mean Exemplars (NME) strategy which
 averages the outputs of the deep convolutional network to create a single proxy feature vector per
 class that are then used by a nearest-neighbor classifier predict the final classes. Hou et
 al.~\citep{hou2019ucir} adopted this method and also introduced another, named CNN, which uses the
@@ -116,8 +125,8 @@ classical metric architectures require special training sampling (e.g., semi-har
 triplets), Hou et al. chose instead to redesign the classifier's last layer of their model to use
 the cosine similarity~\citep{luo2018cosine_classifier}.
 
-\paragraph{Model constraints to prevent catastrophic forgetting} Constraining the model's evolution to
-prevent forgetting is a fruitful idea proposed by several
+\paragraph{Model constraints to prevent catastrophic forgetting} Constraining the model's evolution
+to prevent forgetting is a fruitful idea proposed by several
 methods~\citep{kirkpatrick2017ewc,lopezpaz2017gem,aljundi2018MemoryAwareSynapses,li2018lwf,rebuffi2017icarl,castro2018end_to_end_inc_learn}.
 
 %A loss function may constrain the weights directly~\citep{ewc}, the gradients~\citep{gem}, or the
@@ -144,9 +153,9 @@ visualization method. Wu et al.~\citep{wu2019bias_correction} proposed BiC, an a
 towards large-scale datasets, which employs a small linear model learned on validation data to
 recalibrate the output probabilities before applying a distillation loss.
 
-\paragraph{Experimental context} A critical component of incremental learning is the convention used for
-the memory storing samples of previous data. An usual convention is to consider a fixed amount of
-samples allowed in that memory, as illustrated in \autoref{fig:protocol}.
+\paragraph{Experimental context} A critical component of incremental learning is the convention used
+for the memory storing samples of previous data. An usual convention is to consider a fixed amount
+of samples allowed in that memory, as illustrated in \autoref{fig:protocol}.
 
 Still, there are two experimental protocols for such fixed-sample convention: we may either use the
 memory budget at will ($M_\mathrm{total}$), or add a constraint on the number of samples per class
@@ -175,8 +184,8 @@ the run, averaging the accuracy at the end of each task (including the first).
         \includegraphics[width=0.8\linewidth]{images/podnet/protocol}
     \end{center}
     \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
-        new set of classes, and the model must retain knowledge about \textit{all} classes. The model is
-        allowed a \textit{limited} memory of samples of old classes.}
+        new set of classes, and the model must retain knowledge about \textit{all} classes. The
+        model is allowed a \textit{limited} memory of samples of old classes.}
     \label{fig:protocol}
 \end{figure}
 
@@ -627,11 +636,481 @@ models, proving the robustness of our model.
 
 \section{Ghost: avoid pre-emptively forgetting}
 
-\subsection{Prescient Continual Learning}
+Continual learning models contrast with traditional models by approaching a sequence of tasks
+incrementally. With limitations (often severe) on the training data they can retain, those models
+must avoid catastrophic forgetting of past tasks \cite{robins1995catastrophicforgetting,
+    french1999catastrophicforgetting}, while remaining receptive to new tasks. Many approaches exist to
+counteract forgetting: keeping a limited amount of training data from previous
+tasks~\cite{rebuffi2017icarl,castro2018end_to_end_inc_learn}; learning to generate the training
+data~\cite{kemker2018fearnet,shin2017deep_generative_replay}; extending the architecture for new
+tasks~\cite{yoon2018dynamically_expandable_networks,li2019learning_to_grow}; using a sub-network for
+each task~\cite{fernando2017path_net,golkar2019neural_pruning, hung2019cpg}; and constraining the
+model divergence as it
+evolves~\cite{kirkpatrick2017ewc,lopezpaz2017gem,aljundi2018MemoryAwareSynapses,li2018lwf,rebuffi2017icarl,castro2018end_to_end_inc_learn,
+    douillard2020podnet}. Those approaches are often complementary.
 
-\subsection{Model}
+% Transition and proposition of our data setting
+We propose a challenging new setting, \textit{prescient continual learning}, in which the model must
+perform well not only for present and past tasks, but also for \textit{future} ones, both avoiding
+catastrophic forgetting (using a limited number of training samples for past classes), and giving
+the best possible estimates for the future classes (using no training samples at all). To make the
+setting possible, the model must know the classes and have some prior information about them.
+Indeed, Aljundi et al. \cite{aljundi2019selfless} remark that the ability to make room for future
+classes is a key limitation of current continual learning models, and propose a regularization loss
+to make the model more “selfless”, explicitly leaving capacity for future classes in the
+representation. Han et al. \cite{hanrebuffi2020autodiscovering} proposed a setting where the
+training samples from all classes are present from the beginning, but the labels become available
+incrementally. In a way, our setting is the inverse: we know which labels we are going to encounter,
+but the training data for those labels arrive incrementally. For instance, in many real-world
+applications (e.g. fashion product classification), due to budget constraints, models are released
+incrementally, with partial classes and training data, despite the classes being known from the
+beginning, and being well-characterized by attributes.
 
-\subsection{Experiment results}
+% Related work Zeroshot
+To address the proposed setting, we take inspiration from zero-shot learning
+\cite{lampert2009zeroshot, xian2019awa2}, which allows classifying examples from unseen classes by
+combining a vision model with an embedding possessing knowledge about the classes (e.g. a word
+embedding \cite{mikolov2013word2vec,pennington2014glove} or an attributes matrix). Although several
+approaches exist for zero-shot learning, we will focus on generating a representation for the future
+classes \cite{bucher2017zeroshot_gmmn, kumar2018synthesized_zeroshot,
+    xian2018feature_generating_zeroshot}. The framework of representation learning will allow us to
+integrate continual and zero-shot learning seamlessly, as we advance through the tasks and future
+classes become present classes, and then past classes. Moreover, we will be able to use
+\textit{ghost features}, predicted features for the future classes, to make room in the
+representation space for future classes. All those goals all integrated into a simple, streamlined
+model due to a careful construction of the losses.
+
+The contributions of this work are two-fold: (1) we propose a new challenging setting,
+\textit{prescient} continual learning, where the model must perform well on past, present, and
+\textit{future} classes; (2) we propose our \textit{ghost model} to address that setting,
+integrating continual and zero-shot learning into a coherent whole. We evaluate those contributions
+in comprehensive experiments, showcasing both the intuitive appeal of our model, and its
+performance.
+
+
+\section{Setting: prescient continual learning}
+
+\label{sec:setting}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/ghost/protocol.pdf}
+    \caption{The enriched continual learning setting proposed in this work. At each training task,
+        we learn a new set of classes, but the model is evaluated on \textit{all classes} --- past,
+        present, and future. The model has to avoid catastrophic forgetting of past classes (using a
+        limited number of rehearsal training samples), as well as make a good guess for future classes
+        (using no training samples at all).}
+    \label{fig:protocol_zeroshot_continual}
+\end{figure}
+
+
+In continual learning, a classifier is trained in multiple steps called \textit{tasks}. Each task
+$t\in{1:T}$ comprises a set of new classes $C^t$. The model is evaluated after each task $t$,
+traditionally, on all classes seen so far $C^{1:t}$. Our \textit{rehearsal memory} severely limits
+the training samples we are allowed to keep from the past classes: following
+\cite{hou2019ucir,douillard2020podnet}, we allow a small constant number of samples $s$ per past
+class. We must take the maximum advantage from those limited rehearsal data to avoid catastrophic
+forgetting.
+
+We propose an enriched experimental setting, prescient continual learning, in which each task is
+evaluated on \textit{all classes} $C^{1:T}$: past ($C^{1:t-1}$), present ($C^t$), and future
+($C^{t+1:T}$). In that challenging new setting, we must not only avoid the catastrophic forgetting
+of past classes (using the limited rehearsal training samples), but also give our best estimates for
+future classes (using no training samples at all). That will only be possible if we have some prior
+information about the classes, e.g., their hierarchy in a semantic network (like WordNet), an
+associated word embedding (like Word2Vec), or an attribute matrix. Such setting is illustrated in
+\autoref{fig:protocol_zeroshot_continual}. We will sometimes shorthand the set of past and present
+classes $C^{1:t}$ as the \textit{seen} classes, and the set of future classes $C^{t+1:T}$ as the
+\textit{unseen} classes. We denote individual samples by a superscript $\vx^(i)$, and the class
+label by a subscript $\vx_c$. We denote on which parameters a loss is applied by a subscript
+$\mcL_\Theta$.
+
+\section{Ghost model}
+\label{sec:model}
+
+To address the setting described in the previous section, we propose our \textit{ghost model},
+comprising three components: a convolutional feature extractor $f$, a feature generator $g$, and a
+classifier $\clf$. The feature extractor is the backbone of the model: it learns to extract a
+feature vector from actual samples that can be fed to the classifier. The generator learns the
+distribution of the features for all classes, aiming to generate plausible samples of features for
+the future classes. The classifier makes the final decision for all classes: past, present, and
+future. The classifier is trained on future classes with features sampled from the generator, which
+we call \textit{ghost features} (since they must be “hallucinated” from the seen classes and some
+prior knowledge about the classes).
+
+All three components are learned continuously throughout the $T$ tasks; we denote the component
+learned at task $t$ with a superscript: $f^t$, $g^t$, and $\clf^t$. To avoid catastrophic forgetting
+of past classes, we constrain the model's evolution, placing a cost on the divergence between
+$f^{t-1}$ and $f^t$. To make the best guess for future classes, we take inspiration from zero-shot
+learning, training the classifier with the ghost features. Finally, we adjust the classifier so that
+the ghost features “make room” in the representation space for future classes.
+
+The next subsections detail the model, explaining the different terms in the loss that act in
+concert to obtain the desired balance.
+
+\subsection{Base model for continual learning}
+\label{sec:basemodel}
+
+The base model is a representation-based architecture with a convolutional feature extractor $\vh =
+    f(\vx)$ (where $\vx$ is the input image and $\vh$ is the feature vector) and a cosine classifier
+$\clf$ \cite{luo2018cosine_classifier, hou2019ucir}, a fully-connected layer with the dot-product
+replaced by a cosine similarity:
+%
+\begin{equation}
+    \clf(\vh, \vt)_c = \vyh_c = \frac{\langle \vh, \vt_c \rangle}{\Vert \vh \Vert_2 \Vert \vt_i \Vert_2}\,.
+    \label{eq:cosine-classifier}
+\end{equation}
+%
+Remark that $\vt_c$, the parameter vector for the $c$-th class in $\clf$ ($c\in C^{1:t}$), may be
+interpreted as a representative or proxy for that class. The classification loss could be either a
+cross-entropy loss preceded by softmax activations, or an NCA loss \cite{goldberger2005nca_loss,
+    attias2017proxynca, douillard2020podnet}:
+%
+\begin{equation}
+    \mcL^{\text{\tiny{nca}}}_{\Theta_f,\Theta_{\clf}} = \left[- \log\frac{\exp\left(\vyh_y- \delta\right)}{\sum_{c \neq y} \exp \vyh_c} \right]_+ \,.
+    \label{eq:nca}
+\end{equation}
+%
+To counteract catastrophic forgetting, we must limit the evolution of the model. We impose — as
+usual for continual learning — a distillation loss between the previous model iteration ($t-1$) and
+the current one ($t$). We evaluate several distillation losses applied to intermediate and final
+outputs of the feature extractor \cite{douillard2020podnet,hou2019ucir} on
+\autoref{sec:implementation}. The final loss of the base model is:
+%
+\begin{equation}
+    \mcL = \mcL^{\text{\tiny{nca}}}_{\Theta_f,\Theta_{\clf}} + \lambda_1 \mcL^\text{\tiny{distil}}_{\Theta_f}\,.
+    \label{eq:basemodel_loss}
+\end{equation}
+
+\subsection{Capacitating ghost model for future classes}
+
+The base model can deal with both present classes (with training samples constrained only by their
+availability in the training set)  and past classes (with training samples severely constrained by
+the rehearsal memory). As discussed, the introduction of a distillation loss prevents catastrophic
+forgetting of the latter. We will now address \textit{future classes}, with \textit{no} training
+samples available. First, taking inspiration from zero-shot learning, we will use prior information
+about the classes to generate \textit{ghost features}, plausible stand-ins for the unseen future
+classes' features. Next, we will adapt the classifier to incorporate those ghost features into the
+learning objective seamlessly. The representation learning framework will allow us to integrate the
+entire learning apparatus into one coherent loss.
+
+\textbf{Generator} The generative model estimates the distribution of the unseen classes directly
+in terms of their features (instead of the input images). For the feature generation to work, we
+must have exploitable prior information about the classes, more precisely, we must be able to map
+the class labels $c$ into a \textit{class attribute space} that makes semantic sense. The exact way
+to perform that mapping will be data-dependent, but most often, either we will have an explicit set
+of attributes linked to each class (color, size, material, provenance, etc.), or we will be able to
+extract a latent semantic vector, using a technique like Word2vec
+\cite{mikolov2013word2vec,pennington2014glove}. The generator learns to link the attributes of the
+\textit{seen} classes to the actual feature vectors extracted from the training samples of those
+classes. Thus the first generator training must happen after the features extractor (its
+ground-truth) is learned. The generator is fine-tuned after each task to handle distribution shift.
+Next, we ask the generator to draw random samples, using the attributes of the \textit{unseen}
+classes, creating counterfeit features that we call \textit{ghost features}. The strategy is
+agnostic to the generator model as long as it can be conditioned by class attributes.  At present,
+as detailed in \autoref{sec:quantitative}, we choose a Generative Moment Matching Network
+\cite{li2015gmmn}: a shallow multi-layer perceptron conditioned by class attributes and a noise
+vector trained to minimize the Maximum Mean Discrepancy
+\cite{gretton2007twosampleMMD,gretton2012twosampletestMMD}.
+
+\label{sec:generator}
+
+\textbf{Complete classifier.~~} Remind that the parameters  $\{\vt_c\,,\forall c \in C^{1:t}\}$ on
+the representation-based classifier (\autoref{eq:cosine-classifier}) may be interpreted as proxies
+for the classes $C^{1:t}$. The base model for task $t$ will, thus, learn $|C^{1:t}|$ such proxies,
+one for each of the seen classes. To extend the model for the unseen future classes, the complete
+classifier will learn $|C^{1:t}| + |C^{t+1:T}|$ proxies, which changes \autoref{eq:nca} to:
+%
+\begin{equation}
+    \mcL^\text{\tiny{nca-ghost}}_{\Theta_f,\Theta_{\clf}} = \left[- \log\frac{\exp\left(\vyh_y - \delta\right)}{\sum_{\substack{c \neq y\\c \in C^{1:t}}} \exp \vyh_{c} + \sum_{\substack{c \neq y\\c \in C^{t+1:T}}} \exp \vyh_{c}} \right]_+ \,.
+    \label{eq:nca-ghost}
+\end{equation}
+%
+This classification loss maximizes the similarity $\vyh_y$ (or, conversely, minimizes the distance)
+between sample feature $\vh_y$ and correct class proxy $\vt_y$ in the numerator. In the denominator,
+the loss pushes away all wrong class proxies, from both seen and unseen (future) classes, by
+minimizing the similarities with $\vy_c, \, \forall c \neq y$.
+
+The participation of future classes in the classification loss has two effects. Most obviously, it
+allows the model to perform zero-shot-like guesses for those classes during test time. The
+representation-learning paradigm allows performing both continual and zero-shot learning seamlessly,
+as we advance through the tasks and future classes become present classes, and then past classes.
+Less evidently, but vitally important, the learning of proxies for the future classes makes room in
+the representation space for those classes, creating effective empty spaces that push away the
+actual features of the seen classes (due to the repulsive term in the denominator). As we advance
+through training, future classes become present, their ghost placeholders disappear, and they can
+neatly fit in the newly vacant region. Such a strategy reduces interference between classes
+throughout continual learning, and, as we will see in both visual and quantitative experiments, has
+long-range positive effects.
+
+Naturally, the complete classifier has to be trained with samples from all classes. For seen
+classes, actual data is available from the training and rehearsal data. For unseen future classes
+data is not available, so we employ ghost features sampled from the generator. Note that ghost
+features are produced once per task by the generator and are kept fixed for the task duration.
+\label{sec:ghost-classifier}
+
+%\begin{figure} \centering \includegraphics[width=\linewidth]{images/zeroshot_training.pdf}
+%\caption{The different steps of our training. Starting from the second task, we incorporate our
+%Ghost regularization.} \label{fig:zeroshot_training} \end{figure}
+
+
+
+\label{sec:svm}
+\textbf{Latent-space regularization.~~}
+As explained above, our Ghost classification loss minimizes the intra-class distances and maximizes
+the inter-class distances. The loss enforces those constraints to all proxies regardless of whether
+they represent seen classes or not. We further promote an inter-class separation by optimizing the
+latent representation of seen classes to avoid overlapping with the representation of Ghosts. That
+loss constrains the features space directly and does not affect the proxies and the intra-class
+distances.
+
+We based this regularization loss on SVM \cite{cortes1995svm} for simplicity, but other methods
+could have similar behavior. To compute that loss, we learn binary
+one-unseen-class-Vs-all-seen-classes SVM classifiers, one for each unseen class. We employ a linear
+kernel, since the feature extractor and feature vector dimensionality (512) allows good linear
+separation, but more complex kernels could be used. Those SVMs define hyperplanes $\mathbf{w}_c$ and
+biases $b_c,\, \forall c \in C^{t+1:T}$, separating each unseen region from the mass of seen
+features $\mathbf{h}^{(i)}$ (\autoref{fig:svm_reg}):
+%
+\begin{equation}
+    \mcL^\text{\tiny{svm-reg}}_{\Theta_f} = \frac{1} {N\times |C^{t+1:T}|}\sum_{i=1}^N \sum_{c\in C^{t+1:T}} [\mathbf{w}_c \cdot \mathbf{h}^{(i)} + b_c + \tau]_+\,,
+    \label{eq:svm}
+\end{equation}
+%
+where $\mathbf{h}^{(i)}$ are seen features (classes in $C^{1:t}$), $[\,\cdot\,]_+$ the hinge loss,
+and $\tau$ an additional margin (higher values of $\tau$ push seen features further away from the
+ghost regions, in practice, we set $\tau=1$ to repel beyond the support vectors).
+
+The margin-based regularization of \autoref{eq:svm} refines the ghost classification loss of
+\autoref{eq:nca-ghost}. While the latter acts over the classifier conditioning the feature space
+indirectly via the action of the class proxies, the former acts directly over the latent/feature
+space and the feature extractor backbone that creates it. The computational overhead of training
+several SVMs, detailed in the supplementary material, is negligible compared to the total training
+time.
+
+\textbf{Complete strategy.~~} All modules and losses fit neatly into the goal of learning
+continuously over seen and unseen classes. We train feature extractor (plus classifier) and
+generator in alternation. We train the latter to mimic the features of seen classes, and then ask it
+to extrapolate to unseen classes (ghost features). Ghost features allow us both to unify seen and
+unseen classes into a complete classifier ($\mcL^\text{\tiny{nca-ghost}}$), and to enforce early
+allocation in the feature space for unseen classes ($\mcL^\text{\tiny{svm-reg}}$). The complete
+loss, in addition to a distillation loss to counter-act catastrophic forgetting
+($\mcL^\text{\tiny{distill}}$), is:
+%
+\begin{equation}
+    \mcL = \mcL^\text{\tiny{nca-ghost}}_{\Theta_f,\Theta_{\clf}} + \lambda_1 \mcL^\text{\tiny{distill}}_{\Theta_f} + \lambda_2 \mcL^\text{\tiny{svm-reg}}_{\Theta_f}\,.
+\end{equation}
+%
+An algorithm describing the model's training is provided in the supplementary material.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/ghost/svm_reg.pdf}
+    \caption{Latent-space regularization establishes margin-based one-unseen-class vs. all-seen-classes linear separations. Those separations are employed to directly condition the feature space, creating space for future unseen classes. In the following task, some unseen class will become seen, and may occupy the feature space with less interference.}
+    \label{fig:svm_reg}
+\end{figure}
+
+\section{Experiments}
+\label{sec:implementation}
+
+\subsection{Pictorial experiments}
+
+Before running our full-scale experiments, we will perform a set of experiments with a model that
+keeps the main components from the proposed model in a simplified form that will allow us to link
+quantitative performances to intuitive visual plots of the feature spaces. For the experiments in
+this section we employ the MNIST \cite{lecun2010mnist} dataset, with an initial task of 6 classes
+(digits 0 to 5), then two more tasks of two classes each; the feature extractor comprises two
+convolutional layers followed by a fully connected layer outputting a feature vector of only two
+dimensions — a purposeful choice to allow easy visualization of the feature space. Because MNIST
+classes have no attributes, we cannot apply zero-shot learning directly. Instead, we employ the
+features of actual images from the future classes instead of samples from the generator — which
+corresponds, in some ways, to having a perfectly calibrated generator. Those features are extracted
+once per task, and the feature extractor is never trained on unseen classes images. As we will see
+in \autoref{tab:generated_vs_real}, integrating the generator in our full-scale model outperforms
+using actual extracted features, so that necessary substitution does not exaggerate the abilities of
+this small-scale model. The losses used to train the small and the full-scale models are the same,
+but the SVM-based regularization was not employed since it made little sense for a 2D latent space.
+
+The 2D feature space allows us to directly visualize the evolution of the feature space as the tasks
+progress, without the need for dimensionality reduction techniques that complicate the analysis
+(e.g. t-SNE \cite{maaten2008tsne}). \autoref{fig:toy_ghost_weights_3steps} may be interpreted
+upfront: as the three tasks progress left-to-right, we see the evolution of the feature space on the
+base model (PODNet, on the top branch) and on the proposed model with ghost features (bottom
+branch). The base model presents strong overlap between the initial classes, and the later added  8
+({\color{orange}orange}) and 9 ({\color{violet}dark purple}). That comes partially from shape
+similarities (‘8’ is similar to ‘0’ and ‘5’), partially from continual learning, and results in
+severe forgetting of old classes in favor of new ones. The proposed model organizes better the
+feature space, which is particularly visible between the second and third steps, where the early
+allocation of ghost zones for the future classes (displayed as empty black circles) is prominent.
+That better arrangement of the feature space increases the final accuracy from 44 to 66\%, a 22 p.p.
+improvement. The small latent space of 2 dimensions explains the low performance for both models; a
+model that learns on all classes in one step (\textit{i.e.} not in a continual setting) reaches only
+69\% of final accuracy. That said, our model shows a clear improvement both qualitatively in
+\autoref{fig:toy_ghost_weights_3steps} and quantitatively. More experiments of this kind can be
+found in the supplementary material.
+
+% \subsection{Qualitative assessment} \label{sec:qualitative}
+% \subsection{xxxx}https://www.overleaf.com/project/5e986a07010d7400013af43e
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/ghost/toy_model_6_2_2.pdf}
+    \caption{Small-scale PODNet on MNIST with 3 steps (digits '0' to '5'; then '6' and '7'; then
+        '8' and '9') with a features space of only two dimensions. The early incorporation
+        of ghost features/proxies in the second task, denoted by dotted circles in the bottom
+        row, enforces vacant space for those unseen classes. When filled in the third task
+        (last column), there is less interference/overlap with previous classes. Such a
+        strategy improves the final accuracy by 22 p.p.}
+    \label{fig:toy_ghost_weights_3steps}
+\end{figure}
+
+\subsection{Main experiments}
+\label{sec:quantitative}
+
+\textbf{Datasets \& Protocols.~~} We perform our experiments on two datasets: AwA2
+\cite{xian2019awa2}, with 50 animals categories, each with 85 attributes; and AP\&Y
+\cite{farhadi2009apy}, with 32 everyday object classes, each with 64 attributes. We employ two
+experimental protocols: one typical for continual learning, following
+\cite{hou2019ucir,douillard2020podnet}, starting the first task with half the classes (i.e., 25 for
+AwA2, and 16 for aP\&Y), then adding the remaining classes in evenly-sized tasks (5 tasks of 5
+classes for AwA2, and 8 tasks of 2 classes for aP\&Y); another inspired from zero-shot learning,
+following \cite{xian2019awa2}, starting with a standard selection of classes for each of the
+datasets (40 for AwA2, and 20 for aP\&Y), and adding the remaining classes in small increments (5
+tasks of 2 classes for AwA2, and 6 tasks of 2 classes for aP\&Y). Our evaluation protocol is akin to
+the challenging and realist Generalized Zero-shot Learning \cite{scheirer2013generalizedzeroshot,
+    chao2016generalizedzeroshot} protocol  — with no information on whether a sample is from a seen or
+unseen class — but harsher, since classes are seen gradually, and training samples for past classes
+data are limited by rehearsal memory.
+
+\textbf{Base Models.~~} We evaluate our contributions on top of two different
+representation-learning based models, both based on ResNet18 \cite{he2016resnet} feature extractor
+backbones (with feature vector size of 512) and cosine classifiers. They differ on the distillation
+loss $\mcL_\text{distil}$ employed, the first model (PODNet) using Douillard et al.'s distillation
+\cite{douillard2020podnet} constraining the statistics of the intermediate features after each
+residual block, and the second (UCIR) using Hou et al.'s distillation \cite{hou2019ucir} enforcing a
+cosine constraint on the final flat latent space. The former performs better than the latter, but
+both are improved by the innovations proposed in this work. The cosine classifier has a single
+proxy/representative per class but could easily be generalized to multiple proxies. Implementation
+details are provided in the supplementary material and the code for the entire model will be
+released with the final paper.
+
+\textbf{Generator.~~} Following the work of Bucher et al. \cite{bucher2017zeroshot_gmmn} for
+zero-shot learning, our generator is a Generative Moment Matching Network (GMMN)~\cite{li2015gmmn}
+$g^t(\mathbf{\xi}, \mathbf{E}_c)$, which takes as inputs a Gaussian noise vector $\mathbf{\xi}$ and
+a class attributes vector $\mathbf{E}_c$, and outputs a sample from the estimated distribution of
+features for a class with the given attributes. In our experiments on AwA2 and AP\&Y, the class
+attributes vectors are the average of the attributes for the training samples in the class. For each
+task $t$, the feature extractor $f^t$ and the generator $g^t$ are trained to minimize the Maximum
+Mean Discrepancy (MMD) \cite{gretton2007twosampleMMD,gretton2012twosampletestMMD} between the actual
+features of seen classes $\vh_c = f^t(\vx_c) \, , \forall c \in C^{1:t}$ and their distribution on
+the generator $\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in C^{1:t}$. More
+details and figures can be found in the supplementary material.
+
+\input{tables/ghost/continual_half}
+\input{tables/ghost/final_half}
+
+\textbf{Continual Learning with Future Classes.~~}
+For continual learning, it is usual to take into account the model's performance as it evolves. We
+adapt the traditional average incremental accuracy \cite{rebuffi2017icarl} to take into account
+\textit{all} classes, including the future ones, and call that metric \textit{continual accuracy}:
+the average of accuracy over all seen classes after each task. The results appear in
+\autoref{tab:continual_half}, which shows, for the datasets and protocols explained in the top of
+this section, the performance for our two base models \cite{hou2019ucir,douillard2020podnet}, and
+the improvements on those base models as we implement our proposed model, with and without the SVM
+latent-space regularization refinement. The ability to guess on future class brings large
+improvements on both datasets, for both base models. The SVM-based regularization refinement also
+improves the results, by up to 0.65 p.p.
+
+\textbf{Final Accuracy.~~} Once we reach the final task, the proposed model ability to guess future
+classes provides no advantage due to all classes being now seen. Still, as shown in
+\autoref{tab:final_half} — where the metric is simply the accuracy at the final task of each run —
+the proposed method outperforms the baselines, due to a better organization of the feature space.
+Although the numerical advantages in this table are smaller than in the previous one, these results
+are consequential, showing that the ability of the proposed model of incorporating knowledge about
+the classes is useful beyond the zero-shot scenario. Again, the SVM-regularization refinement helps
+by up to 1.80 p.p.
+
+\input{tables/ghost/plot}
+
+\textbf{Model Evolution.~~} To showcase how the models evolve, plots contrasting the proposed
+methods with each base model (PODNet and UCIR) task by task appear in
+\autoref{fig:plot_awa2_25x5x5c}. The plots show how, on early tasks, the main advantage of the
+proposed model is its ability to guess on the future classes, while on the final task no future
+classes remain, but the proposed model still keeps a (more modest, but definitive) advantage.
+
+\input{tables/ghost/initial_seen}
+
+\textbf{Zero-shot-like Initial Task Setting.~~} This set of experiments (\autoref{tab:initial_seen})
+is intended for comparison with zero-shot learning benchmarks \cite{xian2019awa2}, which always use
+the same split of seen/unseen classes for a given dataset. Our first task in the continual learning
+contains the classes defined in zero-shot benchmark as seen, and we learn next, in small increment,
+the remaining classes, i.e., those defined in the zero-shot benchmark as unseen. Because the initial
+task is larger than previously, fewer future classes remain, and the base models have better
+performance. Still, the proposed method improves both base methods in both datasets significantly.
+The setting proposed is different than the — markedly less challenging — setting appearing in
+Kankuekul et al.\cite{kankuekul2012onlineincrementalzeroshot} and Xue et
+al.\cite{xue2017incrementalzeroshot}, where the set of unseen classes is fixed, and only more seen
+classes are added incrementally, without any sample limitations given by rehearsal memory.
+
+% We completed further experiments with a different task setting. Instead of an initial task of half
+% the classes, as \cite{hou2019ucir,douillard2020podnet}, we initial train the model on Zeroshot's
+% seen classes: usual Zeroshot Learning benchmarks uses the same split seen/unseen. In our Continual
+% Zeroshot Learning, we pick as initial task what benchmarks defines as "seen". Then initial tasks
+% are of larger size than previous setting (\autoref{tab:continual_half,tab:final_half}), thus
+
+\input{tables/ghost/cheat}
+
+\textbf{Generator Validation.~~} The generator approximates the feature extractor for the unseen
+future classes. To validate its effectiveness, we replace the generated features by the actual
+features from the future images. This form of “cheating”, of course, is not possible in
+\textit{actual} real-world scenarios, but serves as a metric. \autoref{tab:generated_vs_real} shows
+the comparison, with the surprising result that generated features performed better than the actual
+features from samples (respectively first and second row). Note that the latter are extracted once
+per task. We hypothesize it explains the score difference because the features extractor was never
+adapted for the unseen classes distribution. The “oracle” experiments in the third and fourth row in
+\autoref{tab:generated_vs_real} establish an upper bound for what we could achieve by ”cheating”
+around the experimental protocol restrictions. The partial oracle from third row is the same model
+as the second row, fine-tuning the feature extractor with samples coming from the future. The full
+oracle of the fourth line uses all images from all classes unrestrictedly in a single task. Despite
+the partial oracle had full access to real future data, we stress that our model's performance with
+generated future data is close to this upper bound.
+%Both oracles have obviously better performances that our method, but we stress that our method is
+%close to the partial oracle with a difference smaller than 5 p.p. (in other words, it follows a
+%vanilla supervised protocol instead of a continual learning one)
+
+%A visual analysis of the ghost features vs. actual features (\autoref{fig:tsne_projection_ghost})
+%shows that the ghost features are, in general, well-calibrated in terms of the rough region of
+%space occupied, but have a much smaller variance than actual features from samples of unseen
+%classes. That smaller variance/diversity may end up better working to regularize the feature space,
+%acting as ``archetypal'' class examples.
+
+% We hypothesise that this can be explained by the intra-class diversity, as seen in
+% \autoref{fig:tsne_projection_ghost}, which is high for real features while low for generated
+% features. Recall that for ``\textit{real}'', the features extractor was never trained on those
+% unseen classes, the latent space it produced it thus uncertain.
+
+%\input{tables/quantitative_pod} \input{tables/qualitative_podflat}
+
+%We also inspected the features we generated for a AwA2, a larger-scale dataset.
+%\autoref{fig:tsne_projection_ghost} showcases a t-SNE 2d projection of the latent space for real
+%and generated features. \autoref{fig:tsne_seen} contains the features of \textit{seen} classes, the
+%generator was trained to approximate those. In \autoref{fig:tsne_unseen}, the generator extrapolate
+%its knowledge to \textit{unseen} classes. As remarked by others \cite{ravuri2019accongan},
+%generative models don't yet produce the most realistic images/features. However in a setting as
+%constrained as ours, where unseen classes are totally nonexistent, generating them provide a much
+%needed insights of the future.
+
+\section{Conclusion}
+
+In this work, we introduced prescient continual learning, a new challenging setting for continual
+learning, where the model trains on a sequence of tasks, each introducing new classes, but has
+access to prior information about the classes. Although we give the model awareness of future
+classes, we also test it on all classes: past, present, and future, resulting in a more challenging
+setting. We proposed ghost model, first of its kind, which uses the paradigm of representation
+learning to incorporate capabilities of zero-shot learning into the continual learning model in a
+seamless way. We refined that model with a novel SVM-based regularization loss acting over the
+feature space to reinforce exclusion zones, reserved for future classes. Finally, we established, in
+extensive quantitative and qualitative experiments, the advantage of the proposed model over two
+base models.
 
 
 \section{Conclusion}

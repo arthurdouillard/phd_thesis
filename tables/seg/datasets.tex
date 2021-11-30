@@ -1,0 +1,42 @@
+\begin{table}[t]
+    \centering
+    \caption{Description of the three datasets considered in this paper. For datasets without explicit background class, one is created based on unlabeled pixels.}
+    \vspace*{-0.3cm}
+    \label{tab:dataset_description}
+    \begin{tabular}{@{}l|ccccc@{}}
+        \toprule
+        Dataset                                   & \# classes & {\scriptsize Background?} & \# train & \# test & {\scriptsize Image size} \\
+        \midrule
+        Pascal-VOC \cite{everingham2015pascalvoc} & 20         & \cmark                    & 10k      & 1.5k    & $512 \times 512$         \\
+        Cityscapes \cite{cordts2016cityscapes}    & 19         & \xmark                    & 3k       & 0.5k    & $512 \times 1024$        \\
+        ADE20k \cite{zhou2017adedataset}          & 150        & \xmark                    & 20k      & 2.0k    & $512 \times 512$         \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[t]
+    \centering
+    \caption{Description of the 12 different benchmarks evaluated in this paper. For some of these, each task brings new classes while, for others, it comes with new domains.}
+    \vspace*{-0.3cm}
+    \label{tab:setting_description}
+    \begin{tabular}{@{}l|rcccc@{}}
+        \toprule
+        {\scriptsize Dataset}       & {\scriptsize Setting} & {\scriptsize Mode} & {\scriptsize \# tasks} & {\scriptsize \# base classes} & {\scriptsize \# classes / inc. task} \\
+        \midrule
+        \multirow{4}{*}{Pascal-VOC} & 19-1                  & class              & 2                      & 19                            & 1                                    \\
+                                    & 15-5                  & class              & 2                      & 15                            & 5                                    \\
+                                    & 15-1                  & class              & 6                      & 15                            & 1                                    \\
+                                    & 10-1                  & class              & 11                     & 10                            & 1                                    \\
+        \hline
+        \multirow{1}{*}{Cityscapes} & 14-1                  & class              & 6                      & 14                            & 1                                    \\
+        %& 11-5 & domain  & 3 & 11 & 5 \\
+        %& 11-1 & domain  & 11 & 11 & 1 \\
+        %& 1-1 & domain  & 21 & 1 & 1 \\
+        \hline
+        \multirow{4}{*}{ADE20k}     & 100-50                & class              & 2                      & 100                           & 50                                   \\
+                                    & 50-50                 & class              & 2                      & 50                            & 50                                   \\
+                                    & 100-10                & class              & 6                      & 100                           & 10                                   \\
+                                    & 100-5                 & class              & 11                     & 100                           & 5                                    \\
+        \bottomrule
+    \end{tabular}
+\end{table}

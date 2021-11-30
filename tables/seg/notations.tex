@@ -1,0 +1,22 @@
+\begin{table}[t]
+    \centering
+    \caption{Notations used in this paper.}
+    \vspace*{-0.3cm}
+    \label{tab:notation}
+    \begin{tabular}{@{}l|c@{}}
+        \toprule
+        Total number of tasks                   & $T$                                      \\
+        Current task                            & $t$                                      \\
+        Current classes                         & $\mcC^t$                                 \\
+        Previous classes                        & $\mcC^{1:t-1}$                           \\
+        Future classes                          & $\mcC^{t+1:T}$                           \\
+        Cardinality of a set of classes         & $\mcN^t=\operatorname{card}(\mcC^{t})-1$ \\
+        Image and Segmentation maps at task $t$ & $\mcI^t$ and $\mcS^t$                    \\
+        Feature extractor at task $t$           & $f^t(\cdot)$                             \\
+        Classifier at task $t$                  & $g^t(\cdot)$                             \\
+        Learnable parameters at task $t$        & $\Phi^t$                                 \\
+        Predicted segmentation maps             & $\hat{\mcS}^t$                           \\
+        Intermediary features at level $l$      & $f^t_l,\,l \in \{1, \dots, L\}$          \\
+        \bottomrule
+    \end{tabular}
+\end{table}
