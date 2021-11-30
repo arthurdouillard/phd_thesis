@@ -1,5 +1,7 @@
 {
     "rewrap.autoWrap.enabled": true,
+    "latex-workshop.kpsewhich.enabled": true,
+    "latex-workshop.intellisense.package.enabled": true,
     "latex-workshop.latex.autoBuild.run": "onSave",
     "latex-workshop.latex.autoClean.run": "onBuilt",
     "latex-workshop.latex.clean.fileTypes": [
