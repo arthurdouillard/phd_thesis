@@ -24,7 +24,7 @@ This repository is an archive of my PhD manuscript and the slides of the defense
 - My LaTeX manuscript compiles with `pdflatex` and `biber`.
 
 
-### Abstract (Enlish)
+### Abstract (English)
 
 For a decade now, convolutional deep neural networks have demonstrated their ability to produce excellent results for computer vision. For this, these models transform the input image into a series of latent representations. In this thesis, we work on improving the "quality" of the latent representations of ConvNets for different tasks.
 
