@@ -1,4 +1,4 @@
-\chapter{Regularization-based Models}
+\chapter{Feature-based Regularizations}
 \label{chapter:regularization}
 
 %\newcommand{\mcL}{\mathcal{L}}
@@ -15,10 +15,24 @@
 
 
 \begin{chapabstract}
-    In this chapter, we propose an overview of regularization in Continual Learning. In particular,
-    we discuss regularizations that are applied on the networks' outputs and discuss
+    Regularization-based methods are powerful approaches to reduce catastrophic
+    forgetting, especially in challenging setting such as \ac{CIL} with single-head
+    where task identity is not known at test-time. However, they often consider
+    only constraining the final probability predictions of the network which falls
+    short to forgetting when faced to large amount of tasks. \\
+    In this chapter, we propose two methods exploiting explicitly the intermediate
+    features to reduce forgetting. The first approach, nicknamed PODNet, aims to
+    constrain similar statistics to avoid a representation drift at all levels
+    of the network. We show that it scales particularly well on extreme scenarios
+    where classes are learned one by one for a long succession of iterations.
+    The second approach, named Ghost, pre-emptively reserves
+    capacity for future ---yet to be seen--- classes avoiding forgetting before
+    it even happens. We pinpoint those classes locations in the representation
+    space by estimating their future positions by drawing inspiration from the
+    \ac{ZSL} literature.
 
-    The work in this section has led to a publication to a conference paper and a workshop paper:
+    The work in this section has led to a publication to a conference paper (PODNet) and a workshop
+    paper (Ghost):
 
     \begin{itemize}
         \item \fullcite{douillard2020podnet}
@@ -26,7 +40,7 @@
     \end{itemize}
 
 \end{chapabstract}
-
+\newpage
 
 \minitoc
 \chapterwithfigures{\nameref*{chapter:regularization}}
