@@ -58,61 +58,27 @@ knowledge distillation \citep{hinton2015knowledge_distillation} that enforces si
 between the old and current model. First introduced by LwF \citep{li2018lwf}, it has then be used by
 multiple seminal papers including iCaRL \citep{rebuffi2017icarl} and WA
 \citep{zhao2020weightalignement}. I propose in this chapter two proposed regularization methods to
-reduce forgetting. The first one, introduced in \ac{PODNet} \citep{douillard2020podnet}, aims to
-regularize the statistics shift at the intermediate feature-level to reduce significantly
-catastrophic forgetting. The second one, nicknamed Ghost \citep{douillard2020ghost}, on the other
-hand, avoid pre-emptively forgetting by regularizing the feature space at locations where future
-classes are estimated to arrive to.
+reduce forgetting. The first one, introduced in \ac{PODNet} \citep{douillard2020podnet} and detailed
+in \autoref{sec:podnet}, aims to regularize the statistics shift at the intermediate feature-level
+to enforce a consistent representation at multiple levels of the feature extractor across
+all steps of the continual training. The second one, nicknamed Ghost \citep{douillard2020ghost} and
+described in \autoref{sec:ghost}, on the other hand, avoid pre-emptively forgetting by regularizing the
+feature space at locations where future classes are estimated to arrive to.
+
+For both PODNet and Ghost, we will focus on \ac{CIL} where each new task brings new classes. We
+propose then to split a dataset into multiple tasks, \ieg{} CIFAR100 50-1 would be 1 task of 50
+classes followed by 50 tasks of 1 class each. Following other regularization methods based on the
+probabilities, we allow a rehearsal memory storing a limited amount of previous data.
 
 \section{PODNet: reducing forgetting via intermediate feature statistics}
+\label{sec:podnet}
 
-Lifelong machine
-learning~\citep{robins1995catastrophicforgetting,french1999catastrophicforgetting,thrun1998lifelonglearning}
-focuses on models that accumulate and refine knowledge over large timespans. Incremental learning
---\,the ability to aggregate different learning objectives seen over time into a coherent whole\,--
-is paramount to those models. To achieve incremental learning, models must fight
-\textit{catastrophic
-    forgetting}~\citep{robins1995catastrophicforgetting,french1999catastrophicforgetting} of previous
-knowledge. Lifelong and incremental learning have attracted much attention in the past few years,
-but existing works still struggle to preserve acquired knowledge over many cycles of short
-incremental learning steps.
+\subsection{Related Works}
+\label{sec:podnet_related}
 
-We will focus on image classifiers, which are ordinarily trained once on a fixed set of classes. In
-\textit{incremental learning}, however, the classifier must learn the classes by steps, in training
-cycles called \textit{tasks}. At each task, we expose the classifier to a new set of classes.
-Incremental learning would reduce trivially to ordinary classification if we were allowed to store
-all training samples, but we are imposed a limited \textit{memory}: a maximum number of samples for
-previously learned classes. This limitation is motivated by practical applications, in which privacy
-issues, or storage and computing limitations prevent us from simply retraining the entire model for
-each new task~\citep{li2018lwf,lomonaco2017core50}. Furthermore, incremental learning is different
-from transfer learning in that we aim to have good performance in both old and new classes.
+We frame our model onto two paradigm: regularization-based and metric-based.
 
-To overcome catastrophic forgetting, different approaches have been proposed: reusing a limited
-amount of previous training data~\citep{rebuffi2017icarl,castro2018end_to_end_inc_learn}; learning
-to generate the training data~\citep{kemker2018fearnet,shin2017deep_generative_replay}; extending
-the architecture for new phases of
-data~\citep{yoon2018dynamically_expandable_networks,li2019learning_to_grow}; using a sub-network for
-each phase~\citep{fernando2017path_net,golkar2019neural_pruning}; or constraining the model
-divergence as it
-evolves~\citep{kirkpatrick2017ewc,lopezpaz2017gem,aljundi2018MemoryAwareSynapses,li2018lwf,rebuffi2017icarl,castro2018end_to_end_inc_learn}.
-
-
-In this work, we propose PODNet, approaching incremental learning as representation learning, with a
-distillation loss that constrains the evolution of the representation. By carefully balancing the
-compromise between remembering the old classes and learning new ones, we learn a representation that
-fights catastrophic forgetting, remaining stable over long runs of small incremental tasks. Our
-model innovates on existing art with (1) an \textit{efficient spatial-based} distillation-loss
-applied \textit{throughout the model}; and (2) as a refinement, a representation comprising multiple
-proxy vectors for each class, resulting in a more flexible representation.
-
-In this paper, we first present the existing state of the art (\autoref{sec:related_work}), which we
-close by detailing our contributions. We then describe our model (\autoref{sec:model}), and evaluate
-it in an extensive set of experiments (\autoref{sec:expes}) on CIFAR100, ImageNet100, and
-ImageNet1000, including ablation studies assessing each contribution, and extensive comparisons with
-existing methods.
-
-\section{Related Work}
-\label{sec:related_work}
+\paragraph{Regularization of the model's output}
 
 To approach the problem of incremental learning, consider a single incremental task: one has a
 classifier already trained over a set of old classes and must adapt it to learn a set of new
@@ -530,7 +496,7 @@ Please see the supplementary materials for the full implementation details.
 \input{tables/podnet/quant_imagenet}
 
 \subsection{Quantitative results}
-\label{sec:quantitative_results}
+\label{sec:podnet_quantitative_results}
 
 The comparisons with all the state of the art are tabulated in \autoref{tab:quantitative_cifar} for
 CIFAR100 and \autoref{tab:quantitative_imagenet} for ImageNet100 and ImageNet1000. All tables shows
@@ -569,7 +535,7 @@ than CIFAR100, and ten times the number of classes as ImageNet100. We evaluate t
 \input{tables/podnet/plots.tex}
 
 \subsection{Further analysis \& ablation studies}
-\label{sec:ablation}
+\label{sec:podnet_ablation}
 
 \paragraph{Ablation Studies}
 Our model has two components: the distillation loss POD and the LSC classifier. An ablation study
@@ -647,6 +613,7 @@ models, proving the robustness of our model.
 
 
 \section{Ghost: avoid pre-emptively forgetting}
+\label{sec:ghost}
 
 Continual learning models contrast with traditional models by approaching a sequence of tasks
 incrementally. With limitations (often severe) on the training data they can retain, those models
