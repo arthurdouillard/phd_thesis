@@ -1,26 +1,28 @@
 \begin{table*}[t]
-    \caption{Average incremental accuracy, PODNet \textit{vs.} state of the art. Models with an asterisk * are reported directly from Hou et al.~\cite{hou2019ucir}}
-    \label{tab:quantitative_imagenet}
     \centering
-    \begin{tabular}{@{}l|cccc|cc@{}}
-        \toprule
-                                                      & \multicolumn{4}{c|}{ImageNet100} & \multicolumn{2}{c}{Imagenet1000}                                                                                                         \\
-        %\cmidrule(l{0pt}r{4pt}){2-4} \cmidrule(l{4pt}r{4pt}){5-7} \cmidrule(l{4pt}r{4pt}){8-9}
-                                                      & 50 steps                         & 25 steps                         & 10 steps                         & 5 steps                          & 10 steps       & 5 steps        \\
-        \multicolumn{1}{r|}{New classes per step}     & 1                                & 2                                & 5                                & 10                               & 50             & 100            \\
-        \midrule
-        iCaRL* \cite{rebuffi2017icarl}                & ---                              & ---                              & 59.53                            & 65.04                            & 46.72          & 51.36          \\
-        iCaRL \cite{rebuffi2017icarl}                 & 54.97                            & 54.56                            & 60.90                            & 65.56                            & ---            & ---            \\
-        BiC \cite{wu2019bias_correction}              & 46.49                            & 59.65                            & 65.14                            & 68.97                            & 44.31          & 45.72          \\
-        UCIR\,{\scriptsize (NME)}* \cite{hou2019ucir} & ---                              & ---                              & 66.16                            & 68.43                            & 59.92          & 61.56          \\
-        UCIR\,{\scriptsize (NME)} \cite{hou2019ucir}  & 55.44                            & 60.81                            & 65.83                            & 69.07                            & ---            & ---            \\
-        UCIR\,{\scriptsize (CNN)}* \cite{hou2019ucir} & ---                              & ---                              & 68.09                            & 70.47                            & 61.28          & 64.34          \\
-        UCIR\,{\scriptsize (CNN)} \cite{hou2019ucir}  & 57.25                            & 62.94                            & 67.82                            & 71.04                            & ---            & ---            \\
-        % PODNet\,{\scriptsize (CNN)}                & \textbf{62.48 $\pm$ 0.59} & \textbf{68.31 $\pm$ 2.45} & \textbf{74.33 $\pm$ 0.93} & \textbf{75.54 $\pm$ 0.26} & \textbf{64.13} & \textbf{66.95}\\
-        PODNet\,{\scriptsize (CNN)}                   & \textbf{62.48}                   & \textbf{68.31}                   & \textbf{74.33}                   & \textbf{75.54}                   & \textbf{64.13} & \textbf{66.95} \\
+    \begin{adjustbox}{max width=\textwidth}
+        \begin{tabular}{@{}l|cccc|cc@{}}
+            \toprule
+                                                          & \multicolumn{4}{|c|}{ImageNet100} & \multicolumn{2}{c}{Imagenet1000}                                                                                                         \\
+            %\cmidrule(l{0pt}r{4pt}){2-4} \cmidrule(l{4pt}r{4pt}){5-7} \cmidrule(l{4pt}r{4pt}){8-9}
+                                                          & 50 steps                          & 25 steps                         & 10 steps                         & 5 steps                          & 10 steps       & 5 steps        \\
+            \multicolumn{1}{r|}{New classes per step}     & 1                                 & 2                                & 5                                & 10                               & 50             & 100            \\
+            \midrule
+            iCaRL* \cite{rebuffi2017icarl}                & ---                               & ---                              & 59.53                            & 65.04                            & 46.72          & 51.36          \\
+            iCaRL                                         & 54.97                             & 54.56                            & 60.90                            & 65.56                            & ---            & ---            \\
+            BiC \cite{wu2019bias_correction}              & 46.49                             & 59.65                            & 65.14                            & 68.97                            & 44.31          & 45.72          \\
+            UCIR\,{\scriptsize (NME)}* \cite{hou2019ucir} & ---                               & ---                              & 66.16                            & 68.43                            & 59.92          & 61.56          \\
+            UCIR\,{\scriptsize (NME)}                     & 55.44                             & 60.81                            & 65.83                            & 69.07                            & ---            & ---            \\
+            UCIR\,{\scriptsize (CNN)}*                    & ---                               & ---                              & 68.09                            & 70.47                            & 61.28          & 64.34          \\
+            UCIR\,{\scriptsize (CNN)}                     & 57.25                             & 62.94                            & 67.82                            & 71.04                            & ---            & ---            \\
+            % PODNet\,{\scriptsize (CNN)}                & \textbf{62.48 $\pm$ 0.59} & \textbf{68.31 $\pm$ 2.45} & \textbf{74.33 $\pm$ 0.93} & \textbf{75.54 $\pm$ 0.26} & \textbf{64.13} & \textbf{66.95}\\
+            PODNet\,{\scriptsize (CNN)}                   & \textbf{62.48}                    & \textbf{68.31}                   & \textbf{74.33}                   & \textbf{75.54}                   & \textbf{64.13} & \textbf{66.95} \\
 
-                                                      & \scriptsize{\textbf{$\pm$ 0.59}} & \scriptsize{\textbf{$\pm$ 2.45}} & \scriptsize{\textbf{$\pm$ 0.93}} & \scriptsize{\textbf{$\pm$ 0.26}} &                &                \\
+                                                          & \scriptsize{\textbf{$\pm$ 0.59}}  & \scriptsize{\textbf{$\pm$ 2.45}} & \scriptsize{\textbf{$\pm$ 0.93}} & \scriptsize{\textbf{$\pm$ 0.26}} &                &                \\
 
-        \bottomrule
-    \end{tabular}
+            \bottomrule
+        \end{tabular}
+    \end{adjustbox}
+    \caption{Average incremental accuracy, PODNet \ivs state of the art. Models with an asterisk * are reported directly from Hou et al.~\cite{hou2019ucir}}
+    \label{tab:podnet_quantitative_imagenet}
 \end{table*}

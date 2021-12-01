@@ -16,6 +16,7 @@
 	\bibliography{biblio.bib}
 
 \usepackage{ifthen}
+\usepackage{adjustbox}
 \usepackage{graphicx}
 \usepackage{comment}
 \usepackage{amsmath,amssymb} % define this before the line numbering.
@@ -99,7 +100,7 @@
 \input{content/00_intro.tex}
 \cleardoublepage
 
-\acresetall
+\acresetall % flush acronyms so they are redefined completly when first used
 \input{content/01_related.tex}
 \cleardoublepage
 \let\leftmark=\oldleftmark
@@ -129,6 +130,7 @@
 \cleardoublepage
 \let\leftmark=\oldleftmark
 
+\appendix
 \acresetall
 \input{content/07_appendix.tex}
 \cleardoublepage
