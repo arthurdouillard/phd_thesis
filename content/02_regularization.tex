@@ -76,117 +76,43 @@ probabilities, we allow a rehearsal memory storing a limited amount of previous 
 \subsection{Related Works}
 \label{sec:podnet_related}
 
-We frame our model onto two paradigm: regularization-based and metric-based.
+We frame our model onto two paradigm: representation learning and regularization-based.
 
-\paragraph{Regularization of the model's output}
+\paragraph{Regularization of the model's output} Regularizations constraining the rate of change of
+the weights \citep{kirkpatrick2017ewc} or the gradients \citep{farajtabar2020ogd} have been
+proposed. They reduce effectively the forgetting of the feature extractors in a multi-heads setting
+where the task identity is known at test-time. However, in the more challenging and realist setting
+of single-head, where classes from all tasks, have to be predicted, these methods often barely work
+better than a naive finetuning \citep{lesort2019regulshortcomings}. Therefore, I focused on
+regularizations applied on a model's output. LwF \citep{li2018lwf} first used the \ac{KD} of \cite{hinton2015knowledge_distillation}: a KL divergence between the probabilities
+of the old and new models. While simple, this loss ---with few variations--- has been used by
+multiple following works \citep{rebuffi2017icarl,zhao2020weightalignement}. Few works tried to
+constrain intermediate outputs of the model: LwM \citep{dhar2019learning_without_memorizing_gradcam}
+proposed to minimize the L2 distance between gradient-based attention maps produced by GradCam
+\citep{selvaraju2017gradcam}. M2KD \citep{peng2019m2kd} used a \ac{KD} on both the final predictions
+and intermediate predictions from an auxilliary classifier similar to Inception
+\citep{szegedy2015inception}. \cite{hou2019ucir} maximizes the cosine similarity between
+the final embeddings before the classifier. Finally,
+\cite{komodakis2017attention_residual_distillation}, in the context of model compression,
+investigated attention-based distillation for image classifiers, by pooling the intermediate
+features of convolutional networks into attention maps, then used in their distillation losses.
 
-To approach the problem of incremental learning, consider a single incremental task: one has a
-classifier already trained over a set of old classes and must adapt it to learn a set of new
-classes. To perform that single task, we will consider: (1) the data/class representation model; (2)
-the set of constraints to prevent catastrophic forgetting; (3) the experimental context (including
-the constraints over the memory for previous training data) for which to design the model.
-
-\paragraph{Data/class representation model} Representation learning was already implicitly present
-in iCaRL~\citep{rebuffi2017icarl}: it introduced the Nearest Mean Exemplars (NME) strategy which
+\paragraph{Representation learning} was already implicitly present in
+iCaRL~\citep{rebuffi2017icarl}: it introduced the Nearest Mean Exemplars (NME) strategy which
 averages the outputs of the deep convolutional network to create a single proxy feature vector per
 class that are then used by a nearest-neighbor classifier predict the final classes. Hou et
 al.~\citep{hou2019ucir} adopted this method and also introduced another, named CNN, which uses the
 output class probabilities to classify incoming samples, freezing (during training) the classifier
-weights associated with old classes, and then fine-tuning them on an under-sampled dataset.
-
-Hou et al.~\citep{hou2019ucir}, in the method called here UCIR, made representation learning
-explicit, by noticing that the limited memory imposed a severe imbalance on the training samples
-available for the old and for the new classes. To overcome that difficulty, they designed a
-metric-learning model instead of a classification model. That strategy is often used in few-shot
+weights associated with old classes, and then fine-tuning them on an under-sampled dataset. Hou et
+al.~\citep{hou2019ucir}, in the method called here UCIR, made representation learning explicit, by
+noticing that the limited memory imposed a severe imbalance on the training samples available for
+the old and for the new classes. To overcome that difficulty, they designed a metric-learning model
+instead of a classification model. That strategy is often used in few-shot
 learning~\citep{gidaris2018fewshot_wo_forgetting} because of its robustness to few data. Because
 classical metric architectures require special training sampling (e.g., semi-hard sampling for
 triplets), Hou et al. chose instead to redesign the classifier's last layer of their model to use
 the cosine similarity~\citep{luo2018cosine_classifier}.
 
-\paragraph{Model constraints to prevent catastrophic forgetting} Constraining the model's evolution
-to prevent forgetting is a fruitful idea proposed by several
-methods~\citep{kirkpatrick2017ewc,lopezpaz2017gem,aljundi2018MemoryAwareSynapses,li2018lwf,rebuffi2017icarl,castro2018end_to_end_inc_learn}.
-
-%A loss function may constrain the weights directly~\citep{ewc}, the gradients~\citep{gem}, or the
-%output probabilities~\citep{lwf}.
-Preventing the model's parameters from diverging too much forces it to remember the old classes, but
-care must be taken to still allow it to learn the new ones. We call this balance the
-\textit{rigidity-plasticity trade-off}.
-
-Existing art on knowledge distillation/compression~\citep{hinton2015knowledge_distillation} was an
-important source of inspiration for constraints on models. The goal is to distill a large trained
-model (called teacher) into a new smaller model (called student). The distillation loss forces the
-features of the student to approach those of its teacher. In our case, the student is the current
-model and the teacher---with same capacity-- is its version at the previous task. Zagoruyko and
-Komodakis~\citep{komodakis2017attention_residual_distillation} investigated attention-based
-distillation for image classifiers, by pooling the intermediate features of convolutional networks
-into attention maps, then used in their distillation losses. Li and Hoiem~\citep{li2018lwf} —-\,and
-several authors after
-them~\citep{rebuffi2017icarl,castro2018end_to_end_inc_learn,wu2019bias_correction}\,—- used a binary
-cross-entropy between the output probabilities by the models. Hou et al.~\citep{hou2019ucir}, used
-instead \textit{Less-Forget}, a cosine-similarity constraint on the flat feature embeddings after
-the global average pooling. Dhar et al.~\citep{dhar2019learning_without_memorizing_gradcam} proposed
-to constrain the gradient-based attentions generated by GradCam~\citep{selvaraju2017gradcam}, a
-visualization method. Wu et al.~\citep{wu2019bias_correction} proposed BiC, an algorithm oriented
-towards large-scale datasets, which employs a small linear model learned on validation data to
-recalibrate the output probabilities before applying a distillation loss.
-
-\paragraph{Experimental context} A critical component of incremental learning is the convention used
-for the memory storing samples of previous data. An usual convention is to consider a fixed amount
-of samples allowed in that memory, as illustrated in \autoref{fig:protocol}.
-
-Still, there are two experimental protocols for such fixed-sample convention: we may either use the
-memory budget at will ($M_\mathrm{total}$), or add a constraint on the number of samples per class
-for the old classes ($M_\mathrm{per}$). When $M_\mathrm{total}=M_\mathrm{per}\times$\textit{\# of
-    classes}, both settings have equivalent \textit{final} memory size, but the latter, that we adopt,
-is much more challenging since early tasks cannot benefit from the full memory size. \textit{The
-    granularity of the increments} is another critical element: with a fixed number of classes,
-increasing the number of tasks decreases the number of classes per task. More tasks imply stronger
-forgetting of the earliest classes, and pushing that number creates a challenging protocol, so far
-unexplored by existing art. Hou et al. evaluate at most 10 tasks on CIFAR100, while we propose as
-much as 50 tasks.
-
-Finally, to score the experiments, Rebuffi et al.~\citep{rebuffi2017icarl} proposed a global metric
-that they called \textbf{average incremental accuracy}, taking into account the entire history of
-the run, averaging the accuracy at the end of each task (including the first).
-%\textit{The granularity of the increments} is another critical element. Hou et al.~\citep{ucir}
-%introduced a protocol where one starts by training the models on half the classes and then divides
-%the remaining classes equally among the remaining tasks. For example for 100 classes and 5 tasks,
-%one would have a starting task with 50 classes and perform 5 additional tasks of 10 classes.
-%Increasing the number of tasks decreases the number of classes per task. A high number of task is a
-%challenging protocol and yet so far unexplored: Hou et al. evaluates itself with at most 10 tasks
-%on CIFAR100 while we push this boundary to 50 tasks.
-
-\begin{figure}[tb]
-    \begin{center}
-        \includegraphics[width=0.8\linewidth]{images/podnet/protocol}
-    \end{center}
-    \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
-        new set of classes, and the model must retain knowledge about \textit{all} classes. The
-        model is allowed a \textit{limited} memory of samples of old classes.}
-    \label{fig:protocol}
-\end{figure}
-
-\paragraph{Contributions} As seen, associating representation learning to model constraints is a
-particularly fruitful idea for incremental learning, but requires carefully balancing the goals of
-rigidity (to avoid catastrophic forgetting) and plasticity (to learn new classes).
-
-Employing a distillation-based loss to constrain the evolution of the representation has also
-resulted in leading
-results~\citep{hou2019ucir,wu2019bias_correction,peng2019m2kd,dhar2019learning_without_memorizing_gradcam}.
-Our model improves existing art by employing a \textit{novel and efficient spatial-based}
-distillation loss, which we are able to apply \textit{throughout the model}.
-
-Implicit or explicit proxy vectors representing each class inside the models have lead to state of
-the art results~\citep{rebuffi2017icarl,hou2019ucir}. Our model extends that idea allowing for
-\textit{multiple proxy vectors} per class, resulting in a more flexible representation.
-
-
-Formally, we learn the model in $T$ \textit{tasks}, task $t$ comprising a set of new classes
-$C^t_N$, and a set of old classes $C^t_O$, and aiming at classifying all seen classes $C^t_O \cup
-    C^t_N$. Between tasks, the new set $C^t_O$ will be set to $C^{t-1}_O \cup C^{t-1}_N$, but the amount
-of training samples from $C^t_O$ (called \textit{memory}) is constrained to exactly $M_\mathrm{per}$
-samples per class, while all training samples in the dataset are allowed for the classes in $C^t_N$.
 
 \subsection{Model}
 \label{sec:podnet_model}
