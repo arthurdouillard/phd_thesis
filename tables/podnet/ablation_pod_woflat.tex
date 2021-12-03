@@ -1,0 +1,22 @@
+\begin{table*}[!htbp]
+    \centering
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Loss                                                        & NME            & CNN            \\
+        \midrule
+        \textit{None}                                               & 41.56          & 40.76          \\
+        POD-pixels                                                  & 42.21          & 40.81          \\
+        POD-channels                                                & 55.91          & 50.34          \\
+        POD-gap                                                     & 57.25          & 53.87          \\
+        POD-width                                                   & 61.25          & 57.51          \\
+        POD-height                                                  & 61.24          & 57.50          \\
+        POD-spatial                                                 & \textbf{61.42} & \textbf{57.64} \\
+        \hdashline
+        GradCam~\citep{dhar2019learning_without_memorizing_gradcam} & 41.89          & 42.07          \\
+        Perceptual Style~\citep{johnson2016perceptual_losses}       & 41.74          & 40.80          \\
+        \bottomrule
+    \end{tabular}
+    \caption{Comparison of distillation losses based on intermediary features. All losses evaluated
+        without POD-flat. We report the average incremental accuracy on CIFAR100 with 50 steps.}
+    \label{tab:podnet_ablation_perceptual_noflat}
+\end{table*}

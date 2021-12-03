@@ -84,18 +84,19 @@ proposed. They reduce effectively the forgetting of the feature extractors in a 
 where the task identity is known at test-time. However, in the more challenging and realist setting
 of single-head, where classes from all tasks, have to be predicted, these methods often barely work
 better than a naive finetuning \citep{lesort2019regulshortcomings}. Therefore, I focused on
-regularizations applied on a model's output. LwF \citep{li2018lwf} first used the \ac{KD} of \cite{hinton2015knowledge_distillation}: a KL divergence between the probabilities
-of the old and new models. While simple, this loss ---with few variations--- has been used by
-multiple following works \citep{rebuffi2017icarl,zhao2020weightalignement}. Few works tried to
-constrain intermediate outputs of the model: LwM \citep{dhar2019learning_without_memorizing_gradcam}
-proposed to minimize the L2 distance between gradient-based attention maps produced by GradCam
+regularizations applied on a model's output. LwF \citep{li2018lwf} first used the \ac{KD} of
+\cite{hinton2015knowledge_distillation}: a KL divergence between the probabilities of the old and
+new models. While simple, this loss ---with few variations--- has been used by multiple following
+works \citep{rebuffi2017icarl,zhao2020weightalignement}. Few works tried to constrain intermediate
+outputs of the model: LwM \citep{dhar2019learning_without_memorizing_gradcam} proposed to minimize
+the L2 distance between gradient-based attention maps produced by GradCam
 \citep{selvaraju2017gradcam}. M2KD \citep{peng2019m2kd} used a \ac{KD} on both the final predictions
 and intermediate predictions from an auxilliary classifier similar to Inception
-\citep{szegedy2015inception}. \cite{hou2019ucir} maximizes the cosine similarity between
-the final embeddings before the classifier. Finally,
-\cite{zagoruyko2016distillation_attention}, in the context of model compression,
-investigated attention-based distillation for image classifiers, by pooling the intermediate
-features of convolutional networks into attention maps, then used in their distillation losses.
+\citep{szegedy2015inception}. \cite{hou2019ucir} maximizes the cosine similarity between the final
+embeddings before the classifier. Finally, \cite{zagoruyko2016distillation_attention}, in the
+context of model compression, investigated attention-based distillation for image classifiers, by
+pooling the intermediate features of convolutional networks into attention maps, then used in their
+distillation losses.
 
 \paragraph{Representation learning} was already implicitly present in
 iCaRL~\citep{rebuffi2017icarl}: it introduced the Nearest Mean Exemplars (NME) strategy which
@@ -121,7 +122,7 @@ Our base model is a deep convolutional network $\vyh = g(f(\vx))$, where $\vx$ i
 $\mathbf{y}$ is the output vector of class probabilities, $\vh = f(\vx)$ is the ``feature
 extraction'' part of the network (all layers up to the next-to-last), $\vyh = g(\vh)$ is the final
 classification layer, and $\vh$ is the final embedding of the network before classification
-(\autoref{fig:model}). The superscript $t$ denotes the model learned at task $t$:$f^{t}$, $g^{t}$,
+(\autoref{fig:podnet_model}). The superscript $t$ denotes the model learned at task $t$:$f^{t}$, $g^{t}$,
 $\vh^{t}$, etc.
 
 Our strategy is made of two keys components: a distillation loss applied at the intermediate
@@ -276,10 +277,10 @@ model across a single task.
     \begin{center}
         \includegraphics[width=0.8\linewidth]{images/podnet/model}
     \end{center}
-    \caption{\textbf{Overview of PODNet}: the distillation loss POD prevent excessive model drift by
-        constraining intermediate outputs of the ConvNet $f$ and the LSC classifier $g$ learns a
+    \caption{\textbf{Overview of PODNet}: the distillation loss \ac{POD} prevent excessive model drift by
+        constraining intermediate outputs of the \ac{ConvNet} $f$ and the \ac{LSC} classifier $g$ learns a
         more expressive multi-modal representation.}
-    \label{fig:model}
+    \label{fig:podnet_model}
 \end{figure}
 
 \subsubsection{Local Similarity Classifier}
@@ -305,8 +306,8 @@ normalized weight vector acts as a \textit{single} proxy~\citep{attias2017proxyn
 the learning procedure pushes all samples in the class.
 
 We observed that such global strategy is hard to optimize in an incremental setting. To avoid
-forgetting, the distillation losses (\autoref{sec:distillation}) tries to keep the final embedding
-$\vh$ consistent through time so that the class proxies stay relevant for the classifier.
+forgetting, the distillation losses (\autoref{sec:podnet_pod}) tries to keep the final
+embedding $\vh$ consistent through time so that the class proxies stay relevant for the classifier.
 Unfortunately catastrophic forgetting, while alleviated by current methods, is not solved and thus
 the distribution of $\vh$ may change. The cosine classifier is very sensitive to those changes as it
 models a unique majority mode through its class proxies.
@@ -341,7 +342,7 @@ to enforce stronger class separation, resulting in the final formulation:
 \paragraph{Weight initialization for new classes} The incremental learning setting imposes detecting
 new classes at each new task $t$. New weights $\{\theta_{c,k} \mid \forall c \in C^t_N, \forall k
     \in {1...K}\}$ must be added to predict them. We could initialize them randomly, but the
-class-agnostic features of the ConvNet $f$, extracted by the model trained so far offer a better
+class-agnostic features of the \ac{ConvNet} $f$, extracted by the model trained so far offer a better
 prior. Thus, we employ a generalization of Imprinted Weights~\citep{qi2018imprintedweights}
 procedure to multiple modes: for each new class $c$, we extract the features of its training
 samples, use a k-means algorithm to split them into $K$ clusters, and use the centroids of those
@@ -356,22 +357,23 @@ beginning of a new task and resulted in a one percentage point improvement on CI
 Our model has the classical structure of a convolutional network $f(\cdot)$ acting as a feature
 extractor, and a classifier $g(\cdot)$ producing a score per class. We introduced two innovations to
 this model: (1) our main contribution is a novel distillation loss (POD) applied all over the
-ConvNet, from the spatial features $\vh_\ell$ to the final flat embedding $\vh$; (2) as further
+\ac{ConvNet}, from the spatial features $\vh_\ell$ to the final flat embedding $\vh$; (2) as further
 refinement we propose that the classifier learns a multi-modal representation that explicitly keeps
 multiple proxy vectors per class, increasing the model expressiveness and thus making it less
 sensible to shift in the distribution of $\vh$. The final loss for current model $g^t \circ f^t$,
 i.e., the model trained for task $t$, is simply their addition $\mathcal{L}_{\{f^t; g^t\}} =
-    \mathcal{L}_\textrm{LSC} + \mathcal{L}_\textrm{POD-final}$.
+    \mathcal{L}_\textrm{LSC} + \mathcal{L}_\textrm{POD-final}$. The overall model is displayed in
+\autoref{fig:podnet_model}.
 
 \subsection{Experiment results}
 \label{sec:podnet_exp}
 
-We compare our technique (PODNet) with three state-of-the-art models. Those models are particularly
+We compare our technique (\ac{PODNet}) with three state-of-the-art models. Those models are particularly
 comparable to ours since they all employ a sample memory with a fixed capacity. Both
 iCaRL~\citep{rebuffi2017icarl} and UCIR~\citep{hou2019ucir} use the same inference method
---\,\textit{Nearest-Mean-Examplars} (NME), although UCIR also proposes a second inference method
-based on the classifier probabilities (called here UCIR-CNN). We evaluate PODNet with both inference
-methods for a small scale dataset, and the later for larger scale datasets.
+--\ac{NME}, although UCIR also proposes a second inference method
+based on the classifier probabilities (called here UCIR-CNN). We evaluate \ac{PODNet} with both inference
+methods for a small scale dataset, and the latter for larger scale datasets.
 BiC~\citep{wu2019bias_correction}, while not focused on representation learning, is specially
 designed to be effective on large scale datasets, and thus provided an interesting baseline.
 
@@ -390,7 +392,7 @@ classes, randomly sampled from the original 1000.
           images for training and $\sim$50k for testing. \end{description}}
 
 \paragraph{Protocol} We validate our model and the compared baselines using the challenging protocol
-introduced by Hou et al.~\citep{hou2019ucir}: we start by training the models on half the classes
+introduced by \cite{hou2019ucir}: we start by training the models on half the classes
 (i.e., 50 for CIFAR100 and ImageNet100, and 500 for ImageNet1000). Then the classes are added
 incrementally in steps. We divide the remaining classes equally among the steps, e.g., for CIFAR100
 we could have 5 steps of 10 classes or 50 steps of 1 class. Note that a training of 50 steps is
@@ -408,10 +410,10 @@ Following \cite{hou2019ucir}, for all datasets, and all compared models, we limi
 memory $M_\textrm{per}$ to 20 images per old class. For results with different memory settings,
 refer to \autoref{sec:podnet_robustness}.
 
-\paragraph{Implementation details} For fair comparison, all compared models employ the same ConvNet
+\paragraph{Implementation details} For fair comparison, all compared models employ the same \ac{ConvNet}
 backbone: ResNet-32 for CIFAR100, and ResNet-18 for ImageNet. We remove the ReLU activation at the
 last block of each ResNet end-of-stage to provide a signed input to POD
-(\autoref{sec:podnet_pod}). We implemented our method (called here PODNet) in
+(\autoref{sec:podnet_pod}). We implemented our method (called here \ac{PODNet}) in
 PyTorch~\citep{paszke2017pytorch}.
 %
 We compare both ours and UCIR's implementation of iCaRL. Results of UCIR come
@@ -420,112 +422,113 @@ also run their code ourselves. We used our implementation of BiC \citep{wu2019bi
 backbone.
 %
 We sample our memory images using \textit{herding selection}~\citep{rebuffi2017icarl} and perform
-the inference with two different methods: the \textit{Nearest-Mean-Examplars} (NME) proposed for
+the inference with two different methods: the \textit{Nearest-Mean-Examplars} (\ac{NME}) proposed for
 iCarl, and also adopted on one of the variants of UCIR~\citep{hou2019ucir}, and the ``CNN'' method
 introduced for UCIR (see \autoref{sec:podnet_related}).
 %
 Please see \autoref{sec:appendix_podnet} in the appendix for the full implementation details.
 
 \input{tables/podnet/quant_cifar100}
+\input{tables/podnet/plots.tex}
 \input{tables/podnet/quant_imagenet}
+
 
 \subsubsection{Quantitative results}
 \label{sec:podnet_quantitative_results}
 
 The comparisons with all the state of the art are tabulated in
 \autoref{tab:podnet_quantitative_cifar} for CIFAR100 and \autoref{tab:podnet_quantitative_imagenet}
-for ImageNet100 and ImageNet1000. All tables shows the average incremental accuracy for each
+for ImageNet100 and ImageNet1000. All tables show the average incremental accuracy for each
 considered models with various number of steps on the incremental learning run. The ``New classes
 per step'' row shows the amount of new classes introduced per task.
 
 \paragraph{CIFAR100} We run our comparisons on 5, 10, 25, and 50 steps with respectively 10, 5, 2,
-and 1 classes per step. We created three random class orders to ran each experiment thrice,
+and 1 classes per step. We created three random class orders to run each experiment thrice,
 reporting averages and standard deviations. For CIFAR100 only, we evaluated our model with two
-different kinds of inference: NME and CNN. With both methods, our model surpasses all previous state
-of the art models on all steps. Moreover, our model relative improvement grows as the number the
-steps increases, surpassing existing models by 0.82, 2.81, 5.14, and 12.1 percent points (\pp) for
-respectively 5, 10, 25, and 50 steps. Larger numbers of steps imply  stronger forgetting; those
-results confirm that PODNet manages to reduce drastically the said forgetting. While PODNet with NME
-has the largest gain, PODNet with CNN also outperforms the previous state of the art by up to
-8.68\pp. See \autoref{fig:plots} for a plot of the incremental accuracies on this dataset. In the
-extreme setting of 50 increments of 1 class (\autoref{fig:cifar_inc1}), our model showcases large
-differences, with slow degradation (``\textit{gradual forgetting}''
-\citep{french1999catastrophicforgetting}) due to forgetting throughout the run, while the other
-models show a quick performance collapse (``\textit{catastrophic forgetting}'') at the start of the
-run.
+different kinds of inference: \ac{NME} and CNN. With both methods, our model surpasses all previous
+state of the art models on all steps. Moreover, our model relative improvement grows as the number
+the steps increases, surpassing existing models by 0.82, 2.81, 5.14, and 12.1 percent points (\pp)
+for respectively 5, 10, 25, and 50 steps. Larger numbers of steps imply  stronger forgetting; those
+results confirm that \ac{PODNet} manages to reduce drastically the said forgetting. While
+\ac{PODNet} with \ac{NME} has the largest gain, \ac{PODNet} with CNN also outperforms the previous
+state of the art by up to 8.68\pp. See \autoref{fig:podnet_plots} for a plot of the incremental
+accuracies on this dataset. In the extreme setting of 50 increments of 1 class
+(\autoref{fig:podnet_cifar_inc1}), our model showcases large differences, with slow degradation
+(``\textit{gradual forgetting}'' \citep{french1999catastrophicforgetting}) due to forgetting
+throughout the run, while the other models show a quick performance collapse (``\textit{catastrophic
+    forgetting}'') at the start of the run.
 
 \paragraph{ImageNet100} We run our comparisons on 5, 10, 25, and 50 steps with respectively 10, 5,
-2, and 1 classes per step. For both ImageNet100, and ImageNet1000 we report only PODNet with CNN, as
-the kNN-based NME classifier did not generalize as well to larger-scale datasets. With the more
+2, and 1 classes per step. For both ImageNet100, and ImageNet1000 we report only \ac{PODNet} with CNN, as
+the kNN-based \ac{NME} classifier did not generalize as well to larger-scale datasets. With the more
 complex images of ImageNet100, our model also outperforms the state of the art on all tested runs,
 by up to 6.51\pp.
 
 \paragraph{ImageNet1000} This dataset is the most challenging, with much greater image complexity
 than CIFAR100, and ten times the number of classes as ImageNet100. We evaluate the models in 5 and
-10 steps, and results confirm the consistent improvement of PODNet against existing arts by up to
+10 steps, and results confirm the consistent improvement of \ac{PODNet} against existing arts by up to
 2.85\pp.
 
 \input{tables/podnet/ablations.tex}
-\input{tables/podnet/plots.tex}
+\input{tables/podnet/ablation_pod_wflat.tex}
+\input{tables/podnet/ablation_pod_woflat.tex}
 
 \subsubsection{Further analysis \& ablation studies}
 \label{sec:podnet_ablation}
 
 \paragraph{Ablation Studies}
-Our model has two components: the distillation loss POD and the LSC classifier. An ablation study
-showcasing the contribution of each component is displayed in \autoref{tab:ablation_inc}: each
+Our model has two components: the distillation loss \ac{POD} and the \ac{LSC} classifier. An ablation study
+showcasing the contribution of each component is displayed in \autoref{tab:podnet_ablation_inc}: each
 additional component improves the model performance. We evaluate every ablation on CIFAR100 with 50
 steps of 1 new class each. The reported metric is the average incremental accuracy. The table shows
-that our novel method of constraining the whole ConvNet is beneficial. Furthermore applying only
+that our novel method of constraining the whole \ac{ConvNet} is beneficial. Furthermore, applying only
 POD-spatial still beats the previous state of the art by a significant margin. Using both
 POD-spatial and POD-flat then further increases results with a large gain. We also compare the
 results with the Cosine classifier~\citep{luo2018cosine_classifier,hou2019ucir} against the Local
-Similarity Classifier (LSC) with NCA loss. Finally, we add LSC-CE: our classifier with multi-mode
+Similarity Classifier (LSC) with NCA loss. Finally, we add LSC-CE: our classifier with multimode
 but with a simple cross-entropy loss instead of our modified NCA loss. This version brings to mind
-SoftTriple~\citep{qian2019softtriple} and Infinited Mixture
+SoftTriple~\citep{qian2019softtriple} and Infinite Mixture
 Prototypes~\citep{allen2019infinitemixtureproto}, used in the different context of few-shot
 learning.
 %The former adds a regularization loss to collapse the multiple proxies into a single one if
 %necessary, which we did not find useful in our imbalanced setting of incremental learning.
-The latter only considers the closest mode of each class in its class assignment, while LSC
-considers all modes of a class, thus, taking into account the intra-class variance. That allows LSC
+The latter only considers the closest mode of each class in its class assignment, while \ac{LSC}
+considers all modes of a class, thus, taking into account the intra-class variance. That allows \ac{LSC}
 to decrease class similarity when intra-class variance is high (which could signal a lack of
 confidence in the class).
 
 \label{sec:podnet_ablation_pooling}
-\paragraph{Spatial-based distillation} We apply our distillation loss POD differently for the flat
-final embedding $\vh$ (POD-flat) and the ConvNet's intermediate features maps $\vh_\ell$
+\paragraph{Spatial-based distillation} We apply our distillation loss \ac{POD} differently for the flat
+final embedding $\vh$ (POD-flat) and the \ac{ConvNet}'s intermediate features maps $\vh_\ell$
 (POD-spatial). We designed and evaluated several alternatives for the latter whose results are shown
-in \autoref{tab:podnet_ablation_perceptual}. Refer to \autoref{sec:podnet_pod}
-for their definition. All losses are evaluated with POD-flat. "\textit{None}" is using only
-POD-flat.
-%POD-pixels (\ref{eq:pod_pixel}) doesn't pool the features maps and is simply an euclidean distance
-%pixel-wise for all channels. POD-gap does a \textit{global average pooling} over spatial dimension.
-%POD-channels sum-pools the channels axis. POD-width and POD-height sum-pools respectively the
-%horinzontal and vertical axis. Finally POD-spatial is the union of both POD-width and POD-height.
+in \autoref{tab:podnet_ablation_perceptual} and \autoref{tab:podnet_ablation_perceptual_noflat}. Refer to \autoref{sec:podnet_pod}
+for their definition. In the first table, all losses are with POD-flat ("\textit{None}" is using only
+POD-flat), while in the second table, there is no POD-flat and thus "\textit{None}" has no
+distillation loss at all.
+
 Overall, we see that not using pooling results in bad performance (POD-pixels). Our final loss,
 POD-spatial, surpasses all others by taking advantages of the statistics aggregated from both
-spatial axis. For the sake of completness we also included losses not designed by us: GradCam
+spatial axis. For the sake of completeness we also included losses not designed by us: GradCam
 distillation~\citep{dhar2019learning_without_memorizing_gradcam} and Perceptual
 Style~\citep{johnson2016perceptual_losses}. The former uses a gradient-based attention while the
 later --\,used for style transfer\,-- computes a gram matrix for each channel.
 
 \paragraph{Forgetting and plasticity balance} Forgetting can be drastically reduced by imposing a
 high factor on the distillation losses. Unfortunately, it will also degrade the capacity (its
-\textit{plasticity}) to learn new classes. When POD-spatial is added on top of POD-flat, we manage
-to increase the oldest classes performance (+7 percentage points) while the newest classes
-performance were barely reduced (-0.2\pp). Because our loss POD-spatial constraints only statistics,
-it is less stringent than a loss based on exact pixels values as POD-pixel. The latter hurts the
-newest classes (-2\pp) for a smaller improvement of old classes (+5\pp). Furthermore our experiments
-confirmed that LSC reduced the sensibility of the model to distribution shift, as the performance it
-brings was localized on the old classes.
+\textit{plasticity}) to learn new classes. When POD-spatial is added on top of POD-flat
+(\autoref{tab:podnet_ablation_perceptual}), we manage to increase the oldest classes performance (+7
+percentage points) while the newest classes performance were barely reduced (-0.2\pp). Because our
+loss POD-spatial constraints only statistics, it is less stringent than a loss based on exact pixels
+values as POD-pixel. The latter hurts the newest classes (-2\pp) for a smaller improvement of old
+classes (+5\pp). Furthermore, our experiments confirmed that LSC reduced the sensibility of the
+model to distribution shift, as the performance it brings was localized on the old classes.
 
 \label{sec:podnet_robustness}
-\paragraph{Robustness of our model} While previous results showed that PODNet improved significantly
+\paragraph{Robustness of our model} While previous results showed that \ac{PODNet} improved significantly
 over the state-of-the-arts, we wish here to demonstrate here the robustness of our model to various
-factors. In \autoref{tab:ablation_memorysize}, we compared how PODNet behaves against the baseline
-when the memory size per class $M_{\text{per}}$ changes: PODNet improvements increase as the memory
-size decrease, up to a gain of 26.20\pp\ with NME (resp. 13.42\pp\ for CNN) with $M_{\text{per}} =
+factors. In \autoref{tab:podnet_ablation_memorysize}, we compared how \ac{PODNet} behaves against the baseline
+when the memory size per class $M_{\text{per}}$ changes: \ac{PODNet} improvements increase as the memory
+size decrease, up to a gain of 26.20\pp\ with \ac{NME} (resp. 13.42\pp\ for CNN) with $M_{\text{per}} =
     5$. Notice that by default, the memory size is 20 in \autoref{sec:podnet_quantitative_results}.
 
 We also compared our model against baselines with a more flexible memory $M_{\text{total}} = 2000$
@@ -533,7 +536,7 @@ We also compared our model against baselines with a more flexible memory $M_{\te
 50 on CIFAR100). In the former case (\autoref{tab:podnet_sub_free_memory}), models benefit from a larger
 memory per class in the early tasks. In the later case (\autoref{tab:podnet_sub_initialincrement}), models
 initialization is worse because of a smaller initial task size. In these settings very different
-from \autoref{sec:quantitative_results}, PODNet still outperformed significantly the compared
+from \autoref{sec:podnet_quantitative_results}, \ac{PODNet} still outperformed significantly the compared
 models, proving the robustness of our model.
 
 \input{tables/podnet/ablation_memorysize}
@@ -551,7 +554,7 @@ must avoid catastrophic forgetting of past tasks \cite{robins1995catastrophicfor
 counteract forgetting: keeping a limited amount of training data from previous
 tasks~\cite{rebuffi2017icarl,castro2018end_to_end_inc_learn}; learning to generate the training
 data~\cite{kemker2018fearnet,shin2017deep_generative_replay}; extending the architecture for new
-tasks~\cite{yoon2018dynamically_expandable_networks,li2019learning_to_grow}; using a sub-network for
+tasks~\cite{yoon2018dynamically_expandable_networks,li2019learning_to_grow}; using a subnetwork for
 each task~\cite{fernando2017path_net,golkar2019neural_pruning, hung2019cpg}; and constraining the
 model divergence as it
 evolves~\cite{kirkpatrick2017ewc,lopezpaz2017gem,aljundi2018MemoryAwareSynapses,li2018lwf,rebuffi2017icarl,castro2018end_to_end_inc_learn,
@@ -578,7 +581,7 @@ beginning, and being well-characterized by attributes.
 To address the proposed setting, we take inspiration from zero-shot learning
 \cite{lampert2009zeroshot, xian2019awa2}, which allows classifying examples from unseen classes by
 combining a vision model with an embedding possessing knowledge about the classes (e.g. a word
-embedding \cite{mikolov2013word2vec,pennington2014glove} or an attributes matrix). Although several
+embedding \cite{mikolov2013word2vec,pennington2014glove} or an attribute matrix). Although several
 approaches exist for zero-shot learning, we will focus on generating a representation for the future
 classes \cite{bucher2017zeroshot_gmmn, kumar2018synthesized_zeroshot,
     xian2018feature_generating_zeroshot}. The framework of representation learning will allow us to
@@ -626,10 +629,10 @@ of past classes (using the limited rehearsal training samples), but also give ou
 future classes (using no training samples at all). That will only be possible if we have some prior
 information about the classes, e.g., their hierarchy in a semantic network (like WordNet), an
 associated word embedding (like Word2Vec), or an attribute matrix. Such setting is illustrated in
-\autoref{fig:protocol_zeroshot_continual}. We will sometimes shorthand the set of past and present
+\autoref{fig:protocol_zeroshot_continual}. We will shorthand the set of past and present
 classes $C^{1:t}$ as the \textit{seen} classes, and the set of future classes $C^{t+1:T}$ as the
-\textit{unseen} classes. We denote individual samples by a superscript $\vx^(i)$, and the class
-label by a subscript $\vx_c$. We denote on which parameters a loss is applied by a subscript
+\textit{unseen} classes. We denote individual samples by a superscript $\vx^(i)$, the class
+label by a subscript $\vx_c$, and on which parameters a loss is applied by a subscript
 $\mcL_\Theta$.
 
 \section{Ghost model}
@@ -710,7 +713,7 @@ of attributes linked to each class (color, size, material, provenance, etc.), or
 extract a latent semantic vector, using a technique like Word2vec
 \cite{mikolov2013word2vec,pennington2014glove}. The generator learns to link the attributes of the
 \textit{seen} classes to the actual feature vectors extracted from the training samples of those
-classes. Thus the first generator training must happen after the features extractor (its
+classes. Thus, the first generator training must happen after the feature extractor (its
 ground-truth) is learned. The generator is fine-tuned after each task to handle distribution shift.
 Next, we ask the generator to draw random samples, using the attributes of the \textit{unseen}
 classes, creating counterfeit features that we call \textit{ghost features}. The strategy is
