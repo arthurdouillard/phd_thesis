@@ -1,17 +1,19 @@
 \begin{table*}
-    \caption{Continual Accuracy on AwA2 and aP\&Y for PODNet and UCIR.}
-    \label{tab:continual_half}
     \centering
-    \begin{tabular}{@{}l|cc|cc@{}}
-        \toprule
-                                                                                    & \multicolumn{2}{c}{AwA2}                              & \multicolumn{2}{c}{aP\&Y}                                                                                           \\
-                                                                                    & \multicolumn{2}{c}{25 classes + 5 $\times$ 5 classes} & \multicolumn{2}{c}{16 classes + 8 $\times$ 2 classes}                                                               \\
-                                                                                    & PODNet \cite{douillard2020podnet}                     & UCIR \cite{hou2019ucir}                               & PODNet \cite{douillard2020podnet} & UCIR \cite{hou2019ucir} \\
-        \midrule
-        Baseline                                                                    & 62.92 \std 0.12                                       & 54.80 \std 0.40                                       & 58.64 \std 0.66                   & 43.42 \std 0.21         \\
-        \tableindent+ $\mcL^\text{\tiny{nca-ghost}}$                                & 68.31 \std 0.36                                       & 57.88 \std 0.27                                       & 62.08 \std 0.25                   & 50.23 \std 0.29         \\
-        \tableindent+ $\mcL^\text{\tiny{nca-ghost}}$ + $\mcL^\text{\tiny{svm-reg}}$ & 68.46 \std 0.47                                       & 58.08 \std 0.46                                       & 62.73 \std 0.60                   & 50.91 \std 0.56         \\
-        %\tableindent+ $\mcL_\text{svm-reg}$ & 63.34 \std 0.13 & 55.34 \std 0.28 & \tbd &\tbd \\
-        \bottomrule
-    \end{tabular}
+    \begin{adjustbox}{max width=\textwidth}
+        \begin{tabular}{@{}l|cc|cc@{}}
+            \toprule
+                                                                                        & \multicolumn{2}{c}{AwA2}                              & \multicolumn{2}{c}{aP\&Y}                                                                 \\
+                                                                                        & \multicolumn{2}{c}{25 classes + 5 $\times$ 5 classes} & \multicolumn{2}{c}{16 classes + 8 $\times$ 2 classes}                                     \\
+                                                                                        & PODNet                                                & UCIR                                                  & PODNet          & UCIR            \\
+            \midrule
+            Baseline                                                                    & 62.92 \std 0.12                                       & 54.80 \std 0.40                                       & 58.64 \std 0.66 & 43.42 \std 0.21 \\
+            \tableindent+ $\mcL^\text{\tiny{nca-ghost}}$                                & 68.31 \std 0.36                                       & 57.88 \std 0.27                                       & 62.08 \std 0.25 & 50.23 \std 0.29 \\
+            \tableindent+ $\mcL^\text{\tiny{nca-ghost}}$ + $\mcL^\text{\tiny{svm-reg}}$ & 68.46 \std 0.47                                       & 58.08 \std 0.46                                       & 62.73 \std 0.60 & 50.91 \std 0.56 \\
+            %\tableindent+ $\mcL_\text{svm-reg}$ & 63.34 \std 0.13 & 55.34 \std 0.28 & \tbd &\tbd \\
+            \bottomrule
+        \end{tabular}
+    \end{adjustbox}
+    \caption{\textbf{Continual Accuracy} on AwA2 and aP\&Y for PODNet and UCIR.}
+    \label{tab:ghost_continual_half}
 \end{table*}

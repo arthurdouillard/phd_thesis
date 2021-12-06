@@ -1,18 +1,20 @@
 \begin{table}
-    \caption{Further experiments where the initial task size correspond to standard zero-shot seen classes \cite{xian2019awa2}. We report Continual and Final Accuracies for PODNet on AwA2 and aP\&Y.}
-    \label{tab:initial_seen}
     \centering
-    \begin{tabular}{@{}l|cc|cc@{}}
-        \toprule
-                                                                                    & \multicolumn{2}{c}{AwA2}                              & \multicolumn{2}{c}{aP\&Y}                                                                 \\
-                                                                                    & \multicolumn{2}{c}{40 classes + 5 $\times$ 2 classes} & \multicolumn{2}{c}{20 classes + 6 $\times$ 2 classes}                                     \\
+    \begin{adjustbox}{max width=\textwidth}
+        \begin{tabular}{@{}l|cc|cc@{}}
+            \toprule
+                                                                                        & \multicolumn{2}{c}{AwA2}                              & \multicolumn{2}{c}{aP\&Y}                                                                 \\
+                                                                                        & \multicolumn{2}{c}{40 classes + 5 $\times$ 2 classes} & \multicolumn{2}{c}{20 classes + 6 $\times$ 2 classes}                                     \\
 
-                                                                                    & Continual                                             & Final                                                 & Continual       & Final           \\
-        \midrule
-        PODNet \cite{douillard2020podnet}                                           & 82.84 $\pm$ 0.10                                      & 84.70 $\pm$ 0.10                                      & 67.57 \std 0.41 & 65.23 \std 0.50 \\
-        \tableindent+ $\mcL^\text{\tiny{nca-ghost}}$                                & 84.99 $\pm$ 0.17                                      & 86.57 $\pm$ 0.49                                      & 68.80 \std 0.98 & 67.93 \std 1.24 \\
-        \tableindent+ $\mcL^\text{\tiny{nca-ghost}}$ + $\mcL^\text{\tiny{svm-reg}}$ & 84.47 \std 0.15                                       & 85.73 \std 0.40                                       & 69.02 \std 0.46 & 67.97 \std 0.60 \\
-        %\tableindent+ $\mcL_\text{svm-reg}$ & 83.58 \std 0.12 & 85.70 \std 0.2° & \tbd & \tbd\\
-        \bottomrule
-    \end{tabular}
+                                                                                        & Continual                                             & Final                                                 & Continual       & Final           \\
+            \midrule
+            PODNet                                                                      & 82.84 $\pm$ 0.10                                      & 84.70 $\pm$ 0.10                                      & 67.57 \std 0.41 & 65.23 \std 0.50 \\
+            \tableindent+ $\mcL^\text{\tiny{nca-ghost}}$                                & 84.99 $\pm$ 0.17                                      & 86.57 $\pm$ 0.49                                      & 68.80 \std 0.98 & 67.93 \std 1.24 \\
+            \tableindent+ $\mcL^\text{\tiny{nca-ghost}}$ + $\mcL^\text{\tiny{svm-reg}}$ & 84.47 \std 0.15                                       & 85.73 \std 0.40                                       & 69.02 \std 0.46 & 67.97 \std 0.60 \\
+            %\tableindent+ $\mcL_\text{svm-reg}$ & 83.58 \std 0.12 & 85.70 \std 0.2° & \tbd & \tbd\\
+            \bottomrule
+        \end{tabular}
+    \end{adjustbox}
+    \caption{\textbf{Further experiments} where the initial task size correspond to standard zero-shot seen classes \cite{xian2019awa2}. We report Continual and Final Accuracies for PODNet on AwA2 and aP\&Y.}
+    \label{tab:ghost_initial_seen}
 \end{table}

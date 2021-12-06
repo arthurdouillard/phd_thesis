@@ -1,18 +1,20 @@
 \begin{table*}
-    \caption{Comparison of generated ghost features vs. actual features extracted from future classes'\,samples with PODNet on AwA2 and aP\&Y.}
-    \label{tab:generated_vs_real}
     \centering
-    \begin{tabular}{@{}l|cc|cc@{}}
-        \toprule
-                                      & \multicolumn{2}{c}{AwA2}                              & \multicolumn{2}{c}{aP\&Y }                                                                              \\
-                                      & \multicolumn{2}{c}{25 classes + 5 $\times$ 5 classes} & \multicolumn{2}{c}{16 classes + 8 $\times$ 2 classes}                                                   \\
-                                      & Continual                                             & Final                                                 & Continual              & Final                  \\
-        \midrule
-        %\textit{None} & &  & \OK & 62.92 \std 0.12 & 77.63 \std 0.06 & 58.64 \std 0.66 & 57.80 \std 0.97\\
-        Our model                     & 68.46 \std 0.47                                       & 79.08 \std 0.53                                       & 62.73 \std 0.60        & 63.30 \std 0.98        \\
-        \tableindent w/ real features & 67.65 \std 0.50                                       & 78.83 \std 0.31                                       & 61.88 \std 0.52        & 61.70 \std 0.26        \\
-        \gray{Partial oracle}         & \gray{72.94 \std 0.25}                                & \gray{84.60 \std 0.28}                                & \gray{63.81 \std 0.29} & \gray{68.03 \std 1.42} \\
-        \gray{Full oracle}            & ---                                                   & \gray{95.40 \std 0.02}                                & ---                    & \gray{97.40 \std 0.30} \\
-        \bottomrule
-    \end{tabular}
+    \begin{adjustbox}{max width=\textwidth}
+        \begin{tabular}{@{}l|cc|cc@{}}
+            \toprule
+                                          & \multicolumn{2}{c}{AwA2}                              & \multicolumn{2}{c}{aP\&Y }                                                                              \\
+                                          & \multicolumn{2}{c}{25 classes + 5 $\times$ 5 classes} & \multicolumn{2}{c}{16 classes + 8 $\times$ 2 classes}                                                   \\
+                                          & Continual                                             & Final                                                 & Continual              & Final                  \\
+            \midrule
+            %\textit{None} & &  & \OK & 62.92 \std 0.12 & 77.63 \std 0.06 & 58.64 \std 0.66 & 57.80 \std 0.97\\
+            Our model                     & 68.46 \std 0.47                                       & 79.08 \std 0.53                                       & 62.73 \std 0.60        & 63.30 \std 0.98        \\
+            \tableindent w/ real features & 67.65 \std 0.50                                       & 78.83 \std 0.31                                       & 61.88 \std 0.52        & 61.70 \std 0.26        \\
+            \gray{Partial oracle}         & \gray{72.94 \std 0.25}                                & \gray{84.60 \std 0.28}                                & \gray{63.81 \std 0.29} & \gray{68.03 \std 1.42} \\
+            \gray{Full oracle}            & ---                                                   & \gray{95.40 \std 0.02}                                & ---                    & \gray{97.40 \std 0.30} \\
+            \bottomrule
+        \end{tabular}
+    \end{adjustbox}
+    \caption{\textbf{Comparison of generated ghost features vs. actual features} extracted from future classes'\,samples with PODNet on AwA2 and aP\&Y.}
+    \label{tab:ghost_generated_vs_real}
 \end{table*}
