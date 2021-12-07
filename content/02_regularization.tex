@@ -552,12 +552,12 @@ new model. Orthogonally, we also explored if we could regularize the intermediat
 that forgetting could be avoided ---or at least reduced--- before even the introduction of
 disrupting new classes. This idea draw inspiration from \cite{aljundi2019selfless} who remarked that
 the ability to make room for future classes is a key limitation of current continual learning
-models, and propose a regularization loss to make the model more “selfless”, by leaving
-capacity for future classes in the representation. However, this pre-allocation of the future
-classes is done without supervision by enforcing sparsity. We propose instead to pre-allocate
-explicitly using weak information about the future classes. Drawing inspiration from the \ac{ZSL}
-\cite{lampert2009zeroshot} literature, we exploit classes metadata to estimate the
-representation of future classes.
+models, and propose a regularization loss to make the model more “selfless”, by leaving capacity for
+future classes in the representation. However, this pre-allocation of the future classes is done
+without supervision by enforcing sparsity. We propose instead to pre-allocate explicitly using weak
+information about the future classes. Drawing inspiration from the \ac{ZSL}
+\cite{lampert2009zeroshot} literature, we exploit classes metadata to estimate the representation of
+future classes.
 
 \begin{comment}
 Continual learning aims to perform equally well on past and present tasks. We proposed instead a
@@ -607,11 +607,11 @@ pre-allocated, reducing their ---yet not happened--- forgetting.
 \begin{figure}
     \centering
     \includegraphics[width=0.7\linewidth]{images/ghost/protocol.pdf}
-    \caption{\textbf{Prescient Continual Learning}. At each training task,
-        we learn a new set of classes, but the model is evaluated on \textit{all classes} --- past,
-        present, and future. The model has to avoid catastrophic forgetting of past classes (using a
-        limited number of rehearsal training samples), as well as make a good guess for future
-        classes (using no training samples at all).}
+    \caption{\textbf{Prescient Continual Learning}. At each training task, we learn a new set of
+        classes, but the model is evaluated on \textit{all classes} --- past, present, and future.
+        The model has to avoid catastrophic forgetting of past classes (using a limited number of
+        rehearsal training samples), as well as make a good guess for future classes (using no
+        training samples at all).}
     \label{fig:ghost_protocol}
 \end{figure}
 
@@ -658,12 +658,12 @@ classes' features. Next, we will adapt the classifier to incorporate those ghost
 learning objective seamlessly. The representation learning framework will allow us to integrate the
 entire learning apparatus into one coherent loss.
 
-\paragraph{Generator} The generative model estimates the distribution of the unseen classes directly in
-terms of their features (instead of the input images). For the feature generation to work, we must
-have exploitable prior information about the classes, more precisely, we must be able to map the
-class labels $c$ into a \textit{class attribute space} that makes semantic sense. The exact way to
-perform that mapping will be data-dependent, but most often, either we will have an explicit set of
-attributes linked to each class (color, size, material, provenance, etc.), or we will be able to
+\paragraph{Generator} The generative model estimates the distribution of the unseen classes directly
+in terms of their features (instead of the input images). For the feature generation to work, we
+must have exploitable prior information about the classes, more precisely, we must be able to map
+the class labels $c$ into a \textit{class attribute space} that makes semantic sense. The exact way
+to perform that mapping will be data-dependent, but most often, either we will have an explicit set
+of attributes linked to each class (color, size, material, provenance, etc.), or we will be able to
 extract a latent semantic vector, using a technique like Word2vec
 \citep{mikolov2013word2vec,pennington2014glove}. The generator learns to link the attributes of the
 \textit{seen} classes to the actual feature vectors extracted from the training samples of those
@@ -677,12 +677,14 @@ as detailed in \autoref{sec:ghost_quantitative}, we choose a Generative Moment M
 vector trained to minimize the Maximum Mean Discrepancy
 \citep{gretton2007twosampleMMD,gretton2012twosampletestMMD}.
 
+\input{tables/ghost/model.tex}
+
 \label{sec:ghost_generator}
 
-\paragraph{Complete classifier.~~} Remind that the parameters  $\{\vt_c\,,\forall c \in C^{1:t}\}$ on
-the representation-based classifier (\autoref{eq:podnet_lsc}) may be interpreted as proxies
-for the classes $C^{1:t}$. The base model for task $t$ will, thus, learn $|C^{1:t}|$ such proxies,
-one for each of the seen classes. To extend the model for the unseen future classes, the complete
+\paragraph{Complete classifier} Remind that the parameters  $\{\vt_c\,,\forall c \in C^{1:t}\}$
+on the representation-based classifier (\autoref{eq:podnet_lsc}) may be interpreted as proxies for
+the classes $C^{1:t}$. The base model for task $t$ will, thus, learn $|C^{1:t}|$ such proxies, one
+for each of the seen classes. To extend the model for the unseen future classes, the complete
 classifier will learn $|C^{1:t}| + |C^{t+1:T}|$ proxies, which changes \autoref{eq:podnet_nca} to:
 %
 \begin{equation}
@@ -720,7 +722,7 @@ features are produced once per task by the generator and are kept fixed for the 
 
 
 \label{sec:ghost_svm}
-\paragraph{Latent-space regularization.~~}
+\paragraph{Latent-space regularization}
 As explained above, our Ghost classification loss minimizes the intra-class distances and maximizes
 the inter-class distances. The loss enforces those constraints to all proxies regardless of whether
 they represent seen classes or not. We further promote an inter-class separation by optimizing the
@@ -752,7 +754,7 @@ space and the feature extractor backbone that creates it. The computational over
 several SVMs, detailed in the supplementary material, is negligible compared to the total training
 time.
 
-\paragraph{Complete strategy.~~} All modules and losses fit neatly into the goal of learning
+\paragraph{Complete strategy} All modules and losses fit neatly into the goal of learning
 continuously over seen and unseen classes. We train feature extractor (plus classifier) and
 generator in alternation. We train the latter to mimic the features of seen classes, and then ask it
 to extrapolate to unseen classes (ghost features). Ghost features allow us both to unify seen and
@@ -766,12 +768,40 @@ loss, in addition to a distillation loss to counter-act catastrophic forgetting
     \label{sec:ghost}
 \end{equation}
 %
-An algorithm describing the model's training is provided in the supplementary material.
+
+The model is illustrated in \autoref{fig:ghost_training_procedure} and \autoref{algo:ghost_task_training} is the
+algorithm of our model in pseudocode, showcasing a procedural view of the execution of one task.
+
+\begin{algorithm}
+    \begin{algorithmic}[1]
+        \Require
+        \Statex task id $t$
+        \Statex $f^t$, $c^t$, and $g^t$
+        \Statex Data from new task and rehearsal memory $(X, y)$
+
+        \If{$t = 1$ or $t = T$} \State Train $f^t$ and $g^t$ with $\mcL^\text{\tiny{nca}}$
+        and $\mcL^\text{\tiny{distill}}$ on $(X, y)$ and Ghost samples. \Else \State Train $f^t$ and $g^t$
+        with $\mcL^\text{\tiny{nca-ghost}}$, $\mcL^\text{\tiny{svm-reg}}$ and $\mcL^\text{\tiny{distill}}$
+        on $(X, y)$ and Ghost samples. \EndIf
+
+        \State Evaluate on all classes: $C^{1:t} \cup C^{t+1:T}$.
+
+        \If{$t \ne 1$ and $t < T - 1$} \State Train $g^t$ with $\mcL^\text{\tiny{MMD}}$ using attributes of
+        seen classes $\mathbf{E}_{c} \,, \forall c \in C^{1:t}$ \State Generate Ghost samples for next
+        task using attributes of unseen classes $\mathbf{E}_{c} \,, \forall c \in C^{t+2:T}$ \EndIf
+    \end{algorithmic}
+    \caption{Task procedure of the Ghost model}
+    \label{algo:ghost_task_training}
+\end{algorithm}
+
 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\linewidth]{images/ghost/svm_reg.pdf}
-    \caption{\textbf{Latent-space regularization} establishes margin-based one-unseen-class vs. all-seen-classes linear separations. Those separations are employed to directly condition the feature space, creating space for future unseen classes. In the following task, some unseen class will become seen, and may occupy the feature space with less interference.}
+    \caption{\textbf{Latent-space regularization} establishes margin-based one-unseen-class vs.
+        all-seen-classes linear separations. Those separations are employed to directly condition the
+        feature space, creating space for future unseen classes. In the following task, some unseen
+        class will become seen, and may occupy the feature space with less interference.}
     \label{fig:ghost_svm_reg}
 \end{figure}
 
@@ -781,8 +811,8 @@ An algorithm describing the model's training is provided in the supplementary ma
 \subsubsection{Pictorial experiments}
 \label{sec:ghost_pictorial}
 
-Before running our full-scale experiments, we perform a set of experiments with a model that
-keeps the main components from the proposed model in a simplified form that will allow us to link
+Before running our full-scale experiments, we perform a set of experiments with a model that keeps
+the main components from the proposed model in a simplified form that will allow us to link
 quantitative performances to intuitive visual plots of the feature spaces. For the experiments in
 this section we employ the MNIST \citep{lecun2010mnist} dataset, with an initial task of 6 classes
 (digits 0 to 5), then two more tasks of two classes each; the feature extractor comprises two
@@ -792,14 +822,15 @@ classes have no attributes, we cannot apply zero-shot learning directly. Instead
 features of actual images from the future classes instead of samples from the generator — which
 corresponds, in some ways, to having a perfectly calibrated generator. Those features are extracted
 once per task, and the feature extractor is never trained on unseen classes images. As we will see
-in \autoref{tab:ghost_generated_vs_real}, integrating the generator in our full-scale model outperforms
-using actual extracted features, so that necessary substitution does not exaggerate the abilities of
-this small-scale model. The losses used to train the small and the full-scale models are the same,
-but the SVM-based regularization was not employed since it made little sense for a 2D latent space.
+in \autoref{tab:ghost_generated_vs_real}, integrating the generator in our full-scale model
+outperforms using actual extracted features, so that necessary substitution does not exaggerate the
+abilities of this small-scale model. The losses used to train the small and the full-scale models
+are the same, but the SVM-based regularization was not employed since it made little sense for a 2D
+latent space.
 
 The 2D feature space allows us to directly visualize the evolution of the feature space as the tasks
 progress, without the need for dimensionality reduction techniques that complicate the analysis
-(e.g. t-SNE \citep{maaten2008tsne}). \autoref{fig:ghost_toy_ghost_weights_3steps} may be interpreted
+(e.g. t-SNE \citep{maaten2008tsne}). \autoref{fig:ghost_toy_weights_3steps} may be interpreted
 upfront: as the three tasks progress left-to-right, we see the evolution of the feature space on the
 base model (\ac{PODNet}, on the top branch) and on the proposed model with ghost features (bottom
 branch). The base model presents strong overlap between the initial classes, and the latter added  8
@@ -818,19 +849,19 @@ found in the supplementary material.
 \begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{images/ghost/toy_model_6_2_2.pdf}
-    \caption{\textbf{Small-scale PODNet} on MNIST with 3 steps (digits '0' to '5'; then '6' and '7'; then '8'
-        and '9') with a features space of only two dimensions. The early incorporation of ghost
-        features/proxies in the second task, denoted by dotted circles in the bottom row, enforces
-        vacant space for those unseen classes. When filled in the third task (last column), there is
-        less interference/overlap with previous classes. Such a strategy improves the final accuracy
-        by 22 p.p.}
+    \caption{\textbf{Small-scale PODNet} on MNIST with 3 steps (digits '0' to '5'; then '6' and '7';
+        then '8' and '9') with a features space of only two dimensions. The early incorporation of
+        ghost features/proxies in the second task, denoted by dotted circles in the bottom row,
+        enforces vacant space for those unseen classes. When filled in the third task (last column),
+        there is less interference/overlap with previous classes. Such a strategy improves the final
+        accuracy by 22 p.p.}
     \label{fig:ghost_toy_weights_3steps}
 \end{figure}
 
 \subsubsection{Main experiments}
 \label{sec:ghost_quantitative}
 
-\paragraph{Datasets \& Protocols.~~} We perform our experiments on two datasets: AwA2
+\paragraph{Datasets \& Protocols} We perform our experiments on two datasets: AwA2
 \cite{xian2019awa2}, with 50 animals categories, each with 85 attributes; and AP\&Y
 \cite{farhadi2009apy}, with 32 everyday object classes, each with 64 attributes. We employ two
 experimental protocols: one typical for continual learning, following
@@ -845,7 +876,7 @@ the challenging and realist Generalized Zero-shot Learning \citep{scheirer2013ge
 unseen class — but harsher, since classes are seen gradually, and training samples for past classes
 data are limited by rehearsal memory.
 
-\paragraph{Base Models.~~} We evaluate our contributions on top of two different
+\paragraph{Base Models} We evaluate our contributions on top of two different
 representation-learning based models, both based on ResNet18 \citep{he2016resnet} feature extractor
 backbones (with feature vector size of 512) and cosine classifiers. They differ on the distillation
 loss $\mcL_\text{distil}$ employed, the first model (PODNet) using Douillard et al.'s distillation
@@ -857,8 +888,8 @@ proxy/representative per class but could easily be generalized to multiple proxi
 details are provided in the supplementary material and the code for the entire model will be
 released with the final paper.
 
-\paragraph{Generator.~~} Following the work of \cite{bucher2017zeroshot_gmmn} for
-zero-shot learning, our generator is a Generative Moment Matching Network (GMMN)~\cite{li2015gmmn}
+\paragraph{Generator} Following the work of \cite{bucher2017zeroshot_gmmn} for zero-shot
+learning, our generator is a Generative Moment Matching Network (GMMN)~\cite{li2015gmmn}
 $g^t(\mathbf{\xi}, \mathbf{E}_c)$, which takes as inputs a Gaussian noise vector $\mathbf{\xi}$ and
 a class attributes vector $\mathbf{E}_c$, and outputs a sample from the estimated distribution of
 features for a class with the given attributes. In our experiments on AwA2 and AP\&Y, the class
@@ -867,12 +898,49 @@ task $t$, the feature extractor $f^t$ and the generator $g^t$ are trained to min
 Mean Discrepancy (MMD) \citep{gretton2007twosampleMMD,gretton2012twosampletestMMD} between the
 actual features of seen classes $\vh_c = f^t(\vx_c) \, , \forall c \in C^{1:t}$ and their
 distribution on the generator $\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in
-    C^{1:t}$. More details and figures can be found in the supplementary material.
+    C^{1:t}$.
+
+We train the generator and the main model (feature extractor and classifier) alternately, as shown
+in \autoref{fig:ghost_training_procedure}. We always train the generator at the end of the task,
+after the feature extractor has adapted to the new distribution (\autoref{fig:ghost_training_gen}).
+We then use the generator to produce ghost samples for the next task (unless we have reached the
+last task, with no unseen classes) which are fed to the feature extractor
+(\autoref{fig:ghost_training_cls}).
+
+When training the generator, we first extract features for all seen classes, with free access to the
+training samples for the present classes, but only a limited number (given by the rehearsal memory)
+for the past classes. For better numerical behavior, we scale each dimension of the extracted
+features to the interval [0, 1] before feeding them to the generator (and then re-scale the output
+of the generator back to the original intervals before feeding its samples to the classifier). The
+generator is trained to minimize the Maximum Mean Discrepancy (MMD) between the features of seen
+concepts $\vh_c = f^t(\vx_c) \, , \forall c \in C^{1:t}$ and the representation it generates
+$\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in C^{1:t}$:
+%
+\begin{equation}
+    \mcL^\text{\tiny{MMD}}_{\Theta_g} = \left\Vert \frac{1}{N} \sum_{i=1}^N \phi\big(\vh^{(i)}_c\big) - \frac{1}{N} \sum_{j=1}^N \phi\big(\tilde{\vh}^{(j)}_c\big) \right\Vert^2\,, \quad c \in C^{1:t}\,,
+    \label{eq:mmd_loss}
+\end{equation}
+%
+with $\phi(\cdot)$ being a Gaussian kernel. The trained generator uses the attributes of the classes
+— which is the only information we have about them — to estimate sample features that we call
+\textit{ghost features}. To better estimate the statistics, we use all the real features of a single
+seen class per batch. We denote the amount of real features by $N$. The generator produces as much
+ghost features as real features.
+
+Our main model has mechanisms to fight Catastrophic Forgetting, which we found were sufficient also
+to protect the generator. The feature extractor has an explicit distillation loss to prevent the
+problem, and since its output is used to train the generator, the latter is also protected.
+We considered applying a distillation loss to the generator, trying to minimize a drift between
+the produced features of the previous and current generator. We measured such drift according to
+several metrics: cosine similarity, Kullback-Leiber divergence, L2 distance, and maximum mean
+discrepancy. The first metric, cosine similarity, gave best results. However, as the generator was
+well protected, we gained at most 0.50 Continual Accuracy p.p. on AwA2.
+
 
 \input{tables/ghost/continual_half}
 \input{tables/ghost/final_half}
 
-\paragraph{Continual Learning with Future Classes.~~}
+\paragraph{Continual Learning with Future Classes}
 For continual learning, it is usual to take into account the model's performance as it evolves. We
 adapt the traditional average incremental accuracy \citep{rebuffi2017icarl} to take into account
 \textit{all} classes, including the future ones, and call that metric \textit{continual accuracy}:
@@ -884,8 +952,10 @@ SVM latent-space regularization refinement. The ability to guess on future class
 improvements on both datasets, for both base models. The SVM-based regularization refinement also
 improves the results, by up to 0.65 p.p.
 
-\paragraph{Final Accuracy.~~} Once we reach the final task, the proposed model ability to guess future
-classes provides no advantage due to all classes being now seen. Still, as shown in
+\input{tables/ghost/plot}
+
+\paragraph{Final Accuracy} Once we reach the final task, the proposed model ability to guess
+future classes provides no advantage due to all classes being now seen. Still, as shown in
 \autoref{tab:ghost_final_half} — where the metric is simply the accuracy at the final task of each
 run — the proposed method outperforms the baselines, due to a better organization of the feature
 space. Although the numerical advantages in this table are smaller than in the previous one, these
@@ -893,9 +963,7 @@ results are consequential, showing that the ability of the proposed model of inc
 about the classes is useful beyond the zero-shot scenario. Again, the SVM-regularization refinement
 helps by up to 1.80 p.p.
 
-\input{tables/ghost/plot}
-
-\paragraph{Model Evolution.~~} To showcase how the models evolve, plots contrasting the proposed
+\paragraph{Model Evolution} To showcase how the models evolve, plots contrasting the proposed
 methods with each base model (PODNet and UCIR) task by task appear in
 \autoref{fig:ghost_plot_awa2_25x5x5c}. The plots show how, on early tasks, the main advantage of the
 proposed model is its ability to guess on the future classes, while on the final task no future
@@ -903,7 +971,7 @@ classes remain, but the proposed model still keeps a (more modest, but definitiv
 
 \input{tables/ghost/initial_seen}
 
-\paragraph{Zero-shot-like Initial Task Setting.~~} This set of experiments
+\paragraph{Zero-shot-like Initial Task Setting} This set of experiments
 (\autoref{tab:ghost_initial_seen}) is intended for comparison with zero-shot learning benchmarks
 \citep{xian2019awa2}, which always use the same split of seen/unseen classes for a given dataset.
 Our first task in the continual learning contains the classes defined in zero-shot benchmark as
@@ -923,7 +991,7 @@ classes are added incrementally, without any sample limitations given by rehears
 
 \input{tables/ghost/cheat}
 
-\paragraph{Generator Validation.~~} The generator approximates the feature extractor for the unseen
+\paragraph{Generator Validation} The generator approximates the feature extractor for the unseen
 future classes. To validate its effectiveness, we replace the generated features by the actual
 features from the future images. This form of “cheating”, of course, is not possible in
 \textit{actual} real-world scenarios, but serves as a metric. \autoref{tab:ghost_generated_vs_real}
@@ -934,33 +1002,45 @@ never adapted for the unseen classes distribution. The "oracle" experiments in t
 row in \autoref{tab:ghost_generated_vs_real} establish an upper bound for what we could achieve by
 "cheating" around the experimental protocol restrictions. The partial oracle from third row is the
 same model as the second row, fine-tuning the feature extractor with samples coming from the future.
-The full oracle of the fourth line uses all images from all classes without any restriction in a single task.
-Despite the partial oracle had full access to real future data, we stress that our model's
-performance with generated future data is close to this upper bound.
-
-%A visual analysis of the ghost features vs. actual features (\autoref{fig:tsne_projection_ghost})
-%shows that the ghost features are, in general, well-calibrated in terms of the rough region of
-%space occupied, but have a much smaller variance than actual features from samples of unseen
-%classes. That smaller variance/diversity may end up better working to regularize the feature space,
-%acting as ``archetypal'' class examples.
-
-% We hypothesise that this can be explained by the intra-class diversity, as seen in
-% \autoref{fig:tsne_projection_ghost}, which is high for real features while low for generated
-% features. Recall that for ``\textit{real}'', the features extractor was never trained on those
-% unseen classes, the latent space it produced it thus uncertain.
-
-%\input{tables/quantitative_pod} \input{tables/qualitative_podflat}
-
-%We also inspected the features we generated for a AwA2, a larger-scale dataset.
-%\autoref{fig:tsne_projection_ghost} showcases a t-SNE 2d projection of the latent space for real
-%and generated features. \autoref{fig:tsne_seen} contains the features of \textit{seen} classes, the
-%generator was trained to approximate those. In \autoref{fig:tsne_unseen}, the generator extrapolate
-%its knowledge to \textit{unseen} classes. As remarked by others \cite{ravuri2019accongan},
-%generative models don't yet produce the most realistic images/features. However in a setting as
-%constrained as ours, where unseen classes are totally nonexistent, generating them provide a much
-%needed insights of the future.
+The full oracle of the fourth line uses all images from all classes without any restriction in a
+single task. Despite the partial oracle had full access to real future data, we stress that our
+model's performance with generated future data is close to this upper bound.
 
 
+\input{tables/ghost/tsne_awa.tex}
+
+\paragraph{Ghost visualization} We inspect the ghost samples created by our generator with
+visualization in \autoref{fig:ghost_tsne}: we compare the features extracted from the
+actual images with their generated homologous, produced by the GMMN on the AwA2 dataset. To allow
+visualization, we reduce the dimensionality of the features to two with t-SNE. In
+\autoref{fig:ghost_tsne_seen}, we compare, at task $t$, the actual features (in dark colors) to generated
+features (in light colors) for seen classes. The generated features are, in most cases, near the
+clusters of real features, and all clusters — real and generated are tightly bound. We then compare
+in \autoref{fig:ghost_tsne_unseen} the real and generated features on unseen classes. Compared to
+\autoref{fig:ghost_tsne_seen}, even the real features show a bigger spread, due, we believe, to the
+feature extractor $f^t$ not having met those unseen images. The generated features are also more
+spread but are still, in general, reasonably placed, indicating the ability of the generator to
+extrapolate — at least partially — the features for unseen classes from their attributes.
 
 \section{Conclusion}
 
+In this chapter, I covered our works on regularizations of the feature space. We proposed to
+regularize, not the model's outputs as the vast majority of the literature, but intermediate
+features. In this context, we tackle catastrophic forgetting via two approaches. Those approaches
+are orthogonal and can be combined.
+
+The first approach, PODNet, reduces the drift between the old and new model by constraining
+statistics of the intermediate features. We show that a naive constraint balance poorly the
+plasticity-rigidity trade-off. Thus, we propose carefully designed pooling to directly exploit the
+spatial nature of the images. By constraining long-range statistics of the horizontal and vertical
+axes, we reduce drastically forgetting, especially in challenging setting with a large amount of
+tasks with few classes per task. Furthermore, we design a robust metric-based classifier that
+exploits the multi-modality of the classes.
+
+The second approach, Ghost, avoid pre-emptively forgetting by estimating the future locations of
+yet unseen classes. Drawing inspiration from the Zeroshot Learning literature, we exploit classes
+metadata to generate what we called "Ghost features" of the future classes. We then regularize
+the latent space, via a modified NCA loss and a SVM-based constraint, to allocate the future
+locations of unseen classes. In addition, of the novel zeroshot capabilities, useful to the new
+Prescient Continual Learning setting we introduced, we show that final performance has been improved
+by avoiding confusion thanks to our pre-allocation strategy.

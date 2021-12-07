@@ -13,6 +13,72 @@
 \section{Details on Ghost}
 \label{sec:appendix_ghost}
 
+
+\subsection{Overhead of SVMs training}
+
+Training the SVMs for $\mcL^{\text{\tiny{svm-reg}}}$ introduces a computational overhead. To
+minimize it, we limit the number of features per class to 500. Moreover, as we advance towards later
+tasks, fewer unseen classes remain, and thus we have fewer SVMs to train. Overall, an experiment on
+AwA2, with our setting of 25 classes + 5 $\times$ 5 classes, takes 5 hours to train. We observed
+that our SVM-based regularization extends that time by less than 5 minutes on average, an overhead
+of less than 2\%, which we deemed acceptable. For reference, the SVMs were trained on a machine with
+10 CPU cores of 3.90GHz each.
+
+\subsection{Implementation Details} For all datasets and settings, we set the classification margin
+$\delta=0.6$, and the SVM latent-space regularization additional margin $\tau=1$. We train the
+feature-extractor-and-classifier pipeline for 90 epochs with an SGD optimizer, learning rate of 0.1,
+cosine scheduling, and weight decay of $10^{-4}$. We train the generator for 1200 epochs, with an
+Adam optimizer and a learning rate of $10^{-5}$. Finally, following
+\cite{hou2019ucir,douillard2020podnet}, we fine-tune the classifier for 60 epochs (with the feature
+extractor frozen and a small learning rate of $10^-4$) at the end of every task (except the last
+one). We found useful to balance the bias towards the seen classes against the unseen classes. With
+the POD distillation \cite{douillard2020podnet}, we set $\lambda_1=3$  for AwA2, and $\lambda_1=15$
+for aP\&Y; with the Less-Forget distillation \cite{hou2019ucir}, we set $\lambda_1=4$ for both
+datasets. We always set $\lambda_2=10^{-3}$, moreover we apply it on L2-normalized features.
+Finally, we do not reinitialize the models between tasks: $f^t$ results from training $f^{t-1}$ on
+task $t$, etc. On the rehearsal memory limitation, we follow the strict setting of Hou et
+al.~\cite{hou2019ucir}, keeping only $s=20$ training images per past class.
+
+\subsection{Datasets details}
+
+We train our model on three datasets: MNIST, AwA2, and aP\&Y. Baselines and our Ghost models are run
+on the exact same data/class splits, with the exact same preprocessing.
+
+\paragraph{MNIST} This dataset has ten classes: handwritten digits ranging from '0'' to '9'. It has a
+training set of 60,000 images and a test set of 10,000 images. We used for validation set, a subset
+of 10,000 examples of the training set. Images are in black\&white (one channel) and of dimension
+$28\times28$. We convert the pixels values to the range [0, 1] and then normalize by the mean and
+standard deviation of the training dataset.
+
+\paragraph{AwA2} This dataset has 50 animals classes. It has a training set of 29,857 images and a test
+set of 7,465 images. We used for validation set a subset of 8,000 images of the training set. Images
+are in RGB color. We convert the pixel values to the range [0, 1] and normalize by the mean and
+standard deviation of the training dataset. Train images are randomly cropped to a square of
+$224\times224$ and are randomly flipped horizontally. Test images are resized to $256\times256$ and
+then center cropped to $224\times224$.
+
+\paragraph{aP\&Y} This dataset has 32 classes of everyday objects. It has a training set of 12,269
+images and a test set of 3,068 images. We used for validation set a subset of 4,000 images of the
+training set. Images are in RGB color. We convert the pixel values to the range [0, 1] and normalize
+by the mean and standard deviation of the training dataset. Train images are randomly cropped to a
+square of $224\times224$ and are randomly flipped horizontally. Test images are resized to
+$256\times256$ and then center cropped to $224\times224$.
+
+\subsection{Reproducibility}
+
+\paragraph{Code Dependencies} The Python version is  3.7.6. We used the PyTorch
+\cite{paszke2017pytorch} (version 1.2.0) deep learning framework and the libraries Torchvision
+(version 0.4.0), NumPy \cite{oliphant2006numpy} (version 1.17.2), Pillow (version 6.2.1), and
+Matplotlib \cite{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Experiments on
+MNIST were done with the data loaders library Continuum \cite{douillardlesort2021continuum}.
+
+The code is released at \href{https://github.com/arthurdouillard/incremental_learning.pytorch}{github.com/arthurdouillard/incremental\_learning.pytorch}.
+
+\paragraph{Hardware \& Training duration} We ran our experiments on 3 Titan Xp GPUs with 12 Go of VRAM
+each. Each experiment had access to 10 CPU cores of 3.90 GHz each, and used at most 3 Go of RAM and
+8 Go of VRAM. A single experiment run on AwA2 took on average 5 hours and, on aP\&Y, 3 hours. We ran
+each experiment thrice with different random seeds (1, 2, and 3).
+
 \section{Continuum: Continual Learning Data Loaders}
 
 \section{CTKT: Continual Domain Adaptation}
