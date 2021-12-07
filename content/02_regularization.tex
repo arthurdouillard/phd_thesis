@@ -380,14 +380,6 @@ ImageNet100~\citep{deng2009imagenet,hou2019ucir,wu2019bias_correction}, and
 ImageNet1000~\citep{deng2009imagenet}. ImageNet100 is a subset of ImageNet1000 with only 100
 classes, randomly sampled from the original 1000.
 
-{\begin{description} \setlength{\parskip}{0pt}
-    \item[CIFAR100] contains 32$\times$32-pixel images in 100 classes, with 50k images for training
-          and 10k for testing.
-    \item[ImageNet100] contains 224$\times$224-pixel images in 100 classes, with $\sim$128k images
-          for training and $\sim$5k for testing.
-    \item[ImageNet1000] contains 224$\times$224-pixel images in 1000 classes, with $\sim$1.28m
-          images for training and $\sim$50k for testing. \end{description}}
-
 \paragraph{Protocol} We validate our model and the compared baselines using the challenging protocol
 introduced by \cite{hou2019ucir}: we start by training the models on half the classes (i.e., 50 for
 CIFAR100 and ImageNet100, and 500 for ImageNet1000). Then the classes are added incrementally in
@@ -468,7 +460,6 @@ to 2.85\pp.
 
 \input{tables/podnet/ablations.tex}
 \input{tables/podnet/ablation_pod_wflat.tex}
-\input{tables/podnet/ablation_pod_woflat.tex}
 
 \subsubsection{Further analysis \& ablation studies}
 \label{sec:podnet_ablation}
@@ -488,8 +479,6 @@ cross-entropy loss instead of our modified NCA loss. This version brings to mind
 SoftTriple~\citep{qian2019softtriple} and Infinite Mixture
 Prototypes~\citep{allen2019infinitemixtureproto}, used in the different context of few-shot
 learning.
-%The former adds a regularization loss to collapse the multiple proxies into a single one if
-%necessary, which we did not find useful in our imbalanced setting of incremental learning.
 The latter only considers the closest mode of each class in its class assignment, while \ac{LSC}
 considers all modes of a class, thus, taking into account the intra-class variance. That allows
 \ac{LSC} to decrease class similarity when intra-class variance is high (which could signal a lack
@@ -499,10 +488,10 @@ of confidence in the class).
 \paragraph{Spatial-based distillation} We apply our distillation loss \ac{POD} differently for the
 flat final embedding $\vh$ (POD-flat) and the \ac{ConvNet}'s intermediate features maps $\vh_\ell$
 (POD-spatial). We designed and evaluated several alternatives for the latter whose results are shown
-in \autoref{tab:podnet_ablation_perceptual} and \autoref{tab:podnet_ablation_perceptual_noflat}.
-Refer to \autoref{sec:podnet_pod} for their definition. In the first table, all losses are with
-POD-flat ("\textit{None}" is using only POD-flat), while in the second table, there is no POD-flat
-and thus "\textit{None}" has no distillation loss at all.
+in \autoref{tab:podnet_ablation_perceptual}.
+Refer to \autoref{sec:podnet_pod} for their definition. In this table, all losses are with
+POD-flat ("\textit{None}" is using only POD-flat). Note that I provide in the appendix
+(\autoref{sec:appendix_podnet}) the same table without POD-flat.
 
 Overall, we see that not using pooling results in bad performance (POD-pixels). Our final loss,
 POD-spatial, surpasses all others by taking advantages of the statistics aggregated from both

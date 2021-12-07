@@ -10,6 +10,73 @@
 \section{Details on PODNet}
 \label{sec:appendix_podnet}
 
+\subsection{Implementation details}
+
+For all datasets, images are augmented with random crops and flips. For CIFAR100, we additionally
+change image intensity by a random value in the range [-63, 63].
+%
+We train our model for 160 epochs for CIFAR100, and 90 epochs for both ImageNet100 and ImageNet100,
+with a SGD optimizer with momentum of 0.9. For all datasets, we start with a learning rate of 0.1, a
+batch size of 128, and cosine annealing scheduling.
+%
+The weight decay is $5\cdot 10^{-4}$ for CIFAR100, and $1\cdot 10^{-4}$ for ImageNet100 and
+ImageNet1000. For CIFAR100 we set model hyperparameters $\lambda_c = 3$ and $\lambda_f=1$, while for
+ImageNet100 and 1000 we set $\lambda_c = 8$ and $\lambda_f =10$. Our model uses POD-spatial and
+POD-flat except when explicitly stated otherwise. Following Hou et al.~\cite{hou2019ucir}, we
+multiply both losses by the adaptive scaling factor: $\lambda=\sqrt{\nicefrac{N}{T}}$ with $N$ being
+the number of seen classes and $T$ the number of classes in the current task.
+
+For POD-spatial, before sum-pooling we take the features to the power of 2 element-wise. The vector
+resulting from the pooling is then L2 normalized.
+
+\subsection{Number of proxies per class}
+
+While our model's expressiveness increases with more proxies in $\mcL_\text{LSC}$, it remains fairly
+stable for values between 5 and 15, thus, for simplicity, we kept it fixed to 10 in all experiments.
+
+In initial experiments, we had the following pairs for the number of clusters (k) and average
+incremental accuracy (acc): k=1, acc=56.80\%; k=2, 57.14\%; k=4, acc=57.40\%; k=6, acc=57.46\%; k=8,
+acc=57.95\%, and k=10, acc=57.98\% --- i.e., a 1.18 p.p. improvement moving from k=1 to k=10. On
+ImageNet100, with 10 steps/tasks (increments of give classes per task), moving from k=1 to k=10
+improved 1.51 p.p. on acc.
+
+\subsection{Reproducibility}
+
+\paragraph{Code Dependencies} The Python version is  3.7.6. We used the PyTorch
+\cite{paszke2017pytorch} (version 1.2.0) deep learning framework and the libraries Torchvision
+(version 0.4.0), NumPy \cite{oliphant2006numpy} (version 1.17.2), Pillow (version 6.2.1), and
+Matplotlib \cite{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Initial
+experiments were done with the data loaders library Continuum \cite{douillardlesort2020continuum}.
+PODNet's full code is released at:\\
+\href{https://github.com/arthurdouillard/incremental\_learning.pytorch}{\texttt{github.com/arthurdouillard/incremental\_learning.pytorch}}.
+\\We provide all configuration files necessary to reproduce results, including seeds and class
+ordering.
+
+\paragraph{Datasets description} I provide bellow extensive details on the content of the three
+datasets considered for PODNet: CIFAR100, ImageNet100, and ImageNet1000.
+
+{\begin{description} \setlength{\parskip}{0pt}
+    \item[CIFAR100] contains 32$\times$32-pixel images in 100 classes, with 50k images for training
+          and 10k for testing.
+    \item[ImageNet100] contains 224$\times$224-pixel images in 100 classes, with $\sim$128k images
+          for training and $\sim$5k for testing.
+    \item[ImageNet1000] contains 224$\times$224-pixel images in 1000 classes, with $\sim$1.28m
+          images for training and $\sim$50k for testing. \end{description}}
+
+\paragraph{Spatial-based distillation} I displayed the differences of performance between
+spatial-based distillation in \autoref{sec:podnet_ablation_pooling}
+(\autoref{tab:podnet_ablation_perceptual}) when combined with POD-flat. In this appendix, I also
+detail in \autoref{tab:podnet_ablation_perceptual_noflat} the same spatial-loss without POD-flat.
+The ranking between distillation losses is ostensibly the same. Notice that POD-spatial ---and its
+sub-components POD-width and POD-height-- are the only losses barely affected by POD-flat's absence.
+Note that all alternative losses were tuned on the validation set to get the best performance,
+including those from external papers. Still, our proposed loss, POD-spatial, outperforms all, both
+with and without POD-flat.
+
+
+\input{tables/podnet/ablation_pod_woflat.tex}
+
+
 \section{Details on Ghost}
 \label{sec:appendix_ghost}
 
@@ -44,16 +111,16 @@ al.~\cite{hou2019ucir}, keeping only $s=20$ training images per past class.
 We train our model on three datasets: MNIST, AwA2, and aP\&Y. Baselines and our Ghost models are run
 on the exact same data/class splits, with the exact same preprocessing.
 
-\paragraph{MNIST} This dataset has ten classes: handwritten digits ranging from '0'' to '9'. It has a
-training set of 60,000 images and a test set of 10,000 images. We used for validation set, a subset
-of 10,000 examples of the training set. Images are in black\&white (one channel) and of dimension
-$28\times28$. We convert the pixels values to the range [0, 1] and then normalize by the mean and
-standard deviation of the training dataset.
+\paragraph{MNIST} This dataset has ten classes: handwritten digits ranging from '0'' to '9'. It has
+a training set of 60,000 images and a test set of 10,000 images. We used for validation set, a
+subset of 10,000 examples of the training set. Images are in black\&white (one channel) and of
+dimension $28\times28$. We convert the pixels values to the range [0, 1] and then normalize by the
+mean and standard deviation of the training dataset.
 
-\paragraph{AwA2} This dataset has 50 animals classes. It has a training set of 29,857 images and a test
-set of 7,465 images. We used for validation set a subset of 8,000 images of the training set. Images
-are in RGB color. We convert the pixel values to the range [0, 1] and normalize by the mean and
-standard deviation of the training dataset. Train images are randomly cropped to a square of
+\paragraph{AwA2} This dataset has 50 animals classes. It has a training set of 29,857 images and a
+test set of 7,465 images. We used for validation set a subset of 8,000 images of the training set.
+Images are in RGB color. We convert the pixel values to the range [0, 1] and normalize by the mean
+and standard deviation of the training dataset. Train images are randomly cropped to a square of
 $224\times224$ and are randomly flipped horizontally. Test images are resized to $256\times256$ and
 then center cropped to $224\times224$.
 
@@ -72,12 +139,13 @@ $256\times256$ and then center cropped to $224\times224$.
 Matplotlib \cite{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Experiments on
 MNIST were done with the data loaders library Continuum \cite{douillardlesort2021continuum}.
 
-The code is released at \href{https://github.com/arthurdouillard/incremental_learning.pytorch}{github.com/arthurdouillard/incremental\_learning.pytorch}.
+The code is released at
+\href{https://github.com/arthurdouillard/incremental_learning.pytorch}{github.com/arthurdouillard/incremental\_learning.pytorch}.
 
-\paragraph{Hardware \& Training duration} We ran our experiments on 3 Titan Xp GPUs with 12 Go of VRAM
-each. Each experiment had access to 10 CPU cores of 3.90 GHz each, and used at most 3 Go of RAM and
-8 Go of VRAM. A single experiment run on AwA2 took on average 5 hours and, on aP\&Y, 3 hours. We ran
-each experiment thrice with different random seeds (1, 2, and 3).
+\paragraph{Hardware \& Training duration} We ran our experiments on 3 Titan Xp GPUs with 12 Go of
+VRAM each. Each experiment had access to 10 CPU cores of 3.90 GHz each, and used at most 3 Go of RAM
+and 8 Go of VRAM. A single experiment run on AwA2 took on average 5 hours and, on aP\&Y, 3 hours. We
+ran each experiment thrice with different random seeds (1, 2, and 3).
 
 \section{Continuum: Continual Learning Data Loaders}
 
