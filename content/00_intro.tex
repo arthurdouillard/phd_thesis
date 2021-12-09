@@ -9,20 +9,59 @@
 
 \section{Context}
 
-\acf{AI} has been a subject of great interest for many decades, aiming at making machines reproduce more or less specific human behaviors, ranging from playing chess to producing medical diagnostics. Specifically, in the past decade, this domain has seen a rapid and almost exponential growth, being invested by numerous research labs and companies (like Google, Facebook, Microsoft, Amazon, etc.). Nowadays, applications of \ac{AI} are varied and show very impressive results. Those include information and image retrieval (web and image search engines), automatic translation, image recognition and classification (\eg Google Photos), face recognition, tracking of objects in videos, speech recognition, making autonomous vehicles drive, interpreting medical imagery, \etc.
+\acf{AI} is a vast subject with several approaches whose common goal is to reproduce more or less
+human behaviors.
+
+\acf{AI} has been a subject of great interest for many decades, aiming at making machines reproduce
+more or less specific human behaviors, ranging from playing chess to producing medical diagnostics.
+Specifically, in the past decade, this domain has seen a rapid and almost exponential growth, being
+invested by numerous research labs and companies (like Google, Facebook, Microsoft, Amazon, etc.).
+Nowadays, applications of \ac{AI} are varied and show very impressive results. Those include
+information and image retrieval (web and image search engines), automatic translation, image
+recognition and classification (\eg Google Photos), face recognition, tracking of objects in videos,
+speech recognition, making autonomous vehicles drive, interpreting medical imagery, \etc.
 
 \section{Motivations for Continual Learning}
 
 \section{Outline}
+
+\begin{itemize}
+      \item \autoref{chapter:regularization}: \nameref{chapter:regularization}\\
+            I first review the existing methods based on regularization for continual learning. While
+            regularizing a model's probabilities is very efficient to reduce forgetting in large-scale
+            datasets, there are few works considering constraints on intermediate features. I cover in this
+            chapter two contributions aiming to regularize directly the latent space of \acs{ConvNet}. The
+            first one, \acf{PODNet} aims to reduce the drift of spatial statistics between the old and new
+            model, which in effect reduces drastically forgetting even on large amount of tasks. I show in a
+            seconnd part a complementary method where we avoid pre-emptively forgetting by allocating
+            locations in the latent space for yet unseen future class.
+      \item \autoref{chapter:segmentation}: \nameref{chapter:segmentation}\\
+            Then, I describe a recent application of \acf{CIL} to semantic segmentation. I show that
+            the very nature of \acf{CSS} offer new specific challenges, namely forgetting on large
+            images and a background shift. We tackle the first problem by extenting our distillation
+            loss introduced in the previous chapter to multi-scales. The second problem is solved by
+            an efficient pseudo-labeling strategy. Finally, we consider the common rehearsal learning,
+            but applied this time to \ac{CSS}. I show that it cannot be used naively because of memory
+            complexity and design a light-weight rehearsal that is even more efficient.
+      \item \autoref{chapter:dynamic}: \nameref{chapter:dynamic}\\
+            Finally, I consider a completely different approach to continual learning: dynamic networks
+            where the parameters are extended during training to adapt to new tasks. Previous works on
+            this domain are hard to train and often suffer from parameter count explosion. For the
+            first time in continual computer vision, we propose to use the Transformer architecture:
+            the model dimension mostly fixed and shared across tasks, with the exception of an
+            expansion of learned task tokens. With an encoder/decoder strategy where the decoder
+            forward is specialized by a task token, we show state-of-the-art robustness to forgetting
+            while our memory and computational complexities barely grow.
+\end{itemize}
 
 \section{Related Publications}
 
 This thesis is based on the materials published in the following papers:
 
 \begin{itemize}
-    \item \fullcite{douillard2020podnet}
-    \item \fullcite{douillard2020ghost}
-    \item \fullcite{douillard2020plop}
-    \item \fullcite{douillard2021objectrehearsal}
-    \item \fullcite{douillard2021dytox}
+      \item \fullcite{douillard2020podnet}
+      \item \fullcite{douillard2020ghost}
+      \item \fullcite{douillard2020plop}
+      \item \fullcite{douillard2021objectrehearsal}
+      \item \fullcite{douillard2021dytox}
 \end{itemize}

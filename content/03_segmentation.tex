@@ -1,14 +1,29 @@
 \chapter{Continual Segmentation}
 \label{chapter:segmentation}
 
-%\minitoc
+\begin{chapabstract}
+    In \acf{CIL}, new classes are learned with each new task. However, most of the literature in
+    that domain focus on image classification where a single label is possible per sample. In
+    \acf{CSS}, the setting is the same, but the implications are wildly different.
+
+
+    \begin{itemize}
+        \item \fullcite{douillard2020plop}
+        \item \fullcite{douillard2021objectrehearsal}
+    \end{itemize}
+
+\end{chapabstract}
+\newpage
+
+\minitoc
 \chapterwithfigures{\nameref*{chapter:segmentation}}
-%\chapterwithtables{\nameref*{chapter:introduction}}
+\chapterwithtables{\nameref*{chapter:segmentation}}
 
 \ifthenelse{\boolean{skipSegm}}{\endinput}{}
 
 
 \section{Introduction}
+
 
 
 Computer vision went this last decade under a dramatic change from hand-crafted features

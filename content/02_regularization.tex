@@ -45,20 +45,20 @@
 
 \section{Introduction}
 
-\ac{CIL}, where each task brings new classes, is among the most challenging setting of \ac{CL}. When
+\acf{CIL}, where each task brings new classes, is among the most challenging setting of \acf{CL}. When
 evaluated in single-head, where the task identity is not known at test-time, the majority of the
 methods rely on rehearsal learning where a limited amount of old data is replayed. Furthermore, it
 is often combined to regularizations that aim to limit forgetting. These regularizations are often a
 knowledge distillation \citep{hinton2015knowledge_distillation} that enforces similar probabilities
-between the old and current model. First introduced by LwF \citep{li2018lwf}, it has then be used by
-multiple seminal papers including iCaRL \citep{rebuffi2017icarl} and WA
+between the old and current model. First introduced by LwF \citep{li2018lwf}, it has be used
+afterwards by multiple seminal papers including iCaRL \citep{rebuffi2017icarl} and WA
 \citep{zhao2020weightalignement}. I propose in this chapter two proposed regularization methods to
-reduce forgetting. The first one, introduced in \ac{PODNet} \citep{douillard2020podnet} and detailed
+reduce forgetting. The first one, introduced in \acf{PODNet} \citep{douillard2020podnet} and detailed
 in \autoref{sec:podnet}, aims to regularize the statistics shift at the intermediate feature-level
 to enforce a consistent representation at multiple levels of the feature extractor across all steps
 of the continual training. The second one, nicknamed Ghost \citep{douillard2020ghost} and described
 in \autoref{sec:ghost}, on the other hand, avoid pre-emptively forgetting by regularizing the
-feature space at locations where future classes are estimated to arrive to.
+feature space at locations where the model estimates future classes will be.
 
 For both PODNet and Ghost, we will focus on \ac{CIL} where each new task brings new classes. We
 propose then to split a dataset into multiple tasks, \ieg{} CIFAR100 50-1 would be 1 task of 50
@@ -362,7 +362,7 @@ i.e., the model trained for task $t$, is simply their addition $\mathcal{L}_{\{f
     \mathcal{L}_\textrm{LSC} + \mathcal{L}_\textrm{POD-final}$. The overall model is displayed in
 \autoref{fig:podnet_model}.
 
-\subsection{Experiment results}
+\subsection{Experiment Results}
 \label{sec:podnet_exp}
 
 We compare our technique (\ac{PODNet}) with three state-of-the-art models. Those models are
@@ -590,7 +590,7 @@ integrating continual and zero-shot learning into a coherent whole where future 
 pre-allocated, reducing their ---yet not happened--- forgetting.
 
 
-\subsection{Setting: prescient continual learning}
+\subsection{Setting: Prescient Continual Learning}
 \label{sec:ghost_setting}
 
 \begin{figure}
@@ -606,14 +606,14 @@ pre-allocated, reducing their ---yet not happened--- forgetting.
 
 
 We propose an enriched experimental setting, prescient continual learning, that extend the class
-incremental setting used in \autoref{fig:podnet}, in which each task is evaluated on \textit{all
+incremental setting used in \autoref{fig:podnet_model}, in which each task is evaluated on \textit{all
     classes} $C^{1:T}$: past ($C^{1:t-1}$), present ($C^t$), and future ($C^{t+1:T}$). In that
 challenging new setting, we must not only avoid the catastrophic forgetting of past classes (using
 the limited rehearsal training samples), but also give our best estimates for future classes (using
 no training samples at all). That will only be possible if we have some prior information about the
 classes, e.g., their hierarchy in a semantic network (like WordNet), an associated word embedding
 (like Word2Vec), or an attribute matrix. Such setting is illustrated in
-\autoref{fig:protocol_zeroshot_continual}. We will shorthand the set of past and present classes
+\autoref{fig:ghost_protocol}. We will shorthand the set of past and present classes
 $C^{1:t}$ as the \textit{seen} classes, and the set of future classes $C^{t+1:T}$ as the
 \textit{unseen} classes. We denote individual samples by a superscript $\vx^(i)$, the class label by
 a subscript $\vx_c$, and on which parameters a loss is applied by a subscript $\mcL_\Theta$.
@@ -794,7 +794,7 @@ algorithm of our model in pseudocode, showcasing a procedural view of the execut
     \label{fig:ghost_svm_reg}
 \end{figure}
 
-\subsection{Experiments}
+\subsection{Experiment Results}
 \label{sec:ghost_exp}
 
 \subsubsection{Pictorial experiments}
