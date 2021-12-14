@@ -10,18 +10,102 @@
 \section{Context}
 
 \acf{AI} is a vast subject with several approaches whose common goal is to reproduce more or less
-human behaviors.
+human behaviors. The field was arguably founded during the Dartmouth Workshop during the summer of
+1956. From that time forward, rule-based systems, algorithms, and machine learning models were
+developed to tackle a wide variety of domains, ranging from playing chess to understanding images
+and text. Now in 2022, \ac{DL} research has underwent an almost exponential growth with important investments
+from both research labs and private companies (\eg Google, Facebook, Heuritech, \etc). Applications
+are widely available to the general public with improved web and search engines, automatic
+translation, face recognition, speech recognition, autonomous driving, \etc.
 
-\acf{AI} has been a subject of great interest for many decades, aiming at making machines reproduce
-more or less specific human behaviors, ranging from playing chess to producing medical diagnostics.
-Specifically, in the past decade, this domain has seen a rapid and almost exponential growth, being
-invested by numerous research labs and companies (like Google, Facebook, Microsoft, Amazon, etc.).
-Nowadays, applications of \ac{AI} are varied and show very impressive results. Those include
-information and image retrieval (web and image search engines), automatic translation, image
-recognition and classification (\eg Google Photos), face recognition, tracking of objects in videos,
-speech recognition, making autonomous vehicles drive, interpreting medical imagery, \etc.
+A particular domain of \ac{AI} is \ac{CV} where a model must be able to automatically process images
+and extract useful information. This domain is particularly important as the amount of images and
+videos uploaded grow exponentially each year. This trove of data is hard to exploit due to the
+unstructured nature of images. The best performing approaches of the 2000's were based on
+handcrafted features such as SIFT \citep{lowe1999sift} or Fisher Vectors \todo{cit} followed by
+machine learning models like Gradient Boosting \todo{cit}, \acs{SVM} \citep{cortes1995svm}, or
+random forest \todo{cit}. From the year 2012, \acf{DL} models, a specific kind of machine learning
+model, started to outperform previous approaches by a large margin. Specifically, a particular type
+of \ac{DL} models called \acs{ConvNet}, well fitted for \ac{CV}, dominated the ILSVC competition
+\citep{russakovsky2015imagenet_ilsvrc} with 2012's AlexNet architecture
+\citep{krizhevsky2012alexnet}. All following state-of-the-art models without exception were also based on the
+\ac{DL} paradigm.
+
+\ac{DL} models are a succession of linear transformations and non-linear functions and are supposed
+to be able to approximate any function \todo{universal approx}. For example, the most simple \ac{DL}
+model, a \ac{MLP} with a single hidden layer for classification can be defined likewise:
+%
+\begin{equation}
+      \hat{\vy} = f_\theta(\vx) = \operatorname{softmax}(\vW_o + \sigma(\vW_h \vx + \vb_h) + \vb_o))\,,
+      \label{eq:intro_mlp}
+\end{equation}
+%
+with $\vW_h \in \mathbb{R}^{H \times D}$, $\vb_h \in \mathbb{R}^{H}$,
+$\vW_o \in \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters and of the network.
+$\vx \in \mathbb{R}^D$ the input data as a vector, and $\tilde{\vy} \in \mathbb{R}^C$ the predicted
+probabilities per classes. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}, and
+$\operatorname{softmax}(\tilde{\vy}) = \nicefrac{e^{\tilde{\vy}}}{\sum_{i} \tilde{\vy}_i}$ the final
+non-linear activation. This small neural network is trained to minimize a loss function. In
+classification, the most common is the cross-entropy:
+%
+\begin{equation}
+      \mcL(\hat{\vy}, \vy) = -\sum_i y_i \log \hat{y}_i\,,
+      \label{eq:intro_ce}
+\end{equation}
+%
+with $\vy$ a one-hot vector of the labels. Finally, to optimize the parameters of the neural
+network, we often use the mini-batch \ac{SGD} algorithm or a variation thereof:
+
+\begin{algorithm}
+      \begin{algorithmic}[1]
+            \Statex \textbf{input:} a dataset $\mathbb{D}$ with pairs of $(\vx, \vy)$
+            \Statex \textbf{input:} a loss function $\mcL(\hat{\vy}, \vy)$
+            \Statex \textbf{input:} a model function $f_\theta$
+            \Statex \textbf{input:} a learning rate $\eta$ and a batch size $b$
+            \Statex
+
+            \While{stopping criterion not satisfied}
+            \State $\vx$, $\vy$ $\gets$ sample mini-batch from $\mathbb{D}$
+            \State Forward pass: $\hat{\vy}$ $\gets$ $f_\theta(\vx)$
+            \State Compute loss: $\mcL$ $\gets$ $\mcL(\hat{\vy}, \vy)$
+            \State Compute the gradients: $\delta$ $\gets$ $\nabla_\theta \mcL$
+            \State Update all parameters: $\theta$ $\gets$ $\theta - \eta \delta$
+            \EndWhile
+      \end{algorithmic}
+      \caption{Task procedure of the Ghost model}
+      \label{algo:intro_sgd}
+\end{algorithm}
+
+Almost all \ac{DL} models, in \ac{CV}, \ac{NLP}, or even Speech use a form of gradient descent to
+optimize differentiable functions.
+
+In 2022, a majority of \ac{DL} models for computer vision are based on learned convolutions.
+Handcrafted convolutions can be used to extract crude patterns such as edges \citep{lowe1999sift}.
+Early works proposed to learn the convolution kernels
+\citep{fukushima1980neocognitron,lecun1999lenet} as parameters of the neural networks. Those networks
+are then called \ac{CNN}. In 2012, thanks to a large dataset and more efficient code working on
+\acs{GPU}, \cite{krizhevsky2012alexnet} won the ILSVC competition
+\citep{russakovsky2015imagenet_ilsvrc} where they had to classify a large dataset ---ImageNet---
+made of 1M2 training images among 1000 classes. From that point forward, multiple improvements were
+made to \ac{CNN} \citep{ioffe2015batchnorm,he2016resnet} and these methods have been applied not only
+to classification but also object detection \citep{ren20fasterrcnn}, semantic segmentation
+\citep{chen2018deeplab}, visual question answering \citep{benyounes2017mutan}, \etc.
 
 \section{Motivations for Continual Learning}
+
+Usually, when training a \ac{CNN}, we assume the dataset is immutable and \textit{i.i.d.}: no new
+image nor new classes will be learned. The knowledge acquired on one dataset A can be
+\textit{transferred} to another dataset B with different classes using \textbf{transfer learning}
+\citep{razavian2014transferlearning}. However, in that case, the new model, while being efficient on
+the dataset B, cannot classify the classes of dataset A.
+
+\textbf{Continual Learning} aims to learn a continually changing dataset without forgetting the
+previous knowledge. \eg a model could learn at first to classify among 10 classes, then add 10 more
+classes, \etc. Continually learning an increasing number of classes is easily doable if the data of
+previous classes is accessible. However, it may not always be the case: privacy reasons are often
+raised ---think medical data or federated learning's user data. In that situation, learning new
+classes lead to a \textbf{catastrophic forgetting} \citep{robins1995catastrophicforgetting} of
+previous classes.
 
 \section{Outline}
 
@@ -33,12 +117,12 @@ speech recognition, making autonomous vehicles drive, interpreting medical image
             chapter two contributions aiming to regularize directly the latent space of \acs{ConvNet}. The
             first one, \acf{PODNet} aims to reduce the drift of spatial statistics between the old and new
             model, which in effect reduces drastically forgetting even on large amount of tasks. I show in a
-            seconnd part a complementary method where we avoid pre-emptively forgetting by allocating
+            second part a complementary method where we avoid pre-emptively forgetting by allocating
             locations in the latent space for yet unseen future class.
       \item \autoref{chapter:segmentation}: \nameref{chapter:segmentation}\\
             Then, I describe a recent application of \acf{CIL} to semantic segmentation. I show that
             the very nature of \acf{CSS} offer new specific challenges, namely forgetting on large
-            images and a background shift. We tackle the first problem by extenting our distillation
+            images and a background shift. We tackle the first problem by extending our distillation
             loss introduced in the previous chapter to multi-scales. The second problem is solved by
             an efficient pseudo-labeling strategy. Finally, we consider the common rehearsal learning,
             but applied this time to \ac{CSS}. I show that it cannot be used naively because of memory
@@ -64,4 +148,5 @@ This thesis is based on the materials published in the following papers:
       \item \fullcite{douillard2020plop}
       \item \fullcite{douillard2021objectrehearsal}
       \item \fullcite{douillard2021dytox}
+      \item \fullcite{douillardlesort2021continuum}
 \end{itemize}
