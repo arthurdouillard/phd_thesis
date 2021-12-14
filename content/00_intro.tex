@@ -41,12 +41,13 @@ model, a \ac{MLP} with a single hidden layer for classification can be defined l
 \end{equation}
 %
 with $\vW_h \in \mathbb{R}^{H \times D}$, $\vb_h \in \mathbb{R}^{H}$,
-$\vW_o \in \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters and of the network.
-$\vx \in \mathbb{R}^D$ the input data as a vector, and $\tilde{\vy} \in \mathbb{R}^C$ the predicted
-probabilities per classes. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}, and
-$\operatorname{softmax}(\tilde{\vy}) = \nicefrac{e^{\tilde{\vy}}}{\sum_{i} \tilde{\vy}_i}$ the final
-non-linear activation. This small neural network is trained to minimize a loss function. In
-classification, the most common is the cross-entropy:
+$\vW_o \in \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters and of the
+network. $\vx \in \mathbb{R}^D$ the input data as a vector, and $\tilde{\vy} \in \mathbb{R}^C$ the
+predicted probabilities per classes. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
+($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\operatorname{softmax}(\tilde{\vy}) =
+      \nicefrac{e^{\tilde{\vy}}}{\sum_{i} \tilde{\vy}_i}$ the final non-linear activation. This small
+neural network is trained to minimize a loss function. In classification, the most common is the
+cross-entropy:
 %
 \begin{equation}
       \mcL(\hat{\vy}, \vy) = -\sum_i y_i \log \hat{y}_i\,,
