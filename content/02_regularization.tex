@@ -61,7 +61,7 @@ in \autoref{sec:ghost}, on the other hand, avoid pre-emptively forgetting by reg
 feature space at locations where the model estimates future classes will be.
 
 For both PODNet and Ghost, we will focus on \ac{CIL} where each new task brings new classes. We
-propose then to split a dataset into multiple tasks, \ieg{} CIFAR100 50-1 would be 1 task of 50
+propose then to split a dataset into multiple tasks, \eg CIFAR100 50-1 would be 1 task of 50
 classes followed by 50 tasks of 1 class each. Following other regularization methods based on the
 probabilities, we allow a rehearsal memory storing a limited amount of previous data.
 
@@ -544,9 +544,9 @@ the ability to make room for future classes is a key limitation of current conti
 models, and propose a regularization loss to make the model more “selfless”, by leaving capacity for
 future classes in the representation. However, this pre-allocation of the future classes is done
 without supervision by enforcing sparsity. We propose instead to pre-allocate explicitly using weak
-information about the future classes. Drawing inspiration from the \ac{ZSL}
-\cite{lampert2009zeroshot} literature, we exploit classes metadata to estimate the representation of
-future classes.
+information about the future classes. Drawing inspiration from the \acf{ZSL} literature
+\citep{lampert2009zeroshot}, we exploit classes metadata to estimate the representation of future
+classes.
 
 \begin{comment}
 Continual learning aims to perform equally well on past and present tasks. We proposed instead a
@@ -570,7 +570,7 @@ by attributes.
 \subsection{Related Works}
 \label{sec:ghost_related}
 
-To address the proposed model, we take inspiration from zero-shot learning
+To address the proposed model, we take inspiration from \acf{ZSL}
 \citep{lampert2009zeroshot,xian2019awa2}, which allows classifying examples from unseen classes by
 combining a vision model with an embedding possessing knowledge about the classes (e.g. a word
 embedding \citep{mikolov2013word2vec,pennington2014glove} or an attribute matrix). Although several
