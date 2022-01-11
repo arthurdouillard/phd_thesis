@@ -83,6 +83,7 @@ more challenging \citep{lesort2019regulshortcomings}.
 $\{\vx, \vy\}$ where $\vx$ is an image, and $\vy$ its class label.
 
 \section{Rehearsal}
+\label{sec:related_rehearsal}
 
 Multiple approaches exist to reduce catastrophic forgetting. The most efficient method is
 \textbf{rehearsal learning} where old samples will be seen alongside the new samples. The amount of
@@ -141,13 +142,15 @@ training, slightly modify them via bi-level optimization to minimize forgetting.
 
 
 \section{Regularization-based Approaches}
+\label{sec:related_regul}
+
 
 \begin{figure}[tb]
     \begin{center}
         \includegraphics[width=1.0\linewidth]{images/related/continual_regularizations.pdf}
     \end{center}
     \caption{\textbf{Regularizations constraints} forcing the new model to be \textit{similar} to
-    the old model to reduce catastrophic forgetting.}
+        the old model to reduce catastrophic forgetting.}
     \label{fig:related_regul}
 \end{figure}
 
@@ -156,26 +159,28 @@ the old and new models as illustrated in \autoref{fig:related_regul}. These cons
 expressed through various forms as described below.
 
 \subsection{Weight-based}
+\label{sec:related_regul_weight}
+
 
 The most straightforward way to avoid completely forgetting, is that the old and new
 models are identical. While the model would be \textit{rigid} (no forgetting), it is also not
 \textit{plastic} at all, and thus cannot learn any new tasks. Thus, a line of research proposed to
 constrain only a portion of the neurons:
-
+%
 \begin{equation}
     \mcL(\theta) = \mcL_\mcT(\theta) + \lambda \sum_i \Omega_i (\theta_i - \theta_i^*)^2\,,
     \label{eq:related_weight_constraint}
 \end{equation}
-
+%
 where $\mcL_\mcT(\theta)$ is the loss of the current task (\eg the cross-entropy), $\theta_i$ and
 $\theta_i^*$ respectively the $i^\text{th}$ neuron of the current and previous model, and $\Omega_i$
 a neuron-wise importance factor. The intuition is that important neuron for $\mcT-1$ shouldn't
 change, while the others can be adapted to fit the new task $\mcT$.
 
 \cite{kirkpatrick2017ewc}, followed by
-\cite{zenke2017synaptic_intelligence,chaudhry2018riemannien_walk}
+\cite{zenke2017synaptic_intelligence} and \cite{chaudhry2018riemannien_walk}
 proposed to use the diagonal Fisher information matrix as importance factors.
-\cite{aljundi2018MemoryAwareSynapses} proposed instead to use the sensitivity of the model when
+\cite{aljundi2018MemoryAwareSynapses} instead used the sensitivity of the model when
 small perturbations are added to the neurons to measure their importance.
 
 However, it's worth remarking that weight-based constraints are usually limited to the multi-heads
@@ -185,23 +190,65 @@ outperformed by rehearsal-based methods.
 
 
 \subsection{Gradient-Based}
+\label{sec:related_regul_gradient}
 
-gem, agem, paper from aljundi with sampling
+\cite{lopezpaz2017gem} proposed the GEM model which combines a constraint on the gradients and
+rehearsal learning. The algorithm requires that the loss on a given stored sample must not increase
+despite the model learning new classes. The authors, given a locality assumption, rewrite this
+formulation as enforcing that the gradient of a new sample ($g$) to be in the same \textit{direction} as
+the gradient of a stored old sample ($g_i$):
+%
+\begin{equation}
+    \langle g,\, g_i\rangle \ge 0,\, \text{for all} i \in \mcM
+\end{equation}
+%
+With $\mcM$ the rehearsal memory. If the constraint is violated, the new gradient $g$ is projected
+to the closest in L2 norm gradient that satisfies the angle constraint by minimizing a quadratic
+program. The drawback of this method is the computational cost that can grow prohibitively when the
+memory is too large. \cite{chaudhry2019AGEM} proposed Averaged-GEM to speed up GEM: the author don't
+constraint the gradient of individual memory samples but only the average of all memory samples.
+\cite{aljundi2019gradientselection} also improved GEM's speed by selecting only a subset of the
+memory samples that maximize the feasible region.
 
-ogd, and the follow up paper with eigenvalues
+Differently, but still constraining the gradients: \cite{farajtabar2020ogd}'s OGD forces the gradients of
+task $t$ to be orthogonal to gradients of task $t-1$. They use the Gram-Schmidt procedure to
+orthogonalize the new gradients, allowing updates for the new task that minimally interfere with the
+performance of old tasks. \cite{saha2021gpm}'s GPM does likewise but using instead a k-rank
+approximation of the SVD of the representation matrix.
+
 
 \subsection{Output-based}
+\label{sec:related_regul_output}
 
 Finally, the majority of Continual model that are benchmarked on large datasets (\eg ImageNet
-\citep{deng2009imagenet}, Pascal VOC \citep{everingham2015pascalvoc})
+\citep{deng2009imagenet}, Pascal VOC \citep{everingham2015pascalvoc}) use a combination of rehearsal
+learning (\autoref{sec:related_rehearsal}) and constraints on the model's outputs.
 
-on probabilities: lwf, icarl, weight alignement
+LwF \cite{li2018lwf} and iCaRL applied the \ac{KD} \cite{hinton2015knowledge_distillation} on the
+model's probabilities. It usually consists in minimizing the \ac{KL} between the probabilities
+of the old and new models:
+%
+\begin{equation}
+    \mcL_\text{KD} = \operatorname{KL}(\operatorname{softmax}(\frac{\tilde{y}^{t-1}}{\tau}) \Vert \operatorname{softmax}(\frac{\tilde{y}^t}{\tau})\,,
+\end{equation}
+%
+where $\tilde{y}^{t-1}$ and $\tilde{y}^{t}$ are respectively the logits of the old and new model,
+and $\tau$ a \textit{temperature} to soften the probabilities in order to give more importance to
+the \textit{dark knowledge} of \cite{hinton2015knowledge_distillation}. Note that in the context of
+Class-Incremental, the new model predicts more classes than the old model, therefore the \ac{KL} is
+only applied on the logits common to both the old and the new models. The \ac{KD} is sometimes also
+defined as the binary cross-entropy between the sigmoid-activated logits.
 
-on embedding: ucir, mk2d
-
-on attention maps: learning without memorizing
-
-on intermediate statistics: paper from zagouraki, and pod and local pod
+Constraining the probabilities is now so ubiquitous that most models include it in their base
+losses. On the other hand, a few models considered constraining intermediate outputs. MK2D
+\citep{peng2019m2kd} uses the \ac{KD} from both the final classifier and an auxilliary classifier
+similarly to the Inception network \citep{szegedy2015inception}. \cite{hou2019ucir} maximizes the
+cosine similarity between the embeddings produced by the \ac{GAP}.
+\cite{dhar2019learning_without_memorizing_gradcam} minimizes the L1 distance between the attention
+maps produced by GradCam \citep{selvaraju2017gradcam}. Drawing inspiration from the model
+compression litterature \cite{zagoruyko2016distillation_attention}, \cite{douillard2020podnet}
+proposed to constraint instead the statistics of all intermediate features of the \ac{ConvNet}. This
+constraint was later expanded to incorporate multiscale information \cite{douillard2020plop}.
 
 \section{Dynamic Strategies}
 
