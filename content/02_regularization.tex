@@ -754,7 +754,7 @@ loss, in addition to a distillation loss to counter-act catastrophic forgetting
 %
 \begin{equation}
     \mcL = \mcL^\text{\tiny{nca-ghost}}_{\Theta_f,\Theta_{\clf}} + \lambda_1 \mcL^\text{\tiny{distill}}_{\Theta_f} + \lambda_2 \mcL^\text{\tiny{svm-reg}}_{\Theta_f}\,.
-    \label{sec:ghost}
+    \label{eq:ghost_loss}
 \end{equation}
 %
 

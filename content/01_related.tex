@@ -26,6 +26,7 @@ machine translation in \ac{NLP}, was applied to images. Using an encoder structu
 \citep{devlin2018bert}, ViT \citep{dosovitskiy2020vit} considered patches of pixels as tokens.
 
 \section{Continual Learning}
+\label{sec:related_continual}
 
 Usually, when training a \ac{CNN}, we assume the dataset is immutable and \textit{i.i.d.}: no new
 image nor new classes will be learned. The knowledge acquired on one dataset A can be
@@ -44,7 +45,20 @@ the amount of previous data that can be kept. In the extreme case, where a model
 new data but now old data, training from scratch fails to model previous iterations' distribution.
 Worse, even if the old model is kept and finetuned on the new data, it'll suffer from
 \textbf{Catastrophic Forgetting} \citep{robins1995catastrophicforgetting}: new data is learned at
-the expanse of old data.
+the expanse of old data. Multiple distribution shifts exist in Continual Learning
+\citep{morenotorresa2012datasetshift,lesort2021driftanalysis}, and they have been called under various names in the
+literature. I detail now the major ones, given $x$ an input sample and $y$ its label:
+
+\begin{itemize}
+    \item \textbf{Covariate shift}: when $p(x)$ changes, also known as domain incremental.
+    \item \textbf{Prior shift}: when $p(y)$ changes; \ac{CIL} happens with this kind of shift.
+    \item \textbf{Conceptual shift}: when $p(y | x)$ changes. Seldom covered in the literature, it
+          can be found in \acf{CSS}.
+\end{itemize}
+
+In the chapter \autoref{chapter:regularization} and \autoref{chapter:dynamic}, I tackled only the
+prior shift, while in \autoref{chapter:segmentation} I solved all three described shifts.
+
 
 \paragraph{Class-Incremental Example} More concretely, a common benchmark in \ac{NC} setting,
 commonly called \ac{CIL} is to learn the image classification CIFAR100 dataset
@@ -57,7 +71,6 @@ classes data. This model, usually called Joint, is considered as a reasonable up
 \textcolor{blue}{blue} line on the other hand is a model that is finetuned on new classes but has no
 access to previous classes. Evidently, the model's accuracy is much lower than its Joint
 counterpart, because it forgets completely old classes by over-predicting new classes.
-
 
 \paragraph{Single-Head \vs Multi-Heads} are the two main evaluation settings in Continual Learning
 \todo{CITE chadhry}. In the former setting, a model has to classify samples among all seen classes,
@@ -79,10 +92,14 @@ more challenging \citep{lesort2019regulshortcomings}.
     \label{fig:related_forgetting}
 \end{figure}
 
-\paragraph{Notations} A model trained for image classification has access to a dataset of tuple
-$\{\vx, \vy\}$ where $\vx$ is an image, and $\vy$ its class label.
+\paragraph{Notations} I define in \autoref{tab:related_notation} the notations used thorough this thesis.
 
-\section{Rehearsal}
+\input{tables/related/notations.tex}
+
+\section{Methods to reduce forgetting}
+\label{sec:related_methods}
+
+\subsection{Rehearsal}
 \label{sec:related_rehearsal}
 
 Multiple approaches exist to reduce catastrophic forgetting. The most efficient method is
@@ -141,7 +158,7 @@ training, slightly modify them via bi-level optimization to minimize forgetting.
 \autoref{fig:related_protocol}
 
 
-\section{Regularization-based Approaches}
+\subsection{Regularization-based Approaches}
 \label{sec:related_regul}
 
 
@@ -158,7 +175,7 @@ A common and efficient way to reduce forgetting, is to minimize the difference i
 the old and new models as illustrated in \autoref{fig:related_regul}. These constraints can be
 expressed through various forms as described below.
 
-\subsection{Weight-based}
+\subsubsection{Weight-based}
 \label{sec:related_regul_weight}
 
 
@@ -188,9 +205,17 @@ setting where a task identifier is available at test time. \cite{lesort2019regul
 that in the more realistic single-head setting, they barely reduce forgetting and were significantly
 outperformed by rehearsal-based methods.
 
-
-\subsection{Gradient-Based}
+\subsubsection{Gradient-Based}
 \label{sec:related_regul_gradient}
+
+\begin{figure}[tb]
+    \begin{center}
+        \includegraphics[width=1.0\linewidth]{images/related/gem.pdf}
+    \end{center}
+    \caption{\textbf{GEM's gradient constraint} forcing updates to be in the same direction as the
+        gradient \wrt old samples.}
+    \label{fig:related_gem}
+\end{figure}
 
 \cite{lopezpaz2017gem} proposed the GEM model which combines a constraint on the gradients and
 rehearsal learning. The algorithm requires that the loss on a given stored sample must not increase
@@ -204,9 +229,10 @@ the gradient of a stored old sample ($g_i$):
 %
 With $\mcM$ the rehearsal memory. If the constraint is violated, the new gradient $g$ is projected
 to the closest in L2 norm gradient that satisfies the angle constraint by minimizing a quadratic
-program. The drawback of this method is the computational cost that can grow prohibitively when the
-memory is too large. \cite{chaudhry2019AGEM} proposed Averaged-GEM to speed up GEM: the author don't
-constraint the gradient of individual memory samples but only the average of all memory samples.
+program. The constraint is illustrated in \autoref{fig:related_gem}. The drawback of this method is
+the computational cost that can grow prohibitively when the memory is too large.
+\cite{chaudhry2019AGEM} proposed Averaged-GEM to speed up GEM: the author don't constraint the
+gradient of individual memory samples but only the average of all memory samples.
 \cite{aljundi2019gradientselection} also improved GEM's speed by selecting only a subset of the
 memory samples that maximize the feasible region.
 
@@ -217,7 +243,7 @@ performance of old tasks. \cite{saha2021gpm}'s GPM does likewise but using inste
 approximation of the SVD of the representation matrix.
 
 
-\subsection{Output-based}
+\subsubsection{Output-based}
 \label{sec:related_regul_output}
 
 Finally, the majority of Continual model that are benchmarked on large datasets (\eg ImageNet
@@ -250,16 +276,131 @@ compression litterature \cite{zagoruyko2016distillation_attention}, \cite{douill
 proposed to constraint instead the statistics of all intermediate features of the \ac{ConvNet}. This
 constraint was later expanded to incorporate multiscale information \cite{douillard2020plop}.
 
-\section{Dynamic Strategies}
+\subsection{Dynamic Strategies}
 
-mask
+\begin{figure}[tb]
+    \begin{center}
+        \includegraphics[width=0.6\linewidth]{images/related/subnetworks.pdf}
+    \end{center}
+    \caption{\textbf{Task-specific subnetworks} that can be uncovered with a sparsity loss or
+        learned masking.}
+    \label{fig:related_subnetwork}
+\end{figure}
 
-growed networks
+Multiple works have also proposed to adopt dynamic strategies where the configuration of the neural
+network is different for each task to learn.
 
-ensembing
+The Lottery Ticket Hypothesis \citep{frankle2019lottery_ticket} states that subnetworks, made of a
+fraction of the neurons and connections of a larger network, can reach excellent performance.
+Several Continual Learning models have exploited that property by using a subnetwork per task. Those
+subnetworks can be uncovered via genetic algorithms \citep{fernando2017path_net}, via induced L1
+sparsity \citep{golkar2019neural_pruning}, or even learned masked \cite{serra2018hat,hung2019cpg}.
+Usually, these methods require a task identifier at test-time in order to select the right
+subnetwork (see \textit{multi-heads} in \autoref{sec:related_continual}). Later,
+\cite{wortsman2020supermasks} proposed to infer the task identifier by selecting the subnetwork with
+the lowest entropy. This subnetwork-based approach is illustrated in \autoref{fig:related_subnetwork}.
 
+A neural network can also be expanded thorough its continual training to accommodate the growing
+amount of tasks to solve. First, \cite{rusu2016progressive} proposed to have one network per task,
+where the $i^{\text{th}}$ network would depend both on the input and all previous networks'
+intermediate features. Unfortunately, the memory consumption is quickly prohibitive with many tasks.
+Following works have proposed to only add blocks of parameters, and only when deemed necessary
+\citep{hung2019cpg,veniat2021mntdp,ostapenko2021localmodulecomposition}.
 
-\section{Optimization}
+Rather than adding many new parameters, it's also possible to only add a few parameters that will
+adapt the existing network \citep{rebuffi2017visualadapters}: \cite{wen2020batchensemble} and
+\cite{sun2019metatransfer} proposed to share most of the weights across tasks, but have
+task-specific weights that directly modify the shared weights.
 
-working on second order, flat minima
+Mixture of experts \citep{masoudnia2014mixture} have also been proposed, where multiple experts
+combine their decision. \cite{aljundi2017experts} learn a gating system to use the right
+task-specific expert. \cite{yan2021der} and \cite{li2021preserve} proposed to have a \ac{ConvNet}
+per task, and to concatenate their output embeddings to be fed to a single classifier. To avoid
+parameters explosion, they aggressively prune each \ac{ConvNet}.
 
+\subsection{Classifier correction}
+
+Forgetting happen in both the feature extractor and the classifier. Previously described
+rehearsal and regularization methods try to reduce it in both places. On the other hand, multiple
+works focused solely on the classifier. They remarked that in \acf{CIL}, the classifier is
+miscalibrated \citep{guo2017miscalibration} where the model over-predicts new classes to the
+detriment of old classes. \cite{belouadah2019il2m} compensate the bias towards new classes by
+rectifying predictions of past classes using their recorded accuracies and confidences.
+\cite{wu2019bias_correction} learn a linear model on validation data to recalibrate the logits of
+the new classes. \cite{zhao2020weightalignement} normalizes the norm of the classifier weights
+associated to new classes so that their average norm becomes the same as that for old classes.
+\cite{hou2019ucir}, aims for a similar result, by replacing the dot product in the classifier by a
+cosine similarity, resulting in classifier weights of unit norm for all.
+
+\section{Specific variations of Continual Learning}
+
+While \acf{CIL} is the most common benchmark in Continual Learning, there are multiple variations of
+benchmark regardless which kind of shift is involved.
+
+\subsection{Multiple labels}
+
+The main task in Continual Learning is classification of a single class per sample, however it can
+also be expanded to multiple classes per samples, \eg object detection
+\citep{shmelkov2017incrementalobjectdetection} and semantic segmentation
+\citep{michieli2019ilt,cermelli2020modelingthebackground}. The latter has seen recently interest
+from the community for its concrete application: hand labeling in segmentation is extremely costly,
+and continual segmentation propose to labelize only the new classes in an image, reducing greatly
+the labeling cost. In that situation, a segmentation maps (made of one label per pixel) will only be
+partially labelized: new classes are labelized, but old classes are assumed to be background.
+Moreover, our model may have encountered new classes in the past, when they were themselves
+considered as background. It's a case of concept shift, where the conditional distribution $p(y |
+    x)$ changes through time. I detail in \autoref{chapter:segmentation} the existing benchmark in
+\ac{CSS} and describe how we tackled this problem.
+
+\subsection{Online Learning \& Task drift detection}
+
+In Continual Learning, a model learns for multiple epochs for each task. On the other hand, in
+Online Learning, also called Stream Learning, there are no notions of tasks nor epochs: a model must
+learn on a stream of samples incoming one by one, and which cannot be replayed by epochs \citep{aljundi2019notaskboundaries}. The
+methods to reduce forgetting described in \autoref{sec:related_methods} can still be applied in
+Online Learning. Modified versions of rehearsal learning, often inspired by reservoir sampling \cite{knuth97tacpvol2}, are
+often used \cite{hayes2019exstream,aljundi2019taskfree}.
+
+\begin{figure}[tb]
+    \begin{center}
+        \includegraphics[width=0.6\linewidth]{images/related/loss_drift.png}
+    \end{center}
+    \caption{\textbf{Task-free detection of drift in the input distribution} by recording the
+        plateau in the loss followed by a peak. y-axis is the loss value, and x-axis the update steps.
+        Image from \cite{aljundi2019taskfree}.}
+    \label{fig:related_lossdrift}
+\end{figure}
+
+Multiple regularization methods (\autoref{sec:related_regul}) needs to do some computation between
+tasks. For example, weight-based regularization (\autoref{sec:related_regul_weight}) must compute
+the task-specific importance weights. Because in Online Learnig, there are no clear task separation,
+a heuristic must determine when doing this computation. \cite{aljundi2019taskfree} working a stream
+of images from soap operas, proposed to analyze the loss surface to find drift in the distribution:
+at some point the model is experienced enough, and the loss starts to plateau. When a drift happen,
+the loss will usually quickly peak. This is a sign of task-free drift of the distribution, and is
+illustrated in \autoref{fig:related_lossdrift}.
+
+\subsection{Continual-Meta Learning}
+
+Continual Learning aims to not forget. However, we --as humans-- often forget, but we can also
+re-learn what was lost quicker than the first time. The goal of \ac{MCL} is therefore to recovers
+as quickly as possible --sample wise-- its original performance on past tasks
+\citep{he2019metacontinual}. As the name implies, meta-learning methods such as the MAML model
+\citep{finn2017maml} are used to that end. Then, \ac{MCL} has be extended to a more general
+framework where the model also has to adapt quickly to new \acf{OoD} tasks.
+
+Note that \acf{MCL} is not to be confused with \acf{CML} where in that case meta-learning is only
+used during pretraining to provide better model initialization.
+
+\paragraph{Zeroshot Continual Learning}
+
+In Computer Vision, \acf{ZSL} \citep{lampert2009zeroshot,xian2019awa2} aims to classify classes that
+were never seen before. To do so, models usually exploit an external knowledge source as a word2vec
+\citep{mikolov2013word2vec} or an attribute matrix. Several works have proposed to unify both
+Continual Learning and \ac{ZSL} where the future classes that haven't been yet seen must be
+classified \cite{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}. Rather than
+simply using \ac{ZSL} as end to itself, we propose, in \citep{douillard2020ghost}, to exploit its properties to directly avoid
+forgetting. This is elaborated further in \autoref{chapter:regularization} (\autoref{sec:ghost}).
+
+\paragraph{Natural Language Processing}
+\paragraph{Reinforcement Learning}

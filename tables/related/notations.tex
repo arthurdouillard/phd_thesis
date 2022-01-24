@@ -1,0 +1,21 @@
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{}l|c@{}}
+        \toprule
+        Total number of tasks              & $T$                                      \\
+        Current task                       & $t$                                      \\
+        Current classes                    & $\mcC^t$                                 \\
+        Previous classes                   & $\mcC^{1:t-1}$                           \\
+        Future classes                     & $\mcC^{t+1:T}$                           \\
+        Cardinality of a set of classes    & $\mcN^t=\operatorname{card}(\mcC^{t})-1$ \\
+        Image and label maps at task $t$   & $\vx^t$ and $\y^t$                       \\
+        Feature extractor at task $t$      & $f^t(\cdot)$                             \\
+        Classifier at task $t$             & $g^t(\cdot)$                             \\
+        Learnable parameters at task $t$   & $\Phi^t$                                 \\
+        Predicted labels                   & $\hat{y}^t$                              \\
+        Intermediary features at level $l$ & $f^t_l,\,l \in \{1, \dots, L\}$          \\
+        \bottomrule
+    \end{tabular}
+    \caption{Notations used in this paper.}
+    \label{tab:related_notation}
+\end{table}
