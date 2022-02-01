@@ -63,25 +63,22 @@
 \newboolean{skipConclusion}
 \newboolean{skipAppendix}
 
-\setboolean{skipIntro}{false}
+% By setting this to true, you skip the compiling of some chapters
+\setboolean{skipIntro}{true}
 \setboolean{skipRelated}{false}
 \setboolean{skipRegul}{false}
-\setboolean{skipSegm}{true}
+\setboolean{skipSegm}{false}
 \setboolean{skipDyna}{true}
 \setboolean{skipRepet}{true}
 \setboolean{skipConclusion}{true}
-\setboolean{skipAppendix}{false}
-% By setting this to true, you skip the compiling of some chapters
-% \setboolean{skipIntro}{true}
-% \setboolean{skipSHADE}{true}
-% \setboolean{skipHN}{true}
-% \setboolean{skipDual}{true}
+\setboolean{skipAppendix}{true}
 
 %\mtcsetoffset{minitoc}{-0.80em}
 
 \setlength{\mtcindent}{-0.80em}
 
 \begin{document}
+%\tracingall
 
 \dominitoc
 \selectlanguage{english}

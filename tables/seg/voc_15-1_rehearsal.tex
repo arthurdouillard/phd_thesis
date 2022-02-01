@@ -1,29 +1,30 @@
 \begin{table*}[t]
     \centering
-    \caption{Comparison of rehearsal-based methods on Pascal-VOC 2012 15-1 overlap in Mean IoU (\%). We only consider the time overhead spent after the first task whose computation overhead is similar for all methods.}
-    \vspace*{-0.3cm}
-    \label{tab:voc_rehearsal_learning}
-    \begin{tabular}{@{}l|ccc|cccc@{}}
-        \toprule
-                                                                & \multicolumn{7}{c}{\textbf{15-1} (6 tasks)}                                                                                                                                              \\
-        \textbf{Method}                                         & \textbf{Rehearsal}                          & \textbf{Memory} (Mb) $\downarrow$ & \textbf{Time} (Hours) $\downarrow$ & 0-15           & 16-20          & \textit{all}   & \textit{avg}   \\
-        \midrule
-        PLOP                                                    & ---                                         & 0                                 & 1.8                                & 65.12          & 21.11          & 54.64          & 67.21          \\
-        PLOPLong                                                & ---                                         & 0                                 & 1.8                                & 72.00          & 26.66          & 61.20          & 70.02          \\
-        %HRHF \cite{huang2021halfrealhalffake} & DeepInversion & 0 & 5.9 & 72.40 & 39.60 & 64.60 & \\
-        \hdashline
-        Yu et al.\cite{yu2020continualsegmentationselftraining} & Unlabeled COCO                              & 20,000                            & 7.0                                & 71.40          & 40.00          & 63.60          &                \\
-        PLOP                                                    & Unlabeled COCO                              & 20,000                            & 1.4                                & 72.57          & 45.08          & 66.03          & 71.85          \\
-        PLOP                                                    & Unlabeled VOC                               & 2,000                             & 1.4                                & 75.32          & 52.59          & 69.91          & 75.21          \\
-        %PLOP & Partial VOC & 2,000 & \tbd & 74.91 & 54.55 & 70.06 & 75.41 \\
-        %PLOPv2 & Partial VOC & 2,000  & \tbd & 76.87 & 56.07 & 71.92 & 74.88\\
-        \hdashline
-        PLOPLong                                                & Partial VOC                                 & 2.2                               & 2.6                                & 74.14          & 38.87          & 65.74          & 72.02          \\
-        PLOPLong                                                & Partial VOC                                 & 22                                & 2.6                                & \textbf{74.18} & 43.22          & 66.81          & \textbf{72.48} \\
-        PLOPLong                                                & Object VOC                                  & 0.26                              & 2.7                                & 73.32          & 42.86          & 66.07          & 72.21          \\
-        PLOPLong                                                & Object VOC                                  & 2.6                               & 2.7                                & 73.79          & \textbf{45.78} & \textbf{67.12} & \textbf{72.42} \\
-        \midrule
-        Joint model                                             & ---                                         & ---                               & ---                                & 79.10          & 72.60          & 77.40          & ---            \\
-        \bottomrule
-    \end{tabular}
+    \begin{adjustbox}{max width=\textwidth}
+        \begin{tabular}{@{}l|ccc|cccc@{}}
+            \toprule
+                                                           & \multicolumn{7}{c}{\textbf{15-1} (6 tasks)}                                                                                                                                              \\
+            \textbf{Method}                                & \textbf{Rehearsal}                          & \textbf{Memory} (Mb) $\downarrow$ & \textbf{Time} (Hours) $\downarrow$ & 0-15           & 16-20          & \textit{all}   & \textit{avg}   \\
+            \midrule
+            PLOP                                           & ---                                         & 0                                 & 1.8                                & 65.12          & 21.11          & 54.64          & 67.21          \\
+            PLOPLong                                       & ---                                         & 0                                 & 1.8                                & 72.00          & 26.66          & 61.20          & 70.02          \\
+            %HRHF \cite{huang2021halfrealhalffake} & DeepInversion & 0 & 5.9 & 72.40 & 39.60 & 64.60 & \\
+            \hdashline
+            \cite{yu2020continualsegmentationselftraining} & Unlabeled COCO                              & 20,000                            & 7.0                                & 71.40          & 40.00          & 63.60          &                \\
+            PLOP                                           & Unlabeled COCO                              & 20,000                            & 1.4                                & 72.57          & 45.08          & 66.03          & 71.85          \\
+            PLOP                                           & Unlabeled VOC                               & 2,000                             & 1.4                                & 75.32          & 52.59          & 69.91          & 75.21          \\
+            %PLOP & Partial VOC & 2,000 & \tbd & 74.91 & 54.55 & 70.06 & 75.41 \\
+            %PLOPv2 & Partial VOC & 2,000  & \tbd & 76.87 & 56.07 & 71.92 & 74.88\\
+            \hdashline
+            PLOPLong                                       & Partial VOC                                 & 2.2                               & 2.6                                & 74.14          & 38.87          & 65.74          & 72.02          \\
+            PLOPLong                                       & Partial VOC                                 & 22                                & 2.6                                & \textbf{74.18} & 43.22          & 66.81          & \textbf{72.48} \\
+            PLOPLong                                       & Object VOC                                  & 0.26                              & 2.7                                & 73.32          & 42.86          & 66.07          & 72.21          \\
+            PLOPLong                                       & Object VOC                                  & 2.6                               & 2.7                                & 73.79          & \textbf{45.78} & \textbf{67.12} & \textbf{72.42} \\
+            \midrule
+            Joint model                                    & ---                                         & ---                               & ---                                & 79.10          & 72.60          & 77.40          & ---            \\
+            \bottomrule
+        \end{tabular}
+    \end{adjustbox}
+    \caption{Comparison of rehearsal-based methods on Pascal-VOC 2012 15-1 overlap in \ac{mIoU} (\%). We only consider the time overhead spent after the first task whose computation overhead is similar for all methods.}
+    \label{tab:seg_voc_rehearsal_learning}
 \end{table*}

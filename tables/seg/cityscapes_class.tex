@@ -1,16 +1,15 @@
 \begin{table}[t]
     \centering
-    \caption{Continual Semantic Segmentation results on Cityscapes 14-1 in Mean IoU (\%).}
-    \vspace*{-0.3cm}
-    \label{tab:cityscapes_class}
-    \begin{tabular}{@{}l|p{1cm}p{1cm}|cccc@{}}
+    \begin{tabular}{@{}l|cc|cccc@{}}
         \toprule
-                                                     & \multicolumn{6}{c}{\textbf{14-1} (6 tasks)}                                                    \\
-        \textbf{Method}                              & 1-14                                        & 15-19          & \textit{all}   & \textit{avg}   \\
+                                                      & \multicolumn{6}{c}{\textbf{14-1} (6 tasks)}                                                    \\
+        \textbf{Method}                               & 1-14                                        & 15-19          & \textit{all}   & \textit{avg}   \\
         \midrule
-        MiB \cite{cermelli2020modelingthebackground} & 55.11                                       & 12.91          & 44.56          & 49.76          \\
-        PLOP                                         & 56.59                                       & 13.07          & 45.71          & 51.28          \\
-        PLOPLong                                     & \textbf{58.60}                              & \textbf{15.04} & \textbf{47.71} & \textbf{54.31} \\
+        MiB \citep{cermelli2020modelingthebackground} & 55.11                                       & 12.91          & 44.56          & 49.76          \\
+        PLOP                                          & 56.59                                       & 13.07          & 45.71          & 51.28          \\
+        PLOPLong                                      & \textbf{58.60}                              & \textbf{15.04} & \textbf{47.71} & \textbf{54.31} \\
         \bottomrule
     \end{tabular}
+    \caption{Continual Semantic Segmentation results on Cityscapes 14-1 in \ac{mIoU} (\%).}
+    \label{tab:seg_cityscapes_class}
 \end{table}
