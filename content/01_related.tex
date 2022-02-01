@@ -73,13 +73,13 @@ access to previous classes. Evidently, the model's accuracy is much lower than i
 counterpart, because it forgets completely old classes by over-predicting new classes.
 
 \paragraph{Single-Head \vs Multi-Heads} are the two main evaluation settings in Continual Learning
-\todo{CITE chadhry}. In the former setting, a model has to classify samples among all seen classes,
-that could have been learned from any of the seen steps. The latter setting, on the other hand,
-knows at test-time from which steps the samples come from. Thus, it only has to classify among the
-limited number of classes brought by a step. This setting is closely related to multi-tasks
-\todo{CITE}. During this thesis, I focused on the Single-Head setting because it's more realistic
-as it is not always possible to know from which step a sample come from in a real-life setting, and
-more challenging \citep{lesort2019regulshortcomings}.
+\citep{chaudhry2018riemannien_walk}. In the former setting, a model has to classify samples among
+all seen classes, that could have been learned from any of the seen steps. The latter setting, on
+the other hand, knows at test-time from which steps the samples come from. Thus, it only has to
+classify among the limited number of classes brought by a step. This setting is closely related to
+multi-tasks learning. During this thesis, I focused on the Single-Head setting because it's more
+realistic as it's not always possible to know from which step a sample come from in a real-life
+setting, and more challenging \citep{lesort2019regulshortcomings}.
 
 
 \begin{figure}[tb]
@@ -95,6 +95,41 @@ more challenging \citep{lesort2019regulshortcomings}.
 \paragraph{Notations} I define in \autoref{tab:related_notation} the notations used thorough this thesis.
 
 \input{tables/related/notations.tex}
+
+\section{Metrics for Continual Learning}
+
+\epigraph{If you cannot measure it, you cannot improve it.}{\textit{Lord Kelvin}}
+
+Multiple metrics exist in Continual Learning: the most common are the \textbf{final accuracy} and
+\textbf{average incremental accuracy}. The former measures the performance of the model on all tasks
+at the last step. The latter measures the average of performance on all seen tasks after each new
+task learned \citep{rebuffi2017icarl}. Practically, given $A_{i,t}$ the accuracy of the $i^{th}$
+task after
+learning the $t^{th}$ task, the final accuracy is (assuming balanced tasks):
+%
+\begin{equation}
+    \text{Acc}_F = \frac{1}{T} \sum_{i=1}^T A_{i,T}\,,
+    \label{eq:related_final_acc}
+\end{equation}
+%
+and the average incremental accuracy:
+%
+\begin{equation}
+    \text{Acc}_a = \frac{1}{T} \sum_{t=1}^T \frac{1}{t}  \sum_{i=1}^t A_{i,t}\,.
+    \label{eq:related_avg_acc}
+\end{equation}
+%
+Average incremental accuracy is somewhat more important than simply the final accuracy: a continual
+model should be good after every step, as in a true continual setting there are no "final task".
+
+Multiple other metrics exists \citep{diaz2018continualmetrics}, including the \textbf{backwardø and forward transfer} \citep{lopezpaz2017gem}
+that measures the influence that learning a task has on the performance of respectively past and
+future tasks. Another notable metric is the \textbf{forgetting} \citep{chaudhry2018riemannien_walk}
+which records how much a model has lost performance-wise on a task compared to the first time it has
+learned it. The interest of this metric is to be agnostic of the absolute performance of the model used.
+
+Finally, metrics such as \textbf{speed} or used \textbf{capacity} are important: \cite{ramasesh2022scalecontinual}
+recently showed that the larger a model was the lower was the forgetting.
 
 \section{Methods to reduce forgetting}
 \label{sec:related_methods}
@@ -123,7 +158,12 @@ incremental barycenter \citep{rebuffi2017icarl}.
 \paragraph{Sampling} is an important but yet fewly investigated topic in Continual Learning. Most
 models mix all memory samples with new samples without any under- or over-sampling.
 \cite{castro2018end_to_end_inc_learn} propose to finetune for a few epochs, after training on a new
-step, on a balanced set of old and new classes samples. \todo{More on that later}
+step, on a balanced set of old and new classes samples. \cite{chaudhry2019tinyepisodicmemories}
+oversample tiny memory with as low as one sample per class, and show, in the context of Online
+Learning (\autoref{sec:related_online_learning}), that continual models still don't overfit. In the
+same context, \cite{aljundi2019maximallyinterfered} proposed to over-sample the memory examples with
+highest losses. In an imbalanced situation for Continual Learning, over- and under-sampling can be
+applied depending on the amount of samples per classes \citep{kim2020imbalancedcontinual}.
 
 \paragraph{Efficient Storing} is important for rehearsal learning: a bigger rehearsal memory leads
 invariably to less forgetting \citep{douillard2020podnet}. Thus, several works considered how more
@@ -136,12 +176,12 @@ the whole, large, images.
 
 \paragraph{Pseudo-rehearsal} doesn't need to store samples, but instead generates pseudo-samples for
 rehearsal \citep{lesort2019generative}. The generation can be done with auto-encoders from
-intermediate features \citep{kemker2018fearnet,ayub2021eec} or use GAN
+intermediate features \citep{kemker2018fearnet,ayub2021eec} or use \ac{GAN}
 \citep{shin2017deep_generative_replay}. Those methods unfortunately have several drawbacks: they
 struggle to scale to large images, the generator size may be superior to a classic rehearsal memory
 size which would defeat the goal of using less storage, and finally the generator may itself suffer
 from catastrophic forgetting. \cite{liu2020mnemonics} propose instead a method halfway between
-rehearsal and pseudo-rehearsal: they samples randomly real images, and then during continual
+rehearsal and pseudo-rehearsal: the authors sample randomly real images, and then during continual
 training, slightly modify them via bi-level optimization to minimize forgetting.
 
 
@@ -277,6 +317,7 @@ proposed to constraint instead the statistics of all intermediate features of th
 constraint was later expanded to incorporate multiscale information \cite{douillard2020plop}.
 
 \subsection{Dynamic Strategies}
+\label{sec:related_dynamic}
 
 \begin{figure}[tb]
     \begin{center}
@@ -319,6 +360,7 @@ per task, and to concatenate their output embeddings to be fed to a single class
 parameters explosion, they aggressively prune each \ac{ConvNet}.
 
 \subsection{Classifier correction}
+\label{sec:related_classif_correction}
 
 Forgetting happen in both the feature extractor and the classifier. Previously described
 rehearsal and regularization methods try to reduce it in both places. On the other hand, multiple
@@ -333,11 +375,14 @@ associated to new classes so that their average norm becomes the same as that fo
 cosine similarity, resulting in classifier weights of unit norm for all.
 
 \section{Specific variations of Continual Learning}
+\label{sec:related_variation}
 
 While \acf{CIL} is the most common benchmark in Continual Learning, there are multiple variations of
 benchmark regardless which kind of shift is involved.
 
 \subsection{Multiple labels}
+\label{sec:related_multiple_labels}
+
 
 The main task in Continual Learning is classification of a single class per sample, however it can
 also be expanded to multiple classes per samples, \eg object detection
@@ -353,6 +398,7 @@ considered as background. It's a case of concept shift, where the conditional di
 \ac{CSS} and describe how we tackled this problem.
 
 \subsection{Online Learning \& Task drift detection}
+\label{sec:related_online_learning}
 
 In Continual Learning, a model learns for multiple epochs for each task. On the other hand, in
 Online Learning, also called Stream Learning, there are no notions of tasks nor epochs: a model must
@@ -374,33 +420,59 @@ often used \cite{hayes2019exstream,aljundi2019taskfree}.
 Multiple regularization methods (\autoref{sec:related_regul}) needs to do some computation between
 tasks. For example, weight-based regularization (\autoref{sec:related_regul_weight}) must compute
 the task-specific importance weights. Because in Online Learnig, there are no clear task separation,
-a heuristic must determine when doing this computation. \cite{aljundi2019taskfree} working a stream
+a heuristic must determine when doing this computation. \cite{aljundi2019taskfree}, working a stream
 of images from soap operas, proposed to analyze the loss surface to find drift in the distribution:
-at some point the model is experienced enough, and the loss starts to plateau. When a drift happen,
-the loss will usually quickly peak. This is a sign of task-free drift of the distribution, and is
+at some point the model is experienced enough, and the loss starts to plateau. When a drift happens,
+the loss will usually peak. This is a sign of task-free drift of the distribution as
 illustrated in \autoref{fig:related_lossdrift}.
 
 \subsection{Continual-Meta Learning}
+\label{sec:related_meta}
+
 
 Continual Learning aims to not forget. However, we --as humans-- often forget, but we can also
-re-learn what was lost quicker than the first time. The goal of \ac{MCL} is therefore to recovers
-as quickly as possible --sample wise-- its original performance on past tasks
-\citep{he2019metacontinual}. As the name implies, meta-learning methods such as the MAML model
-\citep{finn2017maml} are used to that end. Then, \ac{MCL} has be extended to a more general
-framework where the model also has to adapt quickly to new \acf{OoD} tasks.
+re-learn what was lost quicker than the first time. The goal of \ac{MCL} is therefore to recover as
+quickly as possible --sample wise-- the original performance on past tasks
+\citep{he2019metacontinual}. As the name implies, meta-learning methods, that aims to \textit{learn
+    how to learn}, such as the MAML model \citep{finn2017maml} are used to that end. Then, \ac{MCL} has
+been extended to a more general framework where the model also has to adapt quickly to new \acf{OoD}
+tasks.
 
 Note that \acf{MCL} is not to be confused with \acf{CML} where in that case meta-learning is only
 used during pretraining to provide better model initialization.
 
-\paragraph{Zeroshot Continual Learning}
+\subsection{Zeroshot Continual Learning}
+\label{sec:related_zeroshot}
+
 
 In Computer Vision, \acf{ZSL} \citep{lampert2009zeroshot,xian2019awa2} aims to classify classes that
 were never seen before. To do so, models usually exploit an external knowledge source as a word2vec
-\citep{mikolov2013word2vec} or an attribute matrix. Several works have proposed to unify both
-Continual Learning and \ac{ZSL} where the future classes that haven't been yet seen must be
-classified \cite{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}. Rather than
-simply using \ac{ZSL} as end to itself, we propose, in \citep{douillard2020ghost}, to exploit its properties to directly avoid
-forgetting. This is elaborated further in \autoref{chapter:regularization} (\autoref{sec:ghost}).
+embedding \citep{mikolov2013word2vec} trained on Wikipedia or an attribute matrix. Several works
+have proposed to unify both Continual Learning and \ac{ZSL} where the future classes that haven't
+been seen yet must be classified
+\cite{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}. Rather than simply using
+\ac{ZSL} as end to itself, we proposed, in \citep{douillard2020ghost}, to exploit its properties to
+directly avoid forgetting. This is elaborated further in \autoref{chapter:regularization}
+(\autoref{sec:ghost}).
 
-\paragraph{Natural Language Processing}
-\paragraph{Reinforcement Learning}
+\subsection{Natural Language Processing}
+\label{sec:related_nlp}
+
+
+Continual Learning can be applied to all modalities. After \acf{CV}, the most common one is
+\ac{NLP}. \ac{NLP} saw its "\textit{ImageNet moment}" with the advent of Transformers
+\citep{vaswani2017transformer}, and more recently with multi-tasks learning \citep{raffel2019t5}.
+Continual \ac{NLP} \cite{biesialska2020continualnlp} aims naturally to learn multiple tasks, but in
+a consecutive fashion with no --or few-- replay of the old tasks data. Applications can be similar
+to \ac{CV} with addition of new classes \citep{masson2019episodiclifelongnlp} or new domains (\eg
+medical corpus, fiction, tweets, etc.) \citep{gerald2021continualri}.
+
+\subsection{Reinforcement Learning}
+\label{sec:related_rl}
+
+
+\ac{RL} \citep{sutton1998rl} more often than not needs support from Continual
+Learning \citep{khetarpal2020continualrl}: for example as an agent evolves in an environment, it
+usually needs rehearsal learning (also known as episodic memory) \citep{mnih2013atarirl}. Overall,
+the methods originally developped for \ac{CV} (\autoref{sec:related_methods}) were then applied to
+both \ac{NLP} and \ac{RL}.
