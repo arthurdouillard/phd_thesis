@@ -9,10 +9,69 @@
 
 \section{Deep Learning for Computer Vision}
 
-\ac{CNN} have been for a long-time the \textit{defacto} method for \acs{NN} for \ac{CV}
+\acf{CNN} have been for a long-time the \textit{defacto} method for \acs{NN} for \ac{CV}
 \citep{fukushima1980neocognitron,lecun1999lenet}. In 2012, with larger datasets and better hardware
 (\ie \acs{GPU}), \cite{krizhevsky2012alexnet} imposed \ac{DL} models as the best performing
-algorithms for images. In the 2010's decade, multiple major improvements were made but the one of
+algorithms for images. As the name implies, \acs{CNN} are made of convolutions. The convolution
+operation involves sliding a kernel across the image pixels:
+
+\begin{equation}
+    \resizebox{\hsize}{!}{$
+      \left(\left[\begin{array}{lll}
+                  a & b & c \\
+                  d & e & f \\
+                  g & h & i
+            \end{array}\right] *\left[\begin{array}{lll}
+                  1 & 2 & 3 \\
+                  4 & 5 & 6 \\
+                  7 & 8 & 9
+            \end{array}\right]\right)[2,2]=(a \cdot 1)+(b \cdot 2)+(c \cdot 3)+(d \cdot 4)+(e \cdot 5)+(f \cdot 6)+(g \cdot 7)+(h \cdot 8)+(i \cdot 9)\,,
+        $}
+      \label{eq:related_conv}
+\end{equation}
+
+\noindent where the left matrix is a $3\times 3$ convolution kernel, and the right matrix a $3
+      \times 3$ grayscale (\ie single-channel) image. Note that while the literature commonly call
+this a "\textit{convolution}", it's actually a "\textit{cross-correlation}" because the kernel
+hasn't been flipped. If an image contains multiple channels, as an RGB image, a different kernel
+is applied to each channel, and the resulting matrices are summed element-wise. \textbf{The
+      convolution allows extracting patterns in an image}. Before Deep Learning, convolution kernels
+were hand-made, likewise:
+
+\begin{equation}
+      M_{x}=\frac{1}{4}\left[\begin{array}{lll}
+                  -1 & 0 & 1 \\
+                  -2 & 0 & 2 \\
+                  -1 & 0 & 1
+            \end{array}\right]\,.
+      \label{eq:sobel_horizontal}
+\end{equation}
+
+This kernel is the horizontal Sobel kernel which can detect horizontal edges. Detecting more complex
+patterns means more complex kernels, which would be difficult to design manually. Therefore,
+\acs{CNN} considers each element of the kernel as a neuron to be optimized (see
+\autoref{chapter:introduction}). Combining convolution kernels successively allows detecting
+more and more complex patterns until being able to detect object concepts in an image. In
+\autoref{fig:related_cnn}, I illustrate a \ac{CNN} made of convolutions, poolings (a
+dimensionality-reduction/sampling method for images), and a final classifier. The classifier is simply
+a linear projection from the features dimension to the number of classes, where with a softmax
+activation, logits will be mapped to probabilities.
+
+
+\begin{figure}[tb]
+      \begin{center}
+            \includegraphics[width=\linewidth]{images/related/cnn.pdf}
+      \end{center}
+      \caption{\textbf{A Convolutional Neural Networks} extracts more complex patterns through its
+            succession of convolutions. In \textcolor{orange}{orange} a convolution, in \textcolor{red}{red}
+            a pooling, and in \textcolor{green}{the classifier}. Given an image, the \ac{CNN} can assign to
+            each possible class a probability, all summing to 1. Here this cute little cat is clearly a cat.
+            Detected patterns taken from \cite{olah2017feature}.}
+      \label{fig:related_cnn}
+\end{figure}
+
+
+In the 2010's decade, multiple major improvements were made to \acs{CNN}, but the one of
 the latest best performing models \citep{tan2019efficientnet} is mainly based on two architectural changes:
 residual connections allowing training of very deep networks \citep{he2016resnet} and normalization
 of intermediate activations \citep{ioffe2015batchnorm}. Another major factor of recent \ac{CNN}
@@ -50,10 +109,10 @@ the expanse of old data. Multiple distribution shifts exist in Continual Learnin
 literature. I detail now the major ones, given $x$ an input sample and $y$ its label:
 
 \begin{itemize}
-    \item \textbf{Covariate shift}: when $p(x)$ changes, also known as domain incremental.
-    \item \textbf{Prior shift}: when $p(y)$ changes; \ac{CIL} happens with this kind of shift.
-    \item \textbf{Conceptual shift}: when $p(y | x)$ changes. Seldom covered in the literature, it
-          can be found in \acf{CSS}.
+      \item \textbf{Covariate shift}: when $p(x)$ changes, also known as domain incremental.
+      \item \textbf{Prior shift}: when $p(y)$ changes; \ac{CIL} happens with this kind of shift.
+      \item \textbf{Conceptual shift}: when $p(y | x)$ changes. Seldom covered in the literature, it
+            can be found in \acf{CSS}.
 \end{itemize}
 
 In the chapter \autoref{chapter:regularization} and \autoref{chapter:dynamic}, I tackled only the
@@ -81,15 +140,14 @@ multi-tasks learning. During this thesis, I focused on the Single-Head setting b
 realistic as it's not always possible to know from which step a sample come from in a real-life
 setting, and more challenging \citep{lesort2019regulshortcomings}.
 
-
 \begin{figure}[tb]
-    \begin{center}
-        \includegraphics[width=0.8\linewidth]{images/related/catastrophic_forgetting.pdf}
-    \end{center}
-    \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
-        new set of classes, and the model must retain knowledge about \textit{all} classes. The
-        model is allowed a \textit{limited} memory of samples of old classes.}
-    \label{fig:related_forgetting}
+      \begin{center}
+            \includegraphics[width=0.8\linewidth]{images/related/catastrophic_forgetting.pdf}
+      \end{center}
+      \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
+            new set of classes, and the model must retain knowledge about \textit{all} classes. The
+            model is allowed a \textit{limited} memory of samples of old classes.}
+      \label{fig:related_forgetting}
 \end{figure}
 
 \paragraph{Notations} I define in \autoref{tab:related_notation} the notations used thorough this thesis.
@@ -109,15 +167,15 @@ task after
 learning the $t^{th}$ task, the final accuracy is (assuming balanced tasks):
 %
 \begin{equation}
-    \text{Acc}_F = \frac{1}{T} \sum_{i=1}^T A_{i,T}\,,
-    \label{eq:related_final_acc}
+      \text{Acc}_F = \frac{1}{T} \sum_{i=1}^T A_{i,T}\,,
+      \label{eq:related_final_acc}
 \end{equation}
 %
 and the average incremental accuracy:
 %
 \begin{equation}
-    \text{Acc}_a = \frac{1}{T} \sum_{t=1}^T \frac{1}{t}  \sum_{i=1}^t A_{i,t}\,.
-    \label{eq:related_avg_acc}
+      \text{Acc}_a = \frac{1}{T} \sum_{t=1}^T \frac{1}{t}  \sum_{i=1}^t A_{i,t}\,.
+      \label{eq:related_avg_acc}
 \end{equation}
 %
 Average incremental accuracy is somewhat more important than simply the final accuracy: a continual
@@ -187,13 +245,13 @@ training, slightly modify them via bi-level optimization to minimize forgetting.
 
 
 \begin{figure}[tb]
-    \begin{center}
-        \includegraphics[width=1.0\linewidth]{images/podnet/protocol}
-    \end{center}
-    \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
-        new set of classes, and the model must retain knowledge about \textit{all} classes. The
-        model is allowed a \textit{limited} memory of samples of old classes.}
-    \label{fig:related_protocol}
+      \begin{center}
+            \includegraphics[width=1.0\linewidth]{images/podnet/protocol}
+      \end{center}
+      \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
+            new set of classes, and the model must retain knowledge about \textit{all} classes. The
+            model is allowed a \textit{limited} memory of samples of old classes.}
+      \label{fig:related_protocol}
 \end{figure}
 
 \autoref{fig:related_protocol}
@@ -204,12 +262,12 @@ training, slightly modify them via bi-level optimization to minimize forgetting.
 
 
 \begin{figure}[tb]
-    \begin{center}
-        \includegraphics[width=1.0\linewidth]{images/related/continual_regularizations.pdf}
-    \end{center}
-    \caption{\textbf{Regularizations constraints} forcing the new model to be \textit{similar} to
-        the old model to reduce catastrophic forgetting.}
-    \label{fig:related_regul}
+      \begin{center}
+            \includegraphics[width=1.0\linewidth]{images/related/continual_regularizations.pdf}
+      \end{center}
+      \caption{\textbf{Regularizations constraints} forcing the new model to be \textit{similar} to
+            the old model to reduce catastrophic forgetting.}
+      \label{fig:related_regul}
 \end{figure}
 
 A common and efficient way to reduce forgetting, is to minimize the difference in behavior between
@@ -226,8 +284,8 @@ models are identical. While the model would be \textit{rigid} (no forgetting), i
 constrain only a portion of the neurons:
 %
 \begin{equation}
-    \mcL(\theta) = \mcL_\mcT(\theta) + \lambda \sum_i \Omega_i (\theta_i - \theta_i^*)^2\,,
-    \label{eq:related_weight_constraint}
+      \mcL(\theta) = \mcL_\mcT(\theta) + \lambda \sum_i \Omega_i (\theta_i - \theta_i^*)^2\,,
+      \label{eq:related_weight_constraint}
 \end{equation}
 %
 where $\mcL_\mcT(\theta)$ is the loss of the current task (\eg the cross-entropy), $\theta_i$ and
@@ -250,12 +308,12 @@ outperformed by rehearsal-based methods.
 \label{sec:related_regul_gradient}
 
 \begin{figure}[tb]
-    \begin{center}
-        \includegraphics[width=1.0\linewidth]{images/related/gem.pdf}
-    \end{center}
-    \caption{\textbf{GEM's gradient constraint} forcing updates to be in the same direction as the
-        gradient \wrt old samples.}
-    \label{fig:related_gem}
+      \begin{center}
+            \includegraphics[width=1.0\linewidth]{images/related/gem.pdf}
+      \end{center}
+      \caption{\textbf{GEM's gradient constraint} forcing updates to be in the same direction as the
+            gradient \wrt old samples.}
+      \label{fig:related_gem}
 \end{figure}
 
 \cite{lopezpaz2017gem} proposed the GEM model which combines a constraint on the gradients and
@@ -265,7 +323,7 @@ formulation as enforcing that the gradient of a new sample ($g$) to be in the sa
 the gradient of a stored old sample ($g_i$):
 %
 \begin{equation}
-    \langle g,\, g_i\rangle \ge 0,\, \text{for all} i \in \mcM
+      \langle g,\, g_i\rangle \ge 0,\, \text{for all} i \in \mcM
 \end{equation}
 %
 With $\mcM$ the rehearsal memory. If the constraint is violated, the new gradient $g$ is projected
@@ -296,7 +354,7 @@ model's probabilities. It usually consists in minimizing the \ac{KL} between the
 of the old and new models:
 %
 \begin{equation}
-    \mcL_\text{KD} = \operatorname{KL}(\operatorname{softmax}(\frac{\tilde{y}^{t-1}}{\tau}) \Vert \operatorname{softmax}(\frac{\tilde{y}^t}{\tau})\,,
+      \mcL_\text{KD} = \operatorname{KL}(\operatorname{softmax}(\frac{\tilde{y}^{t-1}}{\tau}) \Vert \operatorname{softmax}(\frac{\tilde{y}^t}{\tau})\,,
 \end{equation}
 %
 where $\tilde{y}^{t-1}$ and $\tilde{y}^{t}$ are respectively the logits of the old and new model,
@@ -321,12 +379,12 @@ constraint was later expanded to incorporate multiscale information \cite{douill
 \label{sec:related_dynamic}
 
 \begin{figure}[tb]
-    \begin{center}
-        \includegraphics[width=0.6\linewidth]{images/related/subnetworks.pdf}
-    \end{center}
-    \caption{\textbf{Task-specific subnetworks} that can be uncovered with a sparsity loss or
-        learned masking.}
-    \label{fig:related_subnetwork}
+      \begin{center}
+            \includegraphics[width=0.6\linewidth]{images/related/subnetworks.pdf}
+      \end{center}
+      \caption{\textbf{Task-specific subnetworks} that can be uncovered with a sparsity loss or
+            learned masking.}
+      \label{fig:related_subnetwork}
 \end{figure}
 
 Multiple works have also proposed to adopt dynamic strategies where the configuration of the neural
@@ -395,7 +453,7 @@ the labeling cost. In that situation, a segmentation maps (made of one label per
 partially labelized: new classes are labelized, but old classes are assumed to be background.
 Moreover, our model may have encountered new classes in the past, when they were themselves
 considered as background. It's a case of concept shift, where the conditional distribution $p(y |
-    x)$ changes through time. I detail in \autoref{chapter:segmentation} the existing benchmark in
+      x)$ changes through time. I detail in \autoref{chapter:segmentation} the existing benchmark in
 \ac{CSS} and describe how we tackled this problem.
 
 \subsection{Online Learning \& Task drift detection}
@@ -409,13 +467,13 @@ Online Learning. Modified versions of rehearsal learning, often inspired by rese
 often used \cite{hayes2019exstream,aljundi2019taskfree}.
 
 \begin{figure}[tb]
-    \begin{center}
-        \includegraphics[width=0.6\linewidth]{images/related/loss_drift.png}
-    \end{center}
-    \caption{\textbf{Task-free detection of drift in the input distribution} by recording the
-        plateau in the loss followed by a peak. y-axis is the loss value, and x-axis the update steps.
-        Image from \cite{aljundi2019taskfree}.}
-    \label{fig:related_lossdrift}
+      \begin{center}
+            \includegraphics[width=0.6\linewidth]{images/related/loss_drift.png}
+      \end{center}
+      \caption{\textbf{Task-free detection of drift in the input distribution} by recording the
+            plateau in the loss followed by a peak. y-axis is the loss value, and x-axis the update steps.
+            Image from \cite{aljundi2019taskfree}.}
+      \label{fig:related_lossdrift}
 \end{figure}
 
 Multiple regularization methods (\autoref{sec:related_regul}) needs to do some computation between
@@ -435,7 +493,7 @@ Continual Learning aims to not forget. However, we --as humans-- often forget, b
 re-learn what was lost quicker than the first time. The goal of \ac{MCL} is therefore to recover as
 quickly as possible --sample wise-- the original performance on past tasks
 \citep{he2019metacontinual}. As the name implies, meta-learning methods, that aims to \textit{learn
-    how to learn}, such as the MAML model \citep{finn2017maml} are used to that end. Then, \ac{MCL} has
+      how to learn}, such as the MAML model \citep{finn2017maml} are used to that end. Then, \ac{MCL} has
 been extended to a more general framework where the model also has to adapt quickly to new \acf{OoD}
 tasks.
 

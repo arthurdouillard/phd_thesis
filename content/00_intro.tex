@@ -22,9 +22,9 @@ A particular domain of \ac{AI} is \ac{CV} where a model must be able to automati
 and extract useful information. This domain is particularly important as the amount of images and
 videos uploaded grow exponentially each year. This trove of data is hard to exploit due to the
 unstructured nature of images. The best performing approaches of the 2000's were based on
-handcrafted features such as SIFT \citep{lowe1999sift} or Fisher Vectors \todo{cit} followed by
-machine learning models like Gradient Boosting \todo{cit}, \acs{SVM} \citep{cortes1995svm}, or
-random forest \todo{cit}. From the year 2012, \acf{DL} models, a specific kind of machine learning
+handcrafted features such as SIFT \citep{lowe1999sift} or Fisher Vectors \citep{csurka2010fishervectors} followed by
+machine learning models like Gradient Boosting \citep{friedman2001gradientboosting}, \acs{SVM} \citep{cortes1995svm}, or
+random forest \citep{ho1995randomforest}. From the year 2012, \acf{DL} models, a specific kind of machine learning
 model, started to outperform previous approaches by a large margin. Specifically, a particular type
 of \ac{DL} models called \acs{ConvNet}, well fitted for \ac{CV}, dominated the ILSVC competition
 \citep{russakovsky2015imagenet_ilsvrc} with 2012's AlexNet architecture
@@ -32,7 +32,7 @@ of \ac{DL} models called \acs{ConvNet}, well fitted for \ac{CV}, dominated the I
 \ac{DL} paradigm.
 
 \ac{DL} models are a succession of linear transformations and non-linear functions and are supposed
-to be able to approximate any function \todo{universal approx}. For example, the most simple \ac{DL}
+to be able to approximate any function \citep{gelenbe1999universalapprox}. For example, the most simple \ac{DL}
 model, a \ac{MLP} with a single hidden layer for classification can be defined likewise:
 %
 \begin{equation}
@@ -73,7 +73,7 @@ network, we often use the mini-batch \ac{SGD} algorithm or a variation thereof:
             \State Update all parameters: $\theta$ $\gets$ $\theta - \eta \delta$
             \EndWhile
       \end{algorithmic}
-      \caption{Task procedure of the Ghost model}
+      \caption{Procedure to optimize a neural network with gradient descent.}
       \label{algo:intro_sgd}
 \end{algorithm}
 
@@ -133,7 +133,7 @@ previous classes.
             where the parameters are extended during training to adapt to new tasks. Previous works on
             this domain are hard to train and often suffer from parameter count explosion. For the
             first time in continual computer vision, we propose to use the Transformer architecture:
-            the model dimension mostly fixed and shared across tasks, with the exception of an
+            the model dimension mostly fixed and shared across tasks, except for an
             expansion of learned task tokens. With an encoder/decoder strategy where the decoder
             forward is specialized by a task token, we show state-of-the-art robustness to forgetting
             while our memory and computational complexities barely grow.
