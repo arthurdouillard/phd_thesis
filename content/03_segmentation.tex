@@ -13,7 +13,7 @@
     of segmentation images, and a \textbf{background shift} where images are partially labeled with
     only the current classes' groundtruth being present. Then, I've proposed multiple complementary
     methods across two papers to solve those challenges: I've designed an uncertainty-based
-    hard pseudo-labeling loss, a multiscale distillation loss inspired by my previous POD, and
+    hard pseudo-labeling loss, a multi-scale distillation loss inspired by my previous POD, and
     an efficient object rehearsal method.
 
     The work in this section has led to a publication to a conference paper (CVPR 2021) and a submission
@@ -53,9 +53,9 @@ before being proposed for general segmentation datasets
 \citep{michieli2019ilt,cermelli2020modelingthebackground}.
 
 
-In particular, in this paper, we argue that two problems arise when performing \ac{CSS} with \acs{DCNN}. The
+In particular, in this chapter, we argue that two problems arise when performing \ac{CSS} with \acs{DCNN}. The
 first one, inherited from continual learning, is called \textbf{catastrophic
-    forgetting}~\citep{robins1995catastrophicforgetting,french1999catastrophicforgetting,thrun1998lifelonglearning},
+    forgetting}~\citep{robins1995catastrophicforgetting},
 and points to the fact that neural networks tend to completely and abruptly forget previously
 learned knowledge when learning new information ~\citep{kemker2018measuringforgetting}. Catastrophic
 forgetting presents a real challenge for continual learning applications based on deep learning
@@ -84,30 +84,30 @@ treat them as background to fine-tune the current model.
 We tackle the first challenge of catastrophic forgetting by designing a constraint enforcing a
 similar behavior between the old and current model. Specifically, we leverage intermediary
 representations of the convolutional networks to ensure that similar patterns are extracted through
-time. This feature-based constraints, called Local POD, fully exploits the global and local scale
-necessary to semantic segmentation through a multiscale design. The second challenge, background
-shift, is greatly alleviated a confidence-based pseudo-labeling strategy to retrieve old class
-pixels within the background. For instance, if a current ground truth mask only distinguishes pixels
-from class \texttt{sofa} and background, our approach allows assigning old classes to background
-pixels, e.g. classes \texttt{person}, \texttt{dog} or \texttt{background} (the semantic class). We
-name PLOP the model exploiting those two contributions. We then propose an extension called PLOPLong
-that aims to excel on long continual learning scenarios. This new model exploits cosine
-normalization to adapt the classifier and the Local POD resulting in an improving robustness to the
-discrepancy between old and new classes. Moreover, PLOPLong features a modified batch normalization
-which reduces the sensitivity of the model to moving statistics seen across tasks in continual
-learning. Finally, we are the first to investigate rehearsal learning in the frame of \ac{CSS}. We
-propose a baseline approach that is based upon rehearsing complete images. However, in practice,
-this seemingly classic rehearsal is not as trivial in our context as the labeling is partial: hence,
-once again, we need to complete the rehearsed images after each step by filling the background with
-the missing old classes. While significantly improving performances, we show that such approach has
-two main drawbacks. First, it is memory intensive, as the whole images shall be rehearsed at each
-\ac{CSS} step. Second, despite the large number of pixels in the images, we argue that the images contain
-few, sparse useful information. Consequently, we design a novel rehearsal method, that we named
-``Object Rehearsal``, that consists in selecting only non-regular objects-centered patches as
-candidates for rehearsal. Those objects, belonging to old classes, are combined into the images of
-new classes \textit{via} careful image editing. We empirically show that this new rehearsal method
-surpasses classic rehearsal with pseudo-labeling, while being up to 146x times more memory
-efficient.
+time. \textbf{This feature-based constraints, called Local POD, fully exploits the global and local
+    scale necessary to semantic segmentation through a multi-scale design}. The second challenge,
+background shift, is greatly alleviated \textbf{a confidence-based pseudo-labeling strategy to
+    retrieve old class pixels within the background}. For instance, if a current ground truth mask only
+distinguishes pixels from class \texttt{sofa} and background, our approach allows assigning old
+classes to background pixels, e.g. classes \texttt{person}, \texttt{dog} or \texttt{background} (the
+semantic class). We name PLOP the model exploiting those two contributions. We then propose
+\textbf{an extension called PLOPLong that aims to excel on long continual learning scenarios}. This
+new model exploits cosine normalization to adapt the classifier and the Local POD resulting in an
+improving robustness to the discrepancy between old and new classes. Moreover, PLOPLong features a
+modified batch normalization which reduces the sensitivity of the model to moving statistics seen
+across tasks in continual learning. Finally, we are the first to investigate rehearsal learning in
+the frame of \ac{CSS}. We propose a baseline approach that is based upon rehearsing complete images.
+However, in practice, this seemingly classic rehearsal is not as trivial in our context as the
+labeling is partial: hence, once again, we need to complete the rehearsed images after each step by
+filling the background with the missing old classes. While significantly improving performances, we
+show that such approach has two main drawbacks. First, it is memory intensive, as the whole images
+shall be rehearsed at each \ac{CSS} step. Second, despite the large number of pixels in the images,
+we argue that the images contain few, sparse useful information. Consequently, we design \textbf{a
+    novel rehearsal method, that we named ``Object Rehearsal``, that consists in selecting only
+    non-regular objects-centered patches as candidates for rehearsal}. Those objects, belonging to old
+classes, are combined into the images of new classes \textit{via} careful image editing. We
+empirically show that this new rehearsal method surpasses classic rehearsal with pseudo-labeling,
+while being up to 146x times more memory efficient.
 
 From a practical point of view, our proposed methods (PLOP, PLOPLong, and Object Rehearsal) showed
 three important results. First, we achieve the state-of-the-art performance on several challenging
@@ -118,7 +118,7 @@ scenarios.
 
 To sum it up, our contributions are four-folds:
 \begin{itemize}
-    \item We propose a multiscale spatial distillation loss to better retain knowledge through the
+    \item We propose a multi-scale spatial distillation loss to better retain knowledge through the
           continual learning steps, by preserving long- and short-range spatial statistics, avoiding
           catastrophic forgetting.
     \item We introduce a confidence-based pseudo-labeling strategy to identify old classes for the
@@ -133,33 +133,12 @@ To sum it up, our contributions are four-folds:
           rehearsal.
 \end{itemize}
 
-Additionally, We show that PLOP significantly outperforms state-of-the-art approaches in existing
+Additionally, We show that our PLOP significantly outperforms state-of-the-art approaches in existing
 scenarios and datasets for \ac{CSS}, as well as in several newly proposed challenging benchmarks on new
 datasets. Furthermore, we show that PLOPLong leads to superior performances on longer \ac{CSS} scenarios.
 Last but not least, we show that performance of \ac{CSS} models can be greatly improved where rehearsal
 learning is an option. In such cases, the proposed Object rehearsal allows reaching high accuracies
 with low memory footprint.
-
-In this paper, we expand on our previous work published in conference venue
-\cite{douillard2020plop}. The updated PLOP includes both model and experimental improvements. While
-keeping the losses introduced with PLOP, we incorporate PLOP with the batch renormalization
-technique \cite{ioffe2017batchrenorm} and a cosine classifier \cite{luo2018cosine_classifier}. We
-structurally modify part of the network with these methods, which further mitigates forgetting on
-long stream of tasks compared to the original PLOP. These non-trivial additions helps us improve
-significantly over PLOP, the previous State-of-the-Art, particularly on longer \ac{CSS} scenarios. We also
-investigate rehearsal learning for continual segmentation. For the first time in this domain, we
-consider classic rehearsal, and shows it needs to be combined with pseudo-labeling to fill the
-partial ground-truth. We then highlight drawbacks to this method and design an entirely novel
-rehearsal method based on objects made of non-regular patches of pixels. By selecting only
-informative objects representing old classes, and injecting them into images of new classes with
-careful image editing, we manage to improve performance while using a fraction of memory usage spent
-by classic rehearsal. The resulting memory overhead of our proposed ``Object Rehearsal`` is almost
-null (0.8 Mb on Cityscapes) compared to the datasets size. We perform extensive ablations of this
-rehearsal method to discern its key components and also consider the usage of an external
-non-labeled dataset. We also perform new experiments, by tackling novel and challenging datasets
-such as class-incremental Cityscapes and provide our implementation of new baselines
-\cite{yu2020continualsegmentationselftraining,cermelli2020fewshotcontinualsegm} for the sake of
-completeness.
 
 \section{Related Work}
 \label{sec:seg_related}
@@ -167,8 +146,8 @@ completeness.
 Continual Semantic Segmentation is a relatively young field that started getting traction following
 \cite{michieli2019ilt,cermelli2020modelingthebackground}. However, this field is at the intersection
 of many popular topics. Therefore, we start this section with an overview of recent advances in
-segmentation, continual learning, and a particular aspect of the latter: rehearsal learning. We then
-follow with a more in-depth discussion of existing approaches to \ac{CSS}.
+segmentation. We then follow with a more in-depth discussion of existing approaches to \ac{CSS}. For
+a thorough discussion of Continual Learning, please refer to \autoref{chapter:related}.
 
 \paragraph{Semantic Segmentation} methods based on Fully Convolutional Networks (FCN)
 \citep{long2015fcn,sermanet2014overfeat} have achieved impressive results on several segmentation
@@ -239,7 +218,7 @@ and further improve it with a more data-efficient method based with object rehea
 
 The model description is organized as follows: we first detail the continual protocol and the
 notations. Then, we tackle the issue of catastrophic forgetting by designing an adapted distillation
-loss and we alleviate the background shift by proposing an uncertainty-based pseudo-labeling. Drawing
+loss, and we alleviate the background shift by proposing an uncertainty-based pseudo-labeling. Drawing
 ideas from the continual learning literature, we propose an extension of PLOP specialized for
 long-range continual training that we nickname PLOPLong. Finally, we detail the limits of rehearsal
 learning in segmentation, propose a naive adaptation to the problem, and then deliver our carefully
@@ -266,8 +245,6 @@ Furthermore, catastrophic forgetting is aggravated by the second pitfall, specif
 to \ac{CSS}, that we call background shift: at step $t$, the pixels labeled as background are indeed
 ambiguous, as they may contain either old (including the real background class, predicted in
 $\mcC^{1}$) or future classes.
-
-
 
 We define our model at step $t$ as a composition of a feature extractor $f^t(\cdot)$ (a ResNet 101
 \cite{he2016resnet} backbone and a classifier $g^t(\cdot)$. The output predicted segmentation map
@@ -325,7 +302,7 @@ pooling. However, conversely, semantic segmentation requires preservation of bot
 short-range statistics, making a distillation loss such as POD suboptimal for that purpose.
 
 
-Following this reflection, and inspired by the multiscale literature
+Following this reflection, and inspired by the multi-scale literature
 \cite{lazbnik2006spatial_pyramid_matching,he2014spatialpyramidpooling}, we design a distillation
 loss, called Local POD that retain the long-range spatial statistics while also preserving the local
 information. The proposed Local POD consists in computing the width and height statistics at
