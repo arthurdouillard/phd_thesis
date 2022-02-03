@@ -25,8 +25,8 @@
     locations in the representation space by estimating their future positions by drawing
     inspiration from the \ac{ZSL} literature.
 
-    The work in this section has led to a publication to a conference paper (PODNet) and a workshop
-    paper (Ghost):
+    The work in this section has led to a publication to a conference paper (PODNet, ECCV 2020) and
+    a workshop paper (Ghost, CVPR Workshop 2021):
 
     \begin{itemize}
         \item \fullcite{douillard2020podnet}
@@ -109,6 +109,16 @@ triplets), Hou et al. chose instead to redesign the classifier's last layer of t
 the cosine similarity~\citep{luo2018cosine_classifier}.
 
 
+\begin{figure}[tb]
+    \begin{center}
+        \includegraphics[width=1.0\linewidth]{images/podnet/protocol}
+    \end{center}
+    \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
+        new set of classes, and the model must retain knowledge about \textit{all} classes. The
+        model is allowed a \textit{limited} memory of samples of old classes.}
+    \label{fig:podnet_protocol}
+\end{figure}
+
 \subsection{Model}
 \label{sec:podnet_model}
 
@@ -118,7 +128,7 @@ extraction'' part of the network (all layers up to the next-to-last), $\vyh = g(
 classification layer, and $\vh$ is the final embedding of the network before classification
 (\autoref{fig:podnet_model}). The superscript $t$ denotes the model learned at task $t$:$f^{t}$,
 $g^{t}$, $\vh^{t}$, etc. We frame our model in the class incremental setting with rehearsal memory
-as illustrated in \autoref{fig:protocol}.
+as illustrated in \autoref{fig:podnet_protocol}.
 
 Our strategy is made of two keys components: a distillation loss applied at the intermediate
 feature-level, and a local-similarity classifier.
@@ -388,7 +398,7 @@ different tasks: the initial training followed by the incremental steps. Models 
 each step on \textit{all the classes seen until then}. To facilitate comparison, the accuracies at
 the end of each step are averaged into a unique score called \textit{average incremental
     accuracy}~\citep{rebuffi2017icarl}. If not specified otherwise, the average incremental accuracy is
-the score reported in all our results. The protocol is also illustrated in \autoref{fig:protocol}.
+the score reported in all our results. The protocol is also illustrated in \autoref{fig:podnet_protocol}.
 
 For CIFAR100 and ImageNet100, we ran all experiments thrice, varying the order of the classes. We
 report the averages and standard deviations in tables and graphs. For ImageNet1000, whose models
@@ -610,8 +620,8 @@ incremental setting used in \autoref{fig:podnet_model}, in which each task is ev
 challenging new setting, we must not only avoid the catastrophic forgetting of past classes (using
 the limited rehearsal training samples), but also give our best estimates for future classes (using
 no training samples at all). That will only be possible if we have some prior information about the
-classes, e.g., their hierarchy in a semantic network (like WordNet), an associated word embedding
-(like Word2Vec), or an attribute matrix. Such setting is illustrated in
+classes, e.g., their hierarchy in a semantic network (like WordNet \citep{fellbaum1998wordnet}), an associated word embedding
+(like Word2Vec \citep{mikolov2013word2vec}), or an attribute matrix. Such setting is illustrated in
 \autoref{fig:ghost_protocol}. We will shorthand the set of past and present classes
 $C^{1:t}$ as the \textit{seen} classes, and the set of future classes $C^{t+1:T}$ as the
 \textit{unseen} classes. We denote individual samples by a superscript $\vx^(i)$, the class label by

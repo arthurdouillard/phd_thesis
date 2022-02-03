@@ -4,8 +4,20 @@
 \begin{chapabstract}
     In \acf{CIL}, new classes are learned with each new task. However, most of the literature in
     that domain focus on image classification where a single label is possible per sample. In
-    \acf{CSS}, the setting is the same, but the implications are wildly different.
+    \textbf{\acf{CSS}}, the setting is the same, but the implications are wildly different. In Semantic
+    Segmentation, an image has one label per pixel. Therefore, an image could contain pixels from
+    old, current, and future classes.
+    \\
+    In this chapter, I tackled the recent field of \acf{CSS}: I've first highlighted the main
+    challenges of this domain: an important \textbf{catastrophic forgetting} linked to the higher complexity
+    of segmentation images, and a \textbf{background shift} where images are partially labeled with
+    only the current classes' groundtruth being present. Then, I've proposed multiple complementary
+    methods across two papers to solve those challenges: I've designed an uncertainty-based
+    hard pseudo-labeling loss, a multiscale distillation loss inspired by my previous POD, and
+    an efficient object rehearsal method.
 
+    The work in this section has led to a publication to a conference paper (CVPR 2021) and a submission
+    to a journal (TPAMI):
 
     \begin{itemize}
         \item \fullcite{douillard2020plop}
@@ -25,30 +37,27 @@
 \section{Introduction}
 \label{sec:seg_intro}
 
-\acf{CV} went this last decade under a dramatic change from hand-crafted features
-\cite{lowe1999sift,perronnin2007fisherkernels} and machine learning models \cite{cortes1995svm} to
-deep convolutional neural networks (\acs{DCNN}) \cite{krizhevsky2012alexnet}. Among the existing tasks
-involving computer vision, semantic segmentation aims to assign a label to each pixel of an image.
+Semantic segmentation aims to assign a label to each pixel of an image.
 It allows the prediction of multiple objects in the same image, and moreover their exact position
-and shape. This task recently flourished \cite{tao2020HRNet,zhang2020resnest,chen2018ZPSA} with
+and shape. This task recently flourished \citep{tao2020HRNet,zhang2020resnest,chen2018ZPSA} with
 larger datasets with thousands of fully annotated images
-\cite{zhou2017adedataset,neuhold2017mapillary}, increased computational power, and larger attention
-\cite{wang2020axialdeeplab}. Unfortunately, the recent research in this area is often impracticable
-for real-life applications: they mostly need fully annotated data and require to be retrained from
-scratch if a new class is added to the dataset. Ideally, one would wish to regularly expand a
+\citep{zhou2017adedataset,neuhold2017mapillary}, increased computational power, and larger attention
+\citep{wang2020axialdeeplab}. Unfortunately, the recent research in this area is often impracticable
+for real-life applications: they mostly \textbf{need fully annotated data and require to be retrained from
+    scratch if a new class is added to the dataset.} Ideally, one would wish to regularly expand a
 dataset, only adding and labeling new classes and updating the model in accordance. This setup,
-referred here as \acf{CSS}, has emerged very recently for specialized
+referred here as \textbf{\acf{CSS}}, has emerged very recently for specialized
 applications
-\cite{ozdemir2018learnthenewkeeptheold,ozdemir2019segmentationanotomical,tasar19incrementsegmentationremotesensing}
+\citep{ozdemir2018learnthenewkeeptheold,ozdemir2019segmentationanotomical,tasar19incrementsegmentationremotesensing}
 before being proposed for general segmentation datasets
-\cite{michieli2019ilt,cermelli2020modelingthebackground,douillard2020plop}.
+\citep{michieli2019ilt,cermelli2020modelingthebackground}.
 
 
 In particular, in this paper, we argue that two problems arise when performing \ac{CSS} with \acs{DCNN}. The
-first one, inherited from continual learning, is called \textit{catastrophic
-    forgetting}~\cite{robins1995catastrophicforgetting,french1999catastrophicforgetting,thrun1998lifelonglearning},
+first one, inherited from continual learning, is called \textbf{catastrophic
+    forgetting}~\citep{robins1995catastrophicforgetting,french1999catastrophicforgetting,thrun1998lifelonglearning},
 and points to the fact that neural networks tend to completely and abruptly forget previously
-learned knowledge when learning new information ~\cite{kemker2018measuringforgetting}. Catastrophic
+learned knowledge when learning new information ~\citep{kemker2018measuringforgetting}. Catastrophic
 forgetting presents a real challenge for continual learning applications based on deep learning
 methods. For some applications, storing previously seen data is not allowed for privacy reasons.
 This is a real challenge because the model can no longer be trained on the old categories with
@@ -66,7 +75,7 @@ class contains pixels that do not belong to any of these classes. However, in \a
 contains pixels that do not belong to any of the \textit{current} classes. Thus, for a specific
 learning step, the background can contain both future classes, not yet seen by the model, as well as
 old classes. Thus, if nothing is done to distinguish pixels belonging to the real background class
-from old class pixels, this background shift phenomenon risks exacerbating the catastrophic
+from old class pixels, this \textbf{background shift} phenomenon risks exacerbating the catastrophic
 forgetting even further \cite{cermelli2020modelingthebackground}. This issue also has an impact on
 the selection of the old data we want to store. Because some currently learned classes are annotated
 as background in the old data, this may degrade the performance of these classes if one naively
@@ -77,11 +86,11 @@ similar behavior between the old and current model. Specifically, we leverage in
 representations of the convolutional networks to ensure that similar patterns are extracted through
 time. This feature-based constraints, called Local POD, fully exploits the global and local scale
 necessary to semantic segmentation through a multiscale design. The second challenge, background
-shift, is greatly allievated a confidence-based pseudo-labeling strategy to retrieve old class
+shift, is greatly alleviated a confidence-based pseudo-labeling strategy to retrieve old class
 pixels within the background. For instance, if a current ground truth mask only distinguishes pixels
 from class \texttt{sofa} and background, our approach allows assigning old classes to background
 pixels, e.g. classes \texttt{person}, \texttt{dog} or \texttt{background} (the semantic class). We
-name PLOP the model exploiting those two contributions. We then propose an extention called PLOPLong
+name PLOP the model exploiting those two contributions. We then propose an extension called PLOPLong
 that aims to excel on long continual learning scenarios. This new model exploits cosine
 normalization to adapt the classifier and the Local POD resulting in an improving robustness to the
 discrepancy between old and new classes. Moreover, PLOPLong features a modified batch normalization
@@ -162,68 +171,48 @@ segmentation, continual learning, and a particular aspect of the latter: rehears
 follow with a more in-depth discussion of existing approaches to \ac{CSS}.
 
 \paragraph{Semantic Segmentation} methods based on Fully Convolutional Networks (FCN)
-\cite{long2015fcn,sermanet2014overfeat} have achieved impressive results on several segmentation
-benchmarks ~\cite{everingham2015pascalvoc,
+\citep{long2015fcn,sermanet2014overfeat} have achieved impressive results on several segmentation
+benchmarks ~\citep{everingham2015pascalvoc,
     cordts2016cityscapes,zhou2017adedataset,caesar2018cocoostuff}. These methods improve the
 segmentation accuracy by incorporating more spatial information or exploiting contextual information
-specifically. Atrous convolution~\cite{chen2018deeplab,mehta2018espnet} and encoder-decoder
-architecture~\cite{ronneberger2015UNet,noh2015deconvolution,badrinarayanan2017segnet} are the most
+specifically. Atrous convolution~\citep{chen2018deeplab,mehta2018espnet} and encoder-decoder
+architecture~\citep{ronneberger2015UNet,noh2015deconvolution,badrinarayanan2017segnet} are the most
 common methods for retaining spatial information. Examples of recent works exploiting contextual
 information include attention
-mechanisms~\cite{yuan2018ocnet,zhao2018psanet,fu2019DANet,huang2019CCNet,yuan2020ocr,tao2020HRNet,zhang2020resnest},
+mechanisms~\citep{yuan2018ocnet,zhao2018psanet,fu2019DANet,huang2019CCNet,yuan2020ocr,tao2020HRNet,zhang2020resnest},
 and fixed-scale aggregation
-~\cite{zhao2017PSPNet,chen2018deeplab,chen2018ZPSA,zhang2018ContextEncoding}. %More recently, Strip
-Pooling~\cite{hou2020strippooling} consists in pooling along the width or height dimensions
-similarly to POD \cite{douillard2020podnet} as a complement to a spatial pyramid pooling
-\cite{he2014spatialpyramidpooling} to capture both global and local statistics.
-
-\paragraph{Rehearsal Learning} \cite{robins1995catastrophicforgetting} allows to replay a
-limited amount of samples from previous tasks in order to reduce forgetting. While popular for
-continual image classification
-\cite{rebuffi2017icarl,castro2018end_to_end_inc_learn,chaudhry2019tinyepisodicmemories,hayes2020remind,iscen2020incrementalfeatureadaptation,kemker2018fearnet,shin2017deep_generative_replay,liu2020mnemonics,chaudhry2019tinyepisodicmemories}
-or continual reinforcement learning \cite{traore2019discorl}, this approach has been fewly explored
-in continual segmentation. It can be explained in part because of the prohibitive memory cost of the
-large images used in segmentation (up to $1024 \times 2048$ vs $224 \times 224$). Another drawback
-comes the nature of continual segmentation where images at each step are partially labeled. This
-partial labelling will be different for each rehearsed image, leading to a damaging concept shift
-\cite{morenotorresa2012datasetshift,lesort2021driftanalysis}. Huang et al.
-\cite{huang2021halfrealhalffake} proposed after our PLOP a pseudo-rehearsal method for segmentation
-that while effective, incurs an important time overhead (up to $3\times$ longer). In the concurrent
-work of Maracani et al.~\cite{maracani2021recall}, the authors proposed to rehearse old classes
-either by generating them with \acs{GAN}, or by storing old samples. This latter formulation is
-equivalent to the naive rehearsal that we introduce in our paper. However, we show that our proposed
-Object Rehearsal surpasses this approach both in terms of accuracy and memory consumption.
+~\citep{zhao2017PSPNet,chen2018deeplab,chen2018ZPSA,zhang2018ContextEncoding}.
 
 \paragraph{Continual Semantic segmentation}: Despite enormous progress in the two
 aforementioned areas respectively, segmentation algorithms are mostly used in an offline setting,
 while continual learning methods generally focus on image classification. Recent works extend
-existing continual learning methods \cite{li2018lwf,hou2019ucir} for specialized applications
-\cite{ozdemir2018learnthenewkeeptheold,ozdemir2019segmentationanotomical,tasar19incrementsegmentationremotesensing}
-and general semantic segmentation \cite{michieli2019ilt}. The latter considers that the previously
+existing continual learning methods \citep{li2018lwf,hou2019ucir} for specialized applications
+\citep{ozdemir2018learnthenewkeeptheold,ozdemir2019segmentationanotomical,tasar19incrementsegmentationremotesensing}
+and general semantic segmentation \citep{michieli2019ilt}. The latter considers that the previously
 learned categories are properly annotated in the images of the new dataset. This is an unrealistic
 assumption that fails to consider the background shift: pixels labeled as background at the current
 step are semantically ambiguous, in that they can contain pixels from old classes (including the
 real semantic background class, which is generally deciphered first) as well as pixels from future
-classes. Cermelli et al.~\cite{cermelli2020modelingthebackground} propose a novel classification and
+classes. \cite{cermelli2020modelingthebackground} propose a novel classification and
 distillation losses. Both handle the background shift by summing respectively the old logits with
 the background logits and the new logits with the background. We argue that a distillation loss
 applied to the model output is not strong enough for catastrophic forgetting in \ac{CSS}. Furthermore,
 their classification loss doesn't preserve enough discriminative power w.r.t the old classes when
 learning new classes under background shift. We introduce our PLOP framework that solves more
-effectively those two aspects. Yu et al.~\cite{yu2020continualsegmentationselftraining} proposed to
+effectively those two aspects. \cite{yu2020continualsegmentationselftraining} proposed to
 exploit an external unlabeled dataset in order to do self-training with a pseudo-labeling loss; we
 show that our model while not designed with this assumption in mind can outperform their
-performance. Cermelli et al.~\cite{cermelli2020fewshotcontinualsegm} creates a novel setting of
+performance. \cite{cermelli2020fewshotcontinualsegm} creates a novel setting of
 continual \textit{few-shots} segmentation, we implement their method in our setting and draw
-inspiration from it to further improve PLOP. Michielli et al.\cite{michieli2021sdr} draws
+inspiration from it to further improve PLOP. \cite{michieli2021sdr} draws
 inspiration from the metric learning literature to conceive a model for continual segmentation that
 exploits prototypes updated with an exponential moving average of the mean batch features.
 
 \paragraph{Positioning:\,} Contrary to previous works in continual segmentation
-\cite{michieli2019ilt,cermelli2020modelingthebackground} which reduced slightly forgetting through
+\citep{michieli2019ilt,cermelli2020modelingthebackground} which reduced slightly forgetting through
 distillation of the probabilities, we propose a stronger constraint based on global and local
 statistics extracted from intermediary features. Moreover, background is often not considered
-\cite{michieli2019ilt} or only weakly tackled \cite{cermelli2020modelingthebackground}, while we
+\citep{michieli2019ilt} or only weakly tackled \citep{cermelli2020modelingthebackground}, while we
 propose to eliminate it through segmentation maps completion with pseudo-labeling. Finally, none of
 the work proposed rehearsal methods for \ac{CSS}, while we propose a non-trivial based on image rehearsal
 and further improve it with a more data-efficient method based with object rehearsal.
