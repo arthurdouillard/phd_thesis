@@ -11,13 +11,13 @@
     In this chapter, I tackled the recent field of \acf{CSS}: I've first highlighted the main
     challenges of this domain: an important \textbf{catastrophic forgetting} linked to the higher complexity
     of segmentation images, and a \textbf{background shift} where images are partially labeled with
-    only the current classes' groundtruth being present. Then, I've proposed multiple complementary
+    only the current classes' ground-truth being present. Then, I've proposed multiple complementary
     methods across two papers to solve those challenges: I've designed an uncertainty-based
     hard pseudo-labeling loss, a multi-scale distillation loss inspired by my previous POD, and
     an efficient object rehearsal method.
 
     The work in this section has led to a publication to a conference paper (CVPR 2021) and a submission
-    to a journal (TPAMI):
+    to a journal (TPAMI) still under review:
 
     \begin{itemize}
         \item \fullcite{douillard2020plop}
@@ -187,7 +187,7 @@ inspiration from it to further improve PLOP. \cite{michieli2021sdr} draws
 inspiration from the metric learning literature to conceive a model for continual segmentation that
 exploits prototypes updated with an exponential moving average of the mean batch features.
 
-\paragraph{Positioning:\,} Contrary to previous works in continual segmentation
+\paragraph{Positioning:} Contrary to previous works in continual segmentation
 \citep{michieli2019ilt,cermelli2020modelingthebackground} which reduced slightly forgetting through
 distillation of the probabilities, we propose a stronger constraint based on global and local
 statistics extracted from intermediary features. Moreover, background is often not considered
@@ -226,32 +226,31 @@ designed method.
 
 \subsection{Framework and notations}\label{sec:seg_overview}
 
-\input{tables/seg/notations}
+For most of the notations, please refer to \autoref{tab:related_notation}. The slight difference in
+this chapter, is that instead of working on pair of classification image with a single label $(\vx,
+    y)$, we'll work on pairs of image and segmentation maps where each pixel has a class $(\mcI^t,
+    \mcS^t)$. Here, the task identifier $t$ is even more important because the segmentation maps $\mcS$,
+for a same image, will evolve through the tasks. Indeed, in the considered benchmarks (detailed
+later in \autoref{sec:seg_exp}), an image is only labeled for the current classes $\mcS^t$. The
+previous $\mcC^{1:t-1}$ or future classes $\mcC^{t+1:T}$ the image may contain are not labeled, and
+considered as the special class ``\textit{background}''. However, at test-time, a model at step $t$
+must be able to discriminate between all the classes that have been seen so far, \textit{i.e.}
+$\mcC^{1:t}$.
 
-In Continual Semantic Segmentation (\ac{CSS}), a model learns a dataset  $\mcD$ in $t=1 \dots T$ steps.
-At each step $t$, the model has to learn a new set of classes $\mcC^t$, for which only a subset of
-data $\mcD_t$, that consists in a set of pairs $(\mcI^t, \mcS^t)$, is available. $\mcI^t$ denotes an
-RGB input image of size $W \times H \times 3$ and $\mcS^t$ the corresponding one-hot encoded
-ground-truth segmentation maps of size $W \times H \times \mcC^t$. If a pixel of $\mcI^t$ belongs to
-either one of the previous $\mcC^{1:t-1}$ or future classes $\mcC^{t+1:T}$, it is not labeled as
-such in $\mcS^t$ and shall instead be considered as belonging to the background class, denoted
-$c_\text{bg}$. However, at test time, a model at step $t$ must be able to discriminate between all
-the classes that have been seen so far, \textit{i.e.} $\mcC^{1:t}$. This leads us to identify two
-major pitfalls in \ac{CSS}: the first one, inherited from continual learning, is catastrophic forgetting
-\cite{robins1995catastrophicforgetting,french1999catastrophicforgetting}. It suggests that a network
-will completely forget the old classes $\mcC^{1:t-1}$ when learning the new ones $\mcC^t$.
+This leads us to identify two major pitfalls in \ac{CSS}: the first one, inherited from continual
+learning, is catastrophic forgetting \cite{robins1995catastrophicforgetting}. It suggests that a
+network will completely forget the old classes $\mcC^{1:t-1}$ when learning the new ones $\mcC^t$.
 
-Furthermore, catastrophic forgetting is aggravated by the second pitfall, specific
-to \ac{CSS}, that we call background shift: at step $t$, the pixels labeled as background are indeed
-ambiguous, as they may contain either old (including the real background class, predicted in
-$\mcC^{1}$) or future classes.
+Furthermore, catastrophic forgetting is aggravated by the second pitfall, specific to \ac{CSS}, that
+we call background shift: at step $t$, the pixels labeled as background are indeed ambiguous, as
+they may contain either old (including the real background class, predicted in $\mcC^{1}$) or future
+classes.
 
 We define our model at step $t$ as a composition of a feature extractor $f^t(\cdot)$ (a ResNet 101
 \cite{he2016resnet} backbone and a classifier $g^t(\cdot)$. The output predicted segmentation map
 can then be written $\hat{\mcS}^t = g^t \circ f^t(\mcI)$. We denote the intermediate features at
 each layer of the feature extractor $f_l^t(\cdot)\,,\, l \in \{1, \dots L\}$. Finally, we denote the
-set of learnable parameters of $f^t$ and $g^t$ as $\Theta^t$. The notations introduced in this paper
-are summarized in \autoref{tab:seg_notation}.
+set of learnable parameters of $f^t$ and $g^t$ as $\Theta^t$.
 
 
 \subsection{Overcoming catastrophic forgetting in CSS with local
@@ -268,11 +267,10 @@ trade-off between rigidity (\textit{i.e.} too strong constraints, resulting in n
 learn new classes) and plasticity (\textit{i.e.} enforcing loose constraints, which can lead to
 catastrophic forgetting of the old classes).
 
-
-In previous work \cite{douillard2020podnet} we designed POD, short for Pooled Output Distillation.
-Rather than solely constraining the output model probabilities, POD enforces consistently between
-intermediary statistics of both models. In practice, for a feature map $\vx$, we define a POD
-embedding $\Phi(\cdot)$ as:
+In \autoref{chapter:regularization}, more precisely in \autoref{sec:podnet}, we designed POD, short
+for Pooled Output Distillation. Rather than solely constraining the output model probabilities, POD
+enforces consistently between intermediary statistics of both models. In practice, for a feature map
+$\vx$, we define a POD embedding $\Phi(\cdot)$ as:
 %
 \begin{equation}
     \Phi(\vx) = \left[\frac{1}{W} \sum_{w=1}^W \vx[:,w,:] \bigg\Vert \frac{1}{H} \sum_{h=1}^H \vx[h,:,:]\right] \in \mathbb{R}^{(H + W) \times C}\,,
@@ -291,19 +289,19 @@ $\Theta^t$:
     \label{eq:seg_pod_loss}
 \end{equation}
 %
-POD yields state-of-the-art results in continual learning for image classification, especially when
+POD yielded state-of-the-art results in continual learning for image classification, especially when
 large numbers of tasks are considered, a case where the aforementioned plasticity-rigidity trade-off
 becomes even more crucial. Another interest arises in the context of \ac{CSS}: the long-range statistics
 computed across an entire axis (horizontal or vertical) which reminds recent work on attention for
-segmentation \cite{wang2020axialdeeplab,huang2020ccnet,park2020csc} which aim to enlarge the
-receptive field through global attention/statistics \cite{wang2020axialdeeplab}. In the frame of
+segmentation \citep{wang2020axialdeeplab,huang2020ccnet,park2020csc} which aim to enlarge the
+receptive field through global attention/statistics \citep{wang2020axialdeeplab}. In the frame of
 classification, it is, to a certain extent, necessary to discard spatial information through global
 pooling. However, conversely, semantic segmentation requires preservation of both long-range and
 short-range statistics, making a distillation loss such as POD suboptimal for that purpose.
 
 
 Following this reflection, and inspired by the multi-scale literature
-\cite{lazbnik2006spatial_pyramid_matching,he2014spatialpyramidpooling}, we design a distillation
+\citep{lazbnik2006spatial_pyramid_matching,he2014spatialpyramidpooling}, we design a distillation
 loss, called Local POD that retain the long-range spatial statistics while also preserving the local
 information. The proposed Local POD consists in computing the width and height statistics at
 different scales $\{1/2^s\}_{s=0 \dots S}$, as illustrated in \autoref{fig:seg_model_plop} (a). At a
@@ -345,9 +343,9 @@ models, throughout the \ac{CSS} steps.
 In addition to catastrophic forgetting, a successful \ac{CSS} approach shall handle the background shift
 problem, thus shall take into account the ambiguity of pixels labelled as background at each step.
 We propose a pseudo-labeling strategy that ``\textit{completes}'' the ambiguous background labels.
-Pseudo-labeling \cite{lee2013pseudolabel} is commonly used in domain adaption for semantic
+Pseudo-labeling \citep{lee2013pseudolabel} is commonly used in domain adaption for semantic
 segmentation
-\cite{vu2019advent,li2019bidirectionallearning,zou2018classbalancedselftraining,saporta2020esl}
+\citep{vu2019advent,li2019bidirectionallearning,zou2018classbalancedselftraining,saporta2020esl}
 where a model is trained to match both the labels of a source dataset and the pseudo-labels (usually
 obtained using the same predictive model, in a self-training fashion) of an unlabeled target
 dataset. In this case, the knowledge acquired on the source dataset helps the model to generate
@@ -381,7 +379,7 @@ In other words, in the case of non-background pixels we simply copy the ground t
 Otherwise, we use the class predicted by the old model $g^{t-1}(f^{t-1}(\cdot))$. This pseudo-label
 strategy allows to assign each pixel labelled as background his real semantic label if this pixel
 belongs to any of the old classes. However, pseudo-labeling all background pixels can be
-unproductive, e.g. on uncertain pixels where the old model is likely to fail. Therefore we only keep
+unproductive, e.g. on uncertain pixels where the old model is likely to fail. Therefore, we only keep
 pseudo-labels where the old model is deemed ``\textit{confident}'' enough.
 \autoref{eq:seg_pseudo_bis} is modified to take into account this uncertainty:
 %
@@ -402,7 +400,7 @@ ignored in the final classification loss. Our framework is agnostic to the type 
 but in practice we define it as the entropy. Therefore, we use for $u$ the current model's per-pixel
 entropy $u(\mcS^t(w, h)) = -\sum_{c \in C^{1:t}} \mcS^t(w, h, c) \log \mcS^t(w, h, c)$. Likewise,
 the class-specific threshold $\tau_c$ is computed from the median entropy of the old model over all
-pixels of $\mcD^t$ predicted the class $c$ for all $c \in \mcC^{1:t-1}$ as proposed in
+pixels of $\mcD^t$ predicted the class $c$ for all $c \in \mcC^{1:t-1}$ as proposed by
 \cite{saporta2020esl}. Consequently, the cross-entropy loss with pseudo-labeling of the old classes
 can be written as:
 %
@@ -426,7 +424,7 @@ weighted combination of \autoref{eq:seg_local_pod_loss} and \autoref{eq:seg_pseu
     \label{eq:seg_complete_loss}
 \end{equation}
 %
-with $\lambda$ a hyperparameter. PLOP, while already very competitive, can face difficulties when
+\noindent with $\lambda$ a hyperparameter. PLOP, while already very competitive, can face difficulties when
 dealing with long continual settings, \textit{i.e.} for which the number of steps grows larger. For
 this reason, we propose PLOPLong, an extension of PLOP for dealing with such cases.
 
@@ -437,11 +435,11 @@ struggle to deal with longer settings due to two major drawbacks, namely special
 classifier towards recent classes, and the shifts of the batch normalization layers.
 
 First, we observe that in \ac{CSS} the classifier weights tend to be specialized for the last classes to
-the detriment of older classes \cite{hou2019ucir}. Several solutions exist that aim at correcting
+the detriment of older classes \citep{hou2019ucir}. Several solutions exist that aim at correcting
 this bias
-\cite{wu2019bias_correction,belouadah2019il2m,zhao2020weightalignement,luo2018cosine_classifier}, and
+\citep{wu2019bias_correction,belouadah2019il2m,zhao2020weightalignement,luo2018cosine_classifier}, and
 we choose the cosine normalization. In practice, we replace the classifier by a cosine classifier
-\cite{luo2018cosine_classifier}, where the final inner product is discarded in favor of a cosine
+\citep{luo2018cosine_classifier}, where the final inner product is discarded in favor of a cosine
 similarity. By doing so, all class weights --both old and new-- have a constant magnitude of 1,
 which drastically reduces the bias towards new classes. The classifier $g^t$ is in segmentation a
 pointwise ($1\times1$ kernel) convolution which doesn't alter the spatial organization but maps the
@@ -455,14 +453,14 @@ The cosine normalization can then be express as:
     \label{eq:seg_cosine_classifier}
 \end{equation}
 %
-with $\alpha$ a learned scalar parameter initialized to 1 and helping the convergence, and $\vh \in
+\noindent with $\alpha$ a learned scalar parameter initialized to 1 and helping the convergence, and $\vh \in
     \mathbb{R}^{W \times H \times ch}$ the final features embedding before the classifier. First
-used in continual learning by Hou et al.~\cite{hou2019ucir}, this classifier has more recently
-be adopted by continual few-shot segmentation \cite{cermelli2020fewshotcontinualsegm} or
-multi-modes continual learning \cite{douillard2020podnet}. The new cosine classifier weights
-that correspond to the new classifier can then be initialized with weight imprinting
-\cite{qi2018imprintedweights} as recently adapted for segmentation by Cermelli et
-al.~\cite{cermelli2020fewshotcontinualsegm}.
+used in continual learning by \cite{hou2019ucir}, this classifier has more recently be adopted
+by continual few-shot segmentation \citep{cermelli2020fewshotcontinualsegm} or multi-modes
+continual learning \citep{douillard2020podnet}. The new cosine classifier weights that
+correspond to the new classifier can then be initialized with weight imprinting
+\citep{qi2018imprintedweights} as recently adapted for segmentation by
+\cite{cermelli2020fewshotcontinualsegm}.
 
 Furthermore, we propose to exploit the cosine normalization for intermediary features: the
 comparison between the Local POD embeddings of the previous model $f^{t-1}$ with the current $f^t$
@@ -488,7 +486,7 @@ the Local POD embeddings.
 \end{figure*}
 
 Second, an almost ubiquitous component of modern deep computer vision models is the Batch
-Normalization \cite{ioffe2015batchnorm}. It normalizes internal representation with the batch mean
+Normalization \citep{ioffe2015batchnorm}. It normalizes internal representation with the batch mean
 $\mu_\mathbb{B}$ and batch standard deviation $\sigma_\mathbb{B}$ (resp. running mean $\mu$ and
 running std $\sigma$) during training (resp. testing). Formally for a all batch normalization layer
 taking an input $\vx$ and producing an output $\vy$:
@@ -501,14 +499,14 @@ taking an input $\vx$ and producing an output $\vy$:
 with $\gamma$ and $\beta$ two learned parameters. The important drawback of this normalization layer
 is its assumption that the data is sampled \textit{i.i.d.} which is not the case in continual
 segmentation where multiple shifts
-\cite{morenotorresa2012datasetshift,lesort2021driftanalysis,douillardlesort2021continuum}, happen in
+\citep{morenotorresa2012datasetshift,lesort2021driftanalysis,douillardlesort2021continuum}, happen in
 the training tasks, different from the testing tasks. Drawing inspiration from the domain
-incremental \cite{lomonaco2020ar1} and continual few-shots segmentation
-\cite{cermelli2020fewshotcontinualsegm} literature, we choose to replace the batch normalization by
-batch \textit{re}normalization \cite{ioffe2017batchrenorm}, i.e.:
+incremental \citep{lomonaco2020ar1} and continual few-shots segmentation
+\citep{cermelli2020fewshotcontinualsegm} literature, we choose to replace the batch normalization by
+batch \textit{re}normalization \citep{ioffe2017batchrenorm}, i.e.:
 %
 \begin{equation}
-    \vy = \frac{\vx - \mu_\mathbb{B}}{\sigma_\mathbb{B}} \cdot r + d,\,\text{where}\, r = \frac{\sigma_\mathbb{B}}{\sigma},\, d = \frac{\mu_\mathbb{B} - \mu}{\sigma}\,
+    \vy = \frac{\vx - \mu_\mathbb{B}}{\sigma_\mathbb{B}} \cdot r + d,\,\text{where}\, r = \frac{\sigma_\mathbb{B}}{\sigma},\, d = \frac{\mu_\mathbb{B} - \mu}{\sigma}\,.
     \label{eq:seg_batch_renorm}
 \end{equation}
 %
@@ -551,7 +549,7 @@ the former problem, we propose to select $M$ images for each class $c \in C^t$, 
     \times |C^t|$ images for step $t$. We ensure that the selected images are unique: as multiple
 classes can co-exist in the same image, the resulting amount of sampled classes may be above $M
     \times |C^t|$. We select the images with a simple random selection, which has been proved to
-generally perform as good as more elaborate methods \cite{castro2018end_to_end_inc_learn}. The
+generally perform as good as more elaborate methods \citep{castro2018end_to_end_inc_learn}. The
 memory footprint will grow until all tasks but the last are seen, resulting in a total amount of $M
     \times |C^{1:T-1}|$ stored images. To address the second problem (partial labelization, see also
 Section \ref{sec:seg_hardpl}), we fill the background using our proposed hard pseudo-labeling (see
@@ -563,16 +561,16 @@ $C^{1:t-i}$ as well as new classes $C^{t-i+1:t}$.
 
 The main drawback of image rehearsal is that \ac{CSS} images are usually large (from $512\times 512$ to
 $1024 \times 2048$) yet they are sparsely informative, as a significant part of the images consists
-in background pixels \cite{lin2017focalloss} (e.g. 63\% of Pascal-VOC \cite{everingham2015pascalvoc}
-pixels) or belongs to a majority class (e.g. 32\% of Cityscapes \cite{cordts2016cityscapes} pixels
+in background pixels \citep{lin2017focalloss} (e.g. 63\% of Pascal-VOC \citep{everingham2015pascalvoc}
+pixels) or belongs to a majority class (e.g. 32\% of Cityscapes \citep{cordts2016cityscapes} pixels
 are \texttt{roads}).
 
 To address both problems, instead of storing whole images from the previous tasks $\{1, ..., t-1\}$,
 we propose to store an informative portion that we will mix with the images of the current task $t$.
 Image mixing is popular for classification
-\cite{hingyi2018mixup,yun2019cutmix,dabouei2020supermix,verma2019manifoldmixup,li2021moex,rame2021mixmo}
+\citep{hingyi2018mixup,yun2019cutmix,dabouei2020supermix,verma2019manifoldmixup,li2021moex,rame2021mixmo}
 yet, to the best of our knowledge, sees limited use for semantic segmentation
-\cite{fang2019instaboost,olsson2021classmix,zhang2021objectaug,tranheden2021dacs,ghiasi2020simplecopypaste},
+\citep{fang2019instaboost,olsson2021classmix,zhang2021objectaug,tranheden2021dacs,ghiasi2020simplecopypaste},
 and has never been considered to design memory-efficient rehearsal learning systems. Formally, given
 an image $I$ and the corresponding ground truth segmentation maps $S^t$, we define a binary mask
 $\Pi_c$  such that $\forall c \in C^t$:
@@ -586,13 +584,13 @@ $\Pi_c$  such that $\forall c \in C^t$:
 \end{equation}
 %
 \noindent with $O_c$ the selected object for class $c$. By nature, this patch is extremely sparse
-and can be efficiently stored on disk by modern compression algorithms (\cite{ISO)10918}). The total
+and can be efficiently stored on disk by modern compression algorithms \citep{ISO)10918}. The total
 memory footprint at task t is thus $M \times |C^{1:t}|$ objects.
 
 Then, when learning a task $t > 1$, the model will learn on both the task dataset $\cup_i^n (I^t_i,
     S^t_i)$ and the object memory $\cup_{c \in C^{1:t-1}} \cup_i^M O_{c,i}$. The latter will augment
 the former through object pasting. We augment each object by applying an affine transformation
-matrix \cite{fang2019instaboost}:
+matrix \citep{fang2019instaboost}:
 %
 \begin{equation}
     \mathbf{T}=\left[\begin{array}{ccc}
@@ -618,11 +616,11 @@ refers to the current task:
 The pasting can result in local incoherence where the pixel of a \texttt{cow} is pasted on top or
 next to the pixel of a \texttt{television}. Naively the object borders can be smoothed into the
 image with a Gaussian filter. Unfortunatly it results in inprecise countours which are important in
-segmentation \cite{chen2020semeda}.
+segmentation \citep{chen2020semeda}.
 
 This approach has already been envisoned as a form of data augmentation in semantic segmentation,
 although the gains were small and to avoid the noise induced by this pasting, the batch size is
-prohibitively large (up to 512) \cite{ghiasi2020simplecopypaste}. We propose to reduce interference
+prohibitively large (up to 512) \citep{ghiasi2020simplecopypaste}. We propose to reduce interference
 between the pasted object and the destination images by \textbf{selective erasing} of the
 surrounding pixels. Indeed, given a binary matrix $\Xi(\Pi, S)$ of the same dimension as $I$ and
 $\Pi$:
@@ -633,7 +631,7 @@ $\Pi$:
 \end{equation}
 %
 We replace the pixels erased according to the mask $\Xi$ with a RGB color $\kappa \in \mathbb{R}^3$.
-This RGB vector could be chosen through in-painting \cite{fang2019instaboost} or be random noise,
+This RGB vector could be chosen through in-painting \citep{fang2019instaboost} or be random noise,
 but in practice we choose a constant color gray. We also update accordingly the segmentation maps
 likewise:
 %
@@ -670,9 +668,9 @@ implementations. Although, we also propose to evaluate on new datasets and on mo
 protocols. Furthermore, we explore in advanced experiments, for the first time, how rehearsal can
 improve performance in \ac{CSS}.
 
-\paragraph{Datasets:\,} We evaluate our model on three datasets, summarized in
-\autoref{tab:seg_dataset_description}: Pascal-VOC~\cite{everingham2015pascalvoc},
-Cityscapes~\cite{cordts2016cityscapes} and ADE20k~\cite{zhou2017adedataset}. VOC contains 20
+\paragraph{Datasets:} We evaluate our model on three datasets, summarized in
+\autoref{tab:seg_dataset_description}: Pascal-VOC \citep{everingham2015pascalvoc},
+Cityscapes \citep{cordts2016cityscapes} and ADE20k \citep{zhou2017adedataset}. VOC contains 20
 classes, 10,582 training images, and 1,449 testing images. Cityscapes contains 2975 and 500 images
 for train and test, respectively. Those images represent 19 classes and were taken from 21 different
 cities. ADE20k has 150 classes, 20,210 training images, and 2,000 testing images. All ablations and
@@ -681,7 +679,7 @@ images. For all datasets, we use random resize and crop augmentation (scale from
 well as random horizontal flip during training time. The final image size for Pascal-VOC and ADE20k
 is $512 \times 512$ while it is $512 \times 1024$ for Cityscapes.
 
-\paragraph{CSS protocols:\,} ~\cite{cermelli2020modelingthebackground} introduced the
+\paragraph{CSS protocols:} \cite{cermelli2020modelingthebackground} introduced the
 \textit{Overlapped} setting where only the current classes are labeled vs. a background class
 $\mcC^t$. Moreover, pixels can belong to any classes $\mcC^{1:t-1} \cup \mcC^{t} \cup \mcC^{t+1:T}$
 (old, current, and future). Those two constraints make this setting both challenging and realistic,
@@ -695,34 +693,34 @@ Similarly, on Cityscapes 14-1 means 14 followed by five times 1 class ($6$ steps
 means 100 followed by 50 classes ($2$ steps). We provide a summary of all these settings in
 \autoref{tab:seg_setting_description}.
 
-\paragraph{Metrics:\,} we compare the different models using traditional \acf{mIoU}.
+\paragraph{Metrics:} we compare the different models using traditional \acf{mIoU}.
 Specifically, we compute \ac{mIoU} after the last step $T$ for the initial classes $\mcC^{1}$, for
 the incremented classes $\mcC^{2:T}$, and for all classes $\mcC^{1:T}$ (\textit{all}). These metrics
 respectively reflect the robustness to catastrophic forgetting (the model rigidity), the capacity to
 learn new classes (plasticity), as well as its overall performance (trade-of between both). We also
 introduce a novel \textit{avg} metric (short for \textit{average}), which measures the average of
 \ac{mIoU} scores measured step after step, integrating performance over the whole continual learning
-process. We stress that all four metrics are important and we shouldn't disregard one for the other:
+process. We stress that all four metrics are important, and we shouldn't disregard one for the other:
 a model suffering no forgetting but not able to learn anything new is useless.
 
 \input{tables/seg/cityscapes_class}
 
-\paragraph{Baselines:\,} We benchmark our model against the latest state-of-the-arts \ac{CSS}
-methods ILT~\cite{michieli2019ilt}, MiB~\cite{cermelli2020modelingthebackground}, GIFS
-\cite{cermelli2020fewshotcontinualsegm}, and SDR \cite{michieli2021sdr}. Note that while GIFS was
-created by Cermelli et al.~\cite{cermelli2020fewshotcontinualsegm} for continual \textit{few-shots}
+\paragraph{Baselines:} We benchmark our model against the latest state-of-the-arts \ac{CSS}
+methods ILT \citep{michieli2019ilt}, MiB \citep{cermelli2020modelingthebackground}, GIFS
+\citep{cermelli2020fewshotcontinualsegm}, and SDR \citep{michieli2021sdr}. Note that while GIFS was
+created by \cite{cermelli2020fewshotcontinualsegm} for continual \textit{few-shots}
 segmentation, we adapt it for the more general task of \ac{CSS}. Unless stated otherwise, all the results
 are excerpted from the corresponding papers. We also evaluate general continual models based on
-weight constraints (PI \cite{zenke2017synaptic_intelligence}, EWC \cite{kirkpatrick2017ewc}, and RW
-\cite{chaudhry2018riemannien_walk}) and knowledge distillation (LwF \cite{li2018lwf} and LwF-MC
-\cite{rebuffi2017icarl}). Moreover, unless explicitly stated otherwise, all the models (ours
+weight constraints (PI \citep{zenke2017synaptic_intelligence}, EWC \citep{kirkpatrick2017ewc}, and RW
+\citep{chaudhry2018riemannien_walk}) and knowledge distillation (LwF \citep{li2018lwf} and LwF-MC
+\citep{rebuffi2017icarl}). Moreover, unless explicitly stated otherwise, all the models (ours
 included), do not use rehearsal learning.
 
 
-\paragraph{Implementation Details:\,}As in~\cite{cermelli2020modelingthebackground}, we use a
-Deeplab-V3~\cite{chen2017deeplabv3} architecture with a ResNet-101~\cite{he2016resnet} backbone
-pretrained on ImageNet~\cite{deng2009imagenet} for all experiments and models but SDR
-\cite{michieli2021sdr} which used a Deeplab-V3+~\cite{chen2018deeplabv3plus}. For all datasets, we
+\paragraph{Implementation Details:} As in \cite{cermelli2020modelingthebackground}, we use a
+Deeplab-V3 \citep{chen2017deeplabv3} architecture with a ResNet-101 \citep{he2016resnet} backbone
+pretrained on ImageNet \citep{deng2009imagenet} for all experiments and models but SDR
+\citep{michieli2021sdr} which used a Deeplab-V3+ \citep{chen2018deeplabv3plus}. For all datasets, we
 set a maximum threshold for the uncertainty measure of \autoref{eq:seg_pseudo_bis_uncertain} to
 $\tau=1e-3$. We train our model for 30, 60, and 30 epochs per \ac{CSS} step on Pascal-VOC, ADE20k, and
 Cityscapes, respectively, with an initial learning rate of $1e-2$ for the first \ac{CSS} step, and $1e-3$
@@ -730,13 +728,13 @@ for all the following ones. Note that for Cityscapes, the first step is longer w
 reduce the learning rate exponentially with a decay rate of $9e-1$. We use SGD optimizer with $9e-1$
 Nesterov momentum. The Local POD weighting hyperparameter $\lambda$ is set to $1e-2$ and $5e-4$ for
 intermediate feature maps and logits, respectively. Moreover, we multiply this factor by the
-adaptive weighting $\sqrt{\nicefrac{|C^{1:t}|}{|C^{t}|}}$ introduced by \cite{hou2019ucir} that
+adaptive weighting $\sqrt{\nicefrac{|C^{1:t}|}{|C^{t}|}}$ introduced by \citep{hou2019ucir} that
 increases the strength of the distillation the further we are into the continual process. For all
 feature maps, Local POD is applied before ReLU, with squared pixel values, as in
 \cite{zagoruyko2016distillation_attention,douillard2020podnet}. We use 3 scales for Local POD: $1$,
 $\nicefrac{1}{2}$, and $\nicefrac{1}{4}$, as adding more scales experimentally brought diminishing
 returns. For PLOPLong only, we L2-normalize all POD embeddings before distilling them as also done
-on \cite{douillard2020podnet}. Furthermore, for PLOPLong, the gradient norm-clipping is set at $1.0$
+by \cite{douillard2020podnet}. Furthermore, for PLOPLong, the gradient norm-clipping is set at $1.0$
 for Pascal-VOC and $2.0$ for Cityscapes. We use a batch size of 24 distributed on two 12Go Titan Xp
 GPUs. Contrary to many continual models, we don't have access to any task id in inference, therefore
 our setting/strategy has to predict a class among the set of all seen classes
@@ -759,15 +757,15 @@ our setting/strategy has to predict a class among the set of all seen classes
 \input{tables/seg/ade}
 \input{tables/seg/voc_ade_hard}
 
-\paragraph{Pascal VOC 2012:\,}\autoref{tab:seg_voc_sota1} shows quantitative experiments on
+\paragraph{Pascal VOC 2012:} \autoref{tab:seg_voc_sota1} shows quantitative experiments on
 VOC 19-1, 15-5, and 15-1. Both the proposed PLOP and PLOPLong outperform state-of-the-art
-approaches, MiB \cite{cermelli2020modelingthebackground}, SDR \cite{michieli2021sdr}, and GIFS
-\cite{cermelli2020fewshotcontinualsegm} on all evaluated settings by a significant margin. For
+approaches, MiB \citep{cermelli2020modelingthebackground}, SDR \citep{michieli2021sdr}, and GIFS
+\citep{cermelli2020fewshotcontinualsegm} on all evaluated settings by a significant margin. For
 instance, on 19-1, the forgetting of old classes (1-19) is reduced by 4.39 percentage points (\pp)
 while performance on new classes is greatly improved (+13.76 \pp), as compared to the best
-performing method so far, MIB \cite{cermelli2020modelingthebackground}. On 15-5, our model is on par
+performing method so far, MIB \citep{cermelli2020modelingthebackground}. On 15-5, our model is on par
 with our re-implementation of MiB, and surpasses the original paper scores
-\cite{cermelli2020modelingthebackground} by 1 \pp. On the most challenging 15-1 setting, general
+\citep{cermelli2020modelingthebackground} by 1 \pp. On the most challenging 15-1 setting, general
 continual models (EWC and LwF-MC) and ILT all have very low \ac{mIoU}. While MiB shows significant
 improvements, PLOP still outperforms it by a wide margin. Furthermore, PLOP also significantly
 outperform the best performing approach on this setting, GIFS
@@ -783,7 +781,7 @@ better than PLOPLong on short setups (e.g. 19-1, 15-5), PLOPLong performs better
 
 
 
-\paragraph{Cityscapes:\,}We also validate our method on Cityscapes in
+\paragraph{Cityscapes:} We also validate our method on Cityscapes in
 \autoref{tab:seg_cityscapes_class}. In order to design a setting similar to Pascal-VOC 15-1 (6
 tasks), we design the 14-1 setting. Also, we simulate a background class by folding together the
 unlabeled classes. Here again, PLOP performs slightly better than MIB (+2.48 \pp on the old classes,
@@ -793,7 +791,7 @@ robustness to both catastrophic forgetting and background shift, especially when
 continual learning setups. To more precisely assess this phenomenon, we investigate the performance
 of both methods when dealing with longer task learning sequences.
 
-\paragraph{ADE20K:\,}\autoref{tab:seg_ade_sota} shows experiments on ADE 100-50, 100-10, and
+\paragraph{ADE20K:} \autoref{tab:seg_ade_sota} shows experiments on ADE 100-50, 100-10, and
 50-50. This dataset is notoriously hard, as the joint model baseline \ac{mIoU} is only 38.90\%. ILT
 has poor performance in all three scenarios. PLOP shows comparable performance with MiB on the short
 setting 100-50 (only 2 tasks), improves by 1.09 \textit{p.p} on the medium setting 50-50 (3 tasks),
@@ -803,9 +801,9 @@ performance gain on longer \ac{CSS} (e.g. 100-10) scenarios, due to increased ro
 forgetting and background shift.
 
 
-\paragraph{Longer Continual Trainings:\,}We argue that \ac{CSS} experiments should push towards
+\paragraph{Longer Continual Trainings:}We argue that \ac{CSS} experiments should push towards
 more steps
-\cite{wortsman2020supermasks,lomonaco2020ar1,douillard2020podnet,castro2018end_to_end_inc_learn} to
+\citep{wortsman2020supermasks,lomonaco2020ar1,douillard2020podnet,castro2018end_to_end_inc_learn} to
 quantify the robustness of approaches w.r.t. catastrophic forgetting and background shift. We
 introduce two novel and much more challenging settings with 11 tasks, almost twice as many as the
 previous longest setting. We report results for VOC 10-1 in \autoref{tab:seg_voc_hard} (10 classes
@@ -826,38 +824,46 @@ the components of PLOP and report results in \autoref{tab:seg_ablation_distill_c
 comparisons are evaluated on a val set made with 20\% of the train set, therefore results are
 slightly different from the main experiments.
 
-\paragraph{Distillation comparisons:\,}\autoref{tab:seg_ablation_distillation} compares
-different distillation losses when combined with our pseudo-labeling loss. As such, UNKD introduced
-in \cite{cermelli2020modelingthebackground} performs better than the Knowledge Distillation (KD) of
+\paragraph{Distillation comparisons:} \autoref{tab:seg_ablation_distillation} compares different
+distillation losses when combined with our pseudo-labeling loss. ILT \citep{michieli2019ilt} used
+the naive knowledge distillation of \cite{hinton2015knowledge_distillation}. CSC \citep{park2020csc}
+constrained spatial and channel correlation of intermediary features. This work bears similarity
+with POD and Local POD, but it's much more computationally intensive as it computes pixel-by-pixel
+correlation and not as performant. Finally, UNKD introduced in
+\cite{cermelli2020modelingthebackground} performs better than the Knowledge Distillation (KD) of
 \cite{hinton2015knowledge_distillation}, but not at every step (as indicated by the \textit{avg.}
 value), which indicates instability during the training process. POD, proposed in
-\cite{douillard2020podnet}, improves the results on the old classes, but not on the new classes
-(16-20). In fact, due to too much plasticity, POD model likely overfits and predicts nothing but the
-new classes, hence a lower \ac{mIoU}.  Finally, Local POD leads to superior performance (+20 \pp)
-w.r.t. all metrics, due to its integration of both long and short-range dependencies. This final row
-represents our full PLOP strategy.
+\cite{douillard2020podnet} (\autoref{chapter:regularization}), improves the results on the old
+classes, but not on the new classes (16-20). In fact, due to too much plasticity, POD model likely
+overfits and predicts nothing but the new classes, hence a lower \ac{mIoU}.  Finally, Local POD
+leads to superior performance (+20 \pp) w.r.t. all metrics, due to its integration of both long and
+short-range dependencies. This final row represents our full PLOP strategy.
 
 
-\paragraph{Classification comparisons:\,}\autoref{tab:seg_ablation_classif} compares different
+\paragraph{Classification comparisons:} \autoref{tab:seg_ablation_classif} compares different
 classification losses when combined with our Local POD distillation loss. Cross-Entropy (CE)
 variants perform poorly, especially on new classes. UNCE, introduced in
-\cite{cermelli2020modelingthebackground}, improves by merging the background with old classes,
+\citep{cermelli2020modelingthebackground}, improves by merging the background with old classes,
 however, it still struggles to correctly model the new classes, whereas our pseudo-labeling
 propagates more finely information of the old classes, while learning to predict the new ones,
 dramatically enhancing the performance in both cases. This penultimate row represents our full PLOP
 strategy. Also notice that the performance for pseudo-labeling is very close to
-\textit{Pseudo-Oracle} (where the incorrect pseudo-labels are removed), which may constitute a
+\textit{(Oracle) Pseudo-good} (where the incorrect pseudo-labels are removed), which may constitute a
 performance ceiling of our uncertainty measure. A comparison between these two results illustrates
-the relevance of our entropy-based uncertainty estimate.
+the relevance of our entropy-based uncertainty estimate. \textit{(Oracle) Pseudo-corrected} is
+similar to the previous oracle but instead fix the incorrect pseudo-labels; note that not all labels
+are present as some pixels were not even pseudo-labelized due to their high uncertainty. Finally,
+\textit{(Oracle) CE + all labels} has access to all labels of previous and current classes
+$\mcC^{1:t}$.
 
 \subsubsection{Robustness to class ordering}
 
 Continual learning methods may be prone to instability. It has already been shown in related
-contexts \cite{kim2019medic} that class ordering can have a large impact on performance.
+contexts \citep{kim2019medic} that class ordering can have a large impact on performance.
 Unfortunately, in real-world settings, the optimal class order can never be known beforehand: thus,
 the performance of an ideal \ac{CSS} method should be as invariant to class order as possible. In all
 experiments done so far, this class order has been kept constant, as defined
-in~\cite{cermelli2020modelingthebackground}. We report results in \autoref{fig:seg_order_voc_15-1}
+by \cite{cermelli2020modelingthebackground}. We report results in \autoref{fig:seg_order_voc_15-1}
 as boxplots obtained by applying 20 random permutations of the class order on VOC 15-1. We report in
 \autoref{fig:seg_order_voc_15-1} (from left to right) the \ac{mIoU} for the old, new classes, all
 classes, and average over \ac{CSS} steps. In all cases, PLOP surpasses MiB in terms of avg \ac{mIoU}.
@@ -887,18 +893,18 @@ information of the old classes, which again is more conspicuous on longer \ac{CS
 
 \input{tables/seg/voc_15-1_rehearsal}
 
-\paragraph{Pascal-VOC 15-1:\,} We now allow \ac{CSS} models to store information from the previous
+\paragraph{Pascal-VOC 15-1:} We now allow \ac{CSS} models to store information from the previous
 steps and classes: in such a case, the overall model efficiency can be understood as to what extent
 it allows to find good trade-off between its accuracy (as measured by the aforementionned standard
 metrics) and the memory footprint of the stored images or objects. Methods such as HRHF
-\cite{huang2021halfrealhalffake} can not easily be understood in these terms as they do not store
-data, strictly speaking, but rather use deep inversion \cite{yin20deepinversion} techniques to
+\citep{huang2021halfrealhalffake} can not easily be understood in these terms as they do not store
+data, strictly speaking, but rather use deep inversion \citep{yin20deepinversion} techniques to
 generate synthetic data, which comes at a high time requirement: thus, we exclude this method from
 our comparisons. We first consider the challenging Pascal-VOC 15-1 setting in
 \autoref{tab:seg_voc_rehearsal_learning}. We use PLOP and PLOPLong as baselines with 0 memory
 overhead, as both models only use data from the current task. Moreover, we compare with
 \cite{yu2020continualsegmentationselftraining}, where an unlabeled external dataset such as COCO
-\cite{lin2014mscocodataset} is used through pseudo-labelling to improve performance on Pascal-VOC,
+\citep{lin2014mscocodataset} is used through pseudo-labelling to improve performance on Pascal-VOC,
 as both datasets present significant overlap in terms of classes and domains. We reimplemented their
 method and also considered PLOP in this configuration. Using the external COCO provide PLOP an
 important gain of \ac{mIoU} for both old classes (+7 \pp) and new classes (+24
@@ -935,7 +941,7 @@ strike the best trade-off with a minimal memory overhead without impacting its p
     \label{fig:seg_object_pasting}
 \end{figure}
 
-\paragraph{Cityscapes:\,} We propose more experiments with Object Rehearsal in
+\paragraph{Cityscapes:} We propose more experiments with Object Rehearsal in
 \autoref{tab:seg_cityscapes_rehearsal} where we apply our model on Cityscapes 14-1. For the rehearsal,
 we sample either 10 images or object per class. Cityscapes images are particularly large (even
 resized to $512 \times 1024$)  and "empty" (most of it is road and sky). Consequently, the memory
@@ -978,7 +984,7 @@ whole image, an object, or a patch For both object and patch, we only rehearse a
 images: in object, only the pixel's objects are used while for patch, we use the pixel's object and
 the close surrounding pixels that contain background information. We insert the reheasal data
 according to ``\textit{mixing}'', either by pasting (see \autoref{sec:seg_object_rehearsal}), by
-mixing pixels according to mixup \cite{hingyi2018mixup} rule, or in the case of image rehearsal no
+mixing pixels according to mixup \citep{hingyi2018mixup} rule, or in the case of image rehearsal no
 mixing is done. Finally we consider two erasing methods: either all pixels are erased
 (\textit{All}), or only pixels belonging to non-background classes are erased (\textit{Foreground}).
 Note that, for the latter method, it includes classes detected via pseudo-labeling. For all methods,
@@ -986,7 +992,7 @@ we randomly select 10 images/patches/objects per class for rehearsal. Without su
 (III-V) and Object-based (VI-X) rehearsal are more data-efficient than images (I and II) (4.50 and
 2.60 vs 22.20 Mb). Mixing the rehearsed data with mixup (VI and VII) is less efficient than direct
 pasting (III, IV, and VIII-X) because segmentation, contrary to classification, requires sharp
-boundaries \cite{chen2020semeda}. We considered rehearsing each patch/object without mixing, but
+boundaries \citep{chen2020semeda}. We considered rehearsing each patch/object without mixing, but
 because their shape may variate no batching is possible which would be much slower. Therefore, we
 investigate mixing patches/objects while erasing all others pixels (III and VIII). This doesn't
 work, which is probably linked to the altered statistics of the batch normalization. On the other
@@ -995,7 +1001,7 @@ the background of the destination image proved to be very effective (63.12\% to 
 \ac{mIoU} for object). This confirmed our intuition that pasting in segmentation is a delicate
 operation that may lead to confusion in the network, particularly on object boundaries. The erased
 pixels are replaced by gray pixels. We considered more complicated approaches such as in-painting
-\cite{fang2019instaboost} or textures filling \cite{mallikarjuna2006kth-tips}, but were slightly
+\citep{fang2019instaboost} or textures filling \citep{mallikarjuna2006kth-tips}, but were slightly
 less effective than our simpler solution. Overall, through careful design, we manage to get the best
 performance using our novel object rehearsal which was also the most memory-efficient.
 
@@ -1011,7 +1017,7 @@ performance using our novel object rehearsal which was also the most memory-effi
     \label{fig:seg_visualization_gt_shift}
 \end{figure}
 
-\paragraph{Rehearsal allievates pseudo-labeling's limitation:\,} All previous methods, PLOP
+\paragraph{Rehearsal alleviates pseudo-labeling's limitation:} All previous methods, PLOP
 and PLOPLong included, didn't consider rehearsal-learning. While popular in image classification, it
 has fewly been explored for continual segmentation. An attentive reader may wonder if rehearsal
 learning can have benefit given the fact that our pseudo-labeling can uncover ``hidden'' old classes
@@ -1045,7 +1051,7 @@ rehearsal allows further refinement of the predicted masks resulting in sharper 
 Continual Semantic Segmentation (\ac{CSS}) is an emerging but challenging computer vision domain. In this
 paper, we highlighted two major issues in \ac{CSS}: catastrophic forgetting and background shift. To deal
 with the former, we proposed Local POD, a multi-scale distillation scheme that preserves both long
-and short-range spatial statistics between pixels. This lead to to an effective balance between
+and short-range spatial statistics between pixels. This lead to an effective balance between
 rigidity and plasticity for \ac{CSS}, which in turns alleviate catastrophic forgetting. We then tackled
 background shift with an efficient uncertainty-based pseudo-labeling loss. It completes the
 partially-labeled segmentation maps, allowing the network to efficiently retain previously learned
