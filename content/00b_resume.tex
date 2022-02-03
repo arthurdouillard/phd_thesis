@@ -14,6 +14,34 @@ My Summary.
 Mon résumé.
 \selectlanguage{english}
 
+\begin{itemize}
+    \item \autoref{chapter:regularization}: \nameref{chapter:regularization}\\
+          I first review the existing methods based on regularization for continual learning. While
+          regularizing a model's probabilities is very efficient to reduce forgetting in large-scale
+          datasets, there are few works considering constraints on intermediate features. I cover in this
+          chapter two contributions aiming to regularize directly the latent space of \acs{ConvNet}. The
+          first one, \acf{PODNet} aims to reduce the drift of spatial statistics between the old and new
+          model, which in effect reduces drastically forgetting even on large amount of tasks. I show in a
+          second part a complementary method where we avoid pre-emptively forgetting by allocating
+          locations in the latent space for yet unseen future class.
+    \item \autoref{chapter:segmentation}: \nameref{chapter:segmentation}\\
+          Then, I describe a recent application of \acf{CIL} to semantic segmentation. I show that
+          the very nature of \acf{CSS} offer new specific challenges, namely forgetting on large
+          images and a background shift. We tackle the first problem by extending our distillation
+          loss introduced in the previous chapter to multi-scales. The second problem is solved by
+          an efficient pseudo-labeling strategy. Finally, we consider the common rehearsal learning,
+          but applied this time to \ac{CSS}. I show that it cannot be used naively because of memory
+          complexity and design a light-weight rehearsal that is even more efficient.
+    \item \autoref{chapter:dynamic}: \nameref{chapter:dynamic}\\
+          Finally, I consider a completely different approach to continual learning: dynamic networks
+          where the parameters are extended during training to adapt to new tasks. Previous works on
+          this domain are hard to train and often suffer from parameter count explosion. For the
+          first time in continual computer vision, we propose to use the Transformer architecture:
+          the model dimension mostly fixed and shared across tasks, except for an
+          expansion of learned task tokens. With an encoder/decoder strategy where the decoder
+          forward is specialized by a task token, we show state-of-the-art robustness to forgetting
+          while our memory and computational complexities barely grow.
+\end{itemize}
 
 \cleardoublepage
 \chapter{Remerciements}
