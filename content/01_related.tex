@@ -213,6 +213,15 @@ literature. I detail now the major ones, given $x$ an input sample and $y$ its l
 In the chapter \autoref{chapter:regularization} and \autoref{chapter:dynamic}, I tackled only the
 prior shift, while in \autoref{chapter:segmentation} I solved all three described shifts.
 
+\begin{figure}[tb]
+      \begin{center}
+            \includegraphics[width=1.0\linewidth]{images/related/protocol}
+      \end{center}
+      \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
+            new set of classes, and the model must retain knowledge about \textit{all} classes. The
+            model is allowed a \textit{limited} memory of samples of old classes.}
+      \label{fig:related_protocol}
+\end{figure}
 
 \paragraph{Class-Incremental Example} More concretely, a common benchmark in \ac{NC} setting,
 commonly called \ac{CIL} is to learn the image classification CIFAR100 dataset
@@ -341,7 +350,7 @@ training, slightly modify them via bi-level optimization to minimize forgetting.
 
 \begin{figure}[tb]
       \begin{center}
-            \includegraphics[width=1.0\linewidth]{images/podnet/protocol}
+            \includegraphics[width=1.0\linewidth]{images/related/rehearsal}
       \end{center}
       \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
             new set of classes, and the model must retain knowledge about \textit{all} classes. The
@@ -358,11 +367,12 @@ training, slightly modify them via bi-level optimization to minimize forgetting.
 
 \begin{figure}[tb]
       \begin{center}
-            \includegraphics[width=1.0\linewidth]{images/related/continual_regularizations.pdf}
+            \includegraphics[width=1.0\linewidth]{images/related/constraints}
       \end{center}
-      \caption{\textbf{Regularizations constraints} forcing the new model to be \textit{similar} to
-            the old model to reduce catastrophic forgetting.}
-      \label{fig:related_regul}
+      \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
+            new set of classes, and the model must retain knowledge about \textit{all} classes. The
+            model is allowed a \textit{limited} memory of samples of old classes.}
+      \label{fig:related_protocol}
 \end{figure}
 
 A common and efficient way to reduce forgetting, is to minimize the difference in behavior between
