@@ -2,11 +2,13 @@
 \label{chapter:related}
 
 \begin{chapabstract}
-      In this chapter, I will detail the necessary related work to read this thesis. I'll first
-      briefly explain the learning procedure in \acf{DL} and how the data are structured. Then, I'll
-      describe how \ac{DL} can be applied for \acf{CV}. Finally, I'll introduce the main topic of
-      this thesis ---Continual Learning--- and showcase the challenges, benchmarks, and methods of
-      this domain.
+      Deep Learning is now the major method to learn unstructured data such as images. Computer
+      Vision used for a long time handcrafted convolution kernels, but nowadays, those kernels are
+      learned as ensemble of neurons. While this kind of networks, called Convolutional Neural
+      Networks, showed impressive performance in a wide variety of tasks, they still suffer from
+      the plague of forgetting when learning a moving distribution. Therefore, the field of
+      Continual Learning aims solve this challenge by using multiple approaches, including rehearsal
+      and behavior constraints.
 \end{chapabstract}
 
 %\minitoc
@@ -16,8 +18,11 @@
 \ifthenelse{\boolean{skipRelated}}{\endinput}{}
 
 
-\section{Introduction}
-
+In this chapter, I will detail the necessary related work to read this thesis. I'll first
+briefly explain the learning procedure in \acf{DL} and how the data are structured. Then, I'll
+describe how \ac{DL} can be applied for \acf{CV}. Finally, I'll introduce the main topic of
+this thesis ---Continual Learning--- and showcase the challenges, benchmarks, and methods of
+this domain.
 
 \section{Deep Learning}
 
@@ -35,7 +40,7 @@ $\vW_o \in \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parame
 network. $\vx \in \mathbb{R}^D$ the input data as a vector, and $\tilde{\vy} \in \mathbb{R}^C$ the
 predicted probabilities per classes. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
 ($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\operatorname{softmax}(\tilde{\vy}) =
-      \nicefrac{e^{\tilde{\vy}}}{\sum_{i} \tilde{\vy}_i}$ the final non-linear activation. This small
+      \nicefrac{e^{\tilde{\vy}}}{\sum_{i} e^{\tilde{\vy}_i}}$ the final non-linear activation. This small
 neural network is trained to minimize a loss function. In classification, the most common is the
 cross-entropy:
 %
@@ -72,68 +77,21 @@ optimize differentiable functions.
 
 \section{Modern Computer Vision}
 
-In 2022, a majority of \ac{DL} models for computer vision are based on learned convolutions.
-Handcrafted convolutions can be used to extract crude patterns such as edges \citep{lowe1999sift}.
-Early works proposed to learn the convolution kernels
-\citep{fukushima1980neocognitron,lecun1999lenet} as parameters of the neural networks. Those networks
-are then called \ac{CNN}. In 2012, thanks to a large dataset and more efficient code working on
-\acs{GPU}, \cite{krizhevsky2012alexnet} won the ILSVC competition
-\citep{russakovsky2015imagenet_ilsvrc} where they had to classify a large dataset ---ImageNet---
-made of 1M2 training images among 1000 classes. From that point forward, multiple improvements were
-made to \ac{CNN} \citep{ioffe2015batchnorm,he2016resnet} and these methods have been applied not only
-to classification but also object detection \citep{ren20fasterrcnn}, semantic segmentation
-\citep{chen2018deeplab}, visual question answering \citep{benyounes2017mutan}, \etc.
+Handcrafted convolutions were used to extract crude patterns such as edges \citep{lowe1999sift} but
+it is complex to design more elaborated convolution kernels. Therefore, researchers have proposed to
+learn the convolution kernels as parameters of the neural networks
+\citep{fukushima1980neocognitron,lecun1999lenet}. Those networks are then called \ac{CNN}. In 2012,
+thanks to a large dataset and more efficient code working on \acs{GPU}, \cite{krizhevsky2012alexnet}
+won the ILSVC competition \citep{russakovsky2015imagenet_ilsvrc} where they had to classify a large
+dataset ---ImageNet--- made of 1M2 training images among 1000 classes. From that point forward,
+multiple improvements were made to \ac{CNN} \citep{ioffe2015batchnorm,he2016resnet} and these
+methods have been applied not only to classification but also object detection
+\citep{ren20fasterrcnn}, semantic segmentation \citep{chen2018deeplab}, visual question answering
+\citep{benyounes2017mutan}, \etc.
 
-
-
-\acf{CNN} have been for a long-time the \textit{defacto} method for \acs{NN} for \ac{CV}
-\citep{fukushima1980neocognitron,lecun1999lenet}. In 2012, with larger datasets and better hardware
-(\ie \acs{GPU}), \cite{krizhevsky2012alexnet} imposed \ac{DL} models as the best performing
-algorithms for images. As the name implies, \acs{CNN} are made of convolutions. The convolution
-operation involves sliding a kernel across the image pixels:
-
-\begin{equation}
-      \resizebox{\hsize}{!}{$
-                  \left(\left[\begin{array}{lll}
-                              a & b & c \\
-                              d & e & f \\
-                              g & h & i
-                        \end{array}\right] *\left[\begin{array}{lll}
-                              1 & 2 & 3 \\
-                              4 & 5 & 6 \\
-                              7 & 8 & 9
-                        \end{array}\right]\right)[2,2]=(a \cdot 1)+(b \cdot 2)+(c \cdot 3)+(d \cdot 4)+(e \cdot 5)+(f \cdot 6)+(g \cdot 7)+(h \cdot 8)+(i \cdot 9)\,,
-            $}
-      \label{eq:related_conv}
-\end{equation}
-
-\noindent where the left matrix is a $3\times 3$ convolution kernel, and the right matrix a $3
-      \times 3$ grayscale (\ie single-channel) image. Note that while the literature commonly call
-this a "\textit{convolution}", it's actually a "\textit{cross-correlation}" because the kernel
-hasn't been flipped. If an image contains multiple channels, as an RGB image, a different kernel
-is applied to each channel, and the resulting matrices are summed element-wise. \textbf{The
-      convolution allows extracting patterns in an image}. Before Deep Learning, convolution kernels
-were hand-made, likewise:
-
-\begin{equation}
-      M_{x}=\frac{1}{4}\left[\begin{array}{lll}
-                  -1 & 0 & 1 \\
-                  -2 & 0 & 2 \\
-                  -1 & 0 & 1
-            \end{array}\right]\,.
-      \label{eq:sobel_horizontal}
-\end{equation}
-
-This kernel is the horizontal Sobel kernel which can detect horizontal edges. Detecting more complex
-patterns means more complex kernels, which would be difficult to design manually. Therefore,
-\acs{CNN} considers each element of the kernel as a neuron to be optimized (see
-\autoref{chapter:introduction}). Combining convolution kernels successively allows detecting
-more and more complex patterns until being able to detect object concepts in an image. In
-\autoref{fig:related_cnn}, I illustrate a \ac{CNN} made of convolutions, poolings (a
-dimensionality-reduction/sampling method for images), and a final classifier. The classifier is simply
-a linear projection from the features dimension to the number of classes, where with a softmax
-activation, logits will be mapped to probabilities.
-
+Most \acs{CNN} follow a similar structure with blocks of made of convolutions and pooling. The
+feature extractor is usually ended by a global average pooling, and followed by a linear classifier
+predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this general paradigm.
 
 \begin{figure}[tb]
       \begin{center}
@@ -141,24 +99,85 @@ activation, logits will be mapped to probabilities.
       \end{center}
       \caption{\textbf{A Convolutional Neural Networks} extracts more complex patterns through its
             succession of convolutions. In \textcolor{orange}{orange} a convolution, in \textcolor{red}{red}
-            a pooling, and in \textcolor{green}{the classifier}. Given an image, the \ac{CNN} can assign to
+            a pooling, and in \textcolor{green}{green} the classifier. Given an image, the \ac{CNN} can assign to
             each possible class a probability, all summing to 1. Here this cute little cat is clearly a cat.
             Detected patterns taken from \cite{olah2017feature}.}
       \label{fig:related_cnn}
 \end{figure}
 
-In the 2010's decade, multiple major improvements were made to \acs{CNN}, but the one of
-the latest best performing models \citep{tan2019efficientnet} is mainly based on two architectural changes:
-residual connections allowing training of very deep networks \citep{he2016resnet} and normalization
-of intermediate activations \citep{ioffe2015batchnorm}. Another major factor of recent \ac{CNN}
-improvements is better training procedure \citep{wightman2019resnetstrikesback}, which includes
-optimizer \citep{kingma2014adam}, learning rate scheduling, strong data augmentations
-\citep{muller2021trivialaugment,hingyi2018mixup,zhong2017erasing}, and regularizations
-\citep{gal2016dropout,gao2016stochasticdepth}.
+The 2010's decade saw major improvements to \acs{CNN}, both in their architecture structure and in
+their training procedure. \cite{srivastava2015highwaynet} and \cite{he2016resnet} proposed residual
+connections between blocks likewise: $\vy = \vx + \sigma(\operatorname{Conv}(\vx))$. It allows
+training deeper networks by enabling the gradient flows more easily up the earliest layers. This
+type of connections is now quasi-ubiquitous in all \ac{DL} based architectures. Other architecture
+changes include using convolutions of different kernel sizes in parallel as in Inception
+\citep{szegedy2015inception}, enabling a multi-scale view of the features. These architectures are
+depicted in \autoref{fig:related_resnet_inception}.
+
+\begin{figure}[tb]
+      \begin{center}
+            \includegraphics[width=\linewidth]{images/related/resnet_inception.pdf}
+      \end{center}
+      \caption{\textbf{Different CNN architectures:} \textbf{(a)} illustrates a ResNet-like architecture
+            \citep{he2016resnet} where there are residual connections between blocks. Used by the vast
+            majority of modern architectures, these connections help the gradient flows unchanged and
+            allow training deeper networks. \textbf{(b)} showcases an Inception-like architecture where at
+            the same level convolutions with different kernel sizes are used. Each detects patterns of
+            different scales.}
+      \label{fig:related_resnet_inception}
+\end{figure}
+
+The high performance of modern \acs{CNN} is also provided to their training procedure
+\citep{wightman2019resnetstrikesback}: optimizers with adaptive learning rate such as Adam
+\citep{kingma2014adam}, improved learning rate scheduling, strong data augmentations
+\citep{muller2021trivialaugment,hingyi2018mixup,zhong2017erasing}, and regularizations such as
+Dropout \citep{gal2016dropout} and stochastic depth \citep{gao2016stochasticdepth}.
+
+While convolution-based neural networks dominated \acf{CV} in the 2010's decade, in the recent years
+the transformer architecture gained interest: originally designed for machine translation in
+\ac{NLP} \citep{vaswani2017transformer} with an encoder/decoder structure, it has been applied to
+vision \citep{dosovitskiy2020vit} using a modified encoder-only structure as BERT
+\citep{devlin2018bert}. A transformer's input is a sequence of ``\textit{tokens}'', which are
+high-dimensional vectors. While \ac{NLP}, it used to be the learned embeddings of subwords, in
+Vision it is the linear projection of patches of pixels.
+
+\begin{figure}[tb]
+      \begin{center}
+            \includegraphics[width=\linewidth]{images/related/vit.png}
+      \end{center}
+      \caption{\textbf{The Vision Transformer (ViT):} the image is cropped without overlap and
+            projected using a convolution whose stride equals the kernel size. The encoder is made of
+            multiple transformer blocks. Finally, only the special learned token ``class token'' is used
+            at the end, and fed to a linear classifier. Image from \cite{dosodosovitskiy2020vit}.}
+      \label{fig:related_vit}
+\end{figure}
 
 More recently, the Transformer architecture \citep{vaswani2017transformer}, originally designed for
 machine translation in \ac{NLP}, was applied to images. Using an encoder structure similar to BERT
-\citep{devlin2018bert}, ViT \citep{dosovitskiy2020vit} considered patches of pixels as tokens.
+\citep{devlin2018bert}, ViT \citep{dosovitskiy2020vit}, illustrated in \autoref{fig:related_vit},
+considered patches of pixels as tokens. A special learned token, called ``class token'' is added to
+the patch tokens. All the tokens are then processed through multiple transformer blocks. Each block
+is made of LayerNorm \citep{ba2016layernorm}, a \ac{MHSA}, a \ac{MLP}, and residual connections.
+Given a single head, the Self-Attention is:
+%
+\begin{equation}
+      \begin{aligned}
+            Q & =W_{q} \vx\,,                                                       \\
+            K & =W_{k} \vx\,,                                                       \\
+            V & =W_{v} \vx\,,                                                       \\
+            A & =\operatorname{Softmax}\left(Q \cdot K^{T} / \sqrt{D / h}\right)\,, \\
+            O & = W_{o} A V+b_{o}\,.
+      \end{aligned}
+      \label{sec:related_sa}
+\end{equation}
+%
+$\vx$ are the $N$ patch tokens and the class token, of shape $(N, D)$, $D$ being the embedding
+dimension. The patch tokens are linearly transformed thrice in a \textbf{Q}uery, \textbf{K}ey, and
+\textbf{V}alue. An attention matrix of shape $(N, N)$ is computed from the query and the key. Its
+$i^{\text{th}}$ row contains the similarity between the $i^{\text{th}}$ with all other tokens.
+Finally, the multiplication between the attention matrix and the value matrix averages all tokens
+according to their similarities. To extend the Self-Attention its multi-heads variation, we use
+several Query/Key/Value transformations and do as many self-attentions in parallel.
 
 \section{Continual Learning}
 \label{sec:related_continual}
