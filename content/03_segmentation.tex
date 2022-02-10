@@ -54,12 +54,9 @@ before being proposed for general segmentation datasets
 
 
 In particular, in this chapter, we argue that two problems arise when performing \ac{CSS} with
-\acs{DCNN}. The first one, inherited from continual learning, is called \textbf{catastrophic
-    forgetting}~\citep{robins1995catastrophicforgetting}, and points to the fact that neural networks
-tend to completely and abruptly forget previously learned knowledge when learning new information
-~\citep{kemker2018measuringforgetting}. Catastrophic forgetting presents a real challenge for
-continual learning applications based on deep learning methods as described in the previous chapters
-(see \autoref{chapter:related})). One of the most efficient methods to avoid forgetting is rehearsal
+\acs{DCNN}. The first one, inherited from continual learning, is \textbf{catastrophic
+    forgetting}~\citep{robins1995catastrophicforgetting}, already well detailed in the previous chapters
+including \autoref{chapter:related}. One of the most efficient methods to avoid forgetting is rehearsal
 learning (\autoref{sec:related_rehearsal}) where we store a few images from previous tasks.
 Unfortunately, this solution has difficulty in the context of segmentation where multiple classes
 can be in the same image, and where the storage cost is high and images are partially labeled. The
@@ -70,7 +67,7 @@ background contains pixels that do not belong to any of the \textit{current} cla
 specific learning step, the background can contain both future classes, not yet seen by the model,
 as well as old classes. Thus, if nothing is done to distinguish pixels belonging to the real
 background class from old class pixels, this \textbf{background shift} phenomenon risks exacerbating
-the catastrophic forgetting even further \cite{cermelli2020modelingthebackground}. This issue also
+the catastrophic forgetting even further \citep{cermelli2020modelingthebackground}. This issue also
 has an impact on the selection of the old data we want to store. Because some currently learned
 classes are annotated as background in the old data, this may degrade the performance of these
 classes if one naively treat them as background to fine-tune the current model.
@@ -184,10 +181,10 @@ exploits prototypes updated with an exponential moving average of the mean batch
 \paragraph{Positioning:} Contrary to previous works in continual segmentation
 \citep{michieli2019ilt,cermelli2020modelingthebackground} which reduced slightly forgetting through
 distillation of the probabilities, we propose a stronger constraint based on global and local
-statistics extracted from intermediary features. Moreover, background is often not considered
+statistics extracted from intermediary features. Moreover, background shift is often not considered
 \citep{michieli2019ilt} or only weakly tackled \citep{cermelli2020modelingthebackground}, while we
 propose to eliminate it through segmentation maps completion with pseudo-labeling. Finally, none of
-the work proposed rehearsal methods for \ac{CSS}, while we propose a non-trivial based on image
+the work proposed rehearsal methods for \ac{CSS}, while we propose a non-trivial method based on image
 rehearsal and further improve it with a more data-efficient method based with object rehearsal.
 
 
@@ -642,7 +639,7 @@ strategy in \autoref{fig:seg_model_objectrehearsal}.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{images/seg/dataset_viz.pdf}
+    \includegraphics[width=0.5\linewidth]{images/seg/dataset_viz.pdf}
     \vspace*{-0.3cm}
     \caption{Visualization of an example image and its segmentation maps for Pascal-VOC, ADE20k, and Cityscapes.}
     \label{fig:seg_dataset_viz}
@@ -926,14 +923,16 @@ ensemble of our experiments proves that rehearsal, when the partial or missing l
 handled, can provide important performance gain. Furthermore, our novel object rehearsal manages to
 strike the best trade-off with a minimal memory overhead without impacting its performance.
 
+\begin{comment}
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{images/seg/object_pasting.pdf}
+    \includegraphics[width=0.5\linewidth]{images/seg/object_pasting.pdf}
     \caption{Pasted object for rehearsal in three images. Top row shows the pasting of a
         \texttt{motorbike} and a \texttt{bicycle} in Pascal-VOC, and bottom row shows the pasting of
         a \texttt{bus} in Cityscapes.}
     \label{fig:seg_object_pasting}
 \end{figure}
+\end{comment}
 
 \paragraph{Cityscapes:} We propose more experiments with Object Rehearsal in
 \autoref{tab:seg_cityscapes_rehearsal} where we apply our model on Cityscapes 14-1. For the rehearsal,

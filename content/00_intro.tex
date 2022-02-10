@@ -7,108 +7,99 @@
 
 \ifthenelse{\boolean{skipIntro}}{\endinput}{}
 
-\section{Context}
 
-\acf{AI} is a vast subject with several approaches whose common goal is to reproduce more or less
-human behaviors. The field was arguably founded during the Dartmouth Workshop during the summer of
-1956. From that time forward, rule-based systems, algorithms, and machine learning models were
-developed to tackle a wide variety of domains, ranging from playing chess to understanding images
-and text. Now in 2022, \ac{DL} research has underwent an almost exponential growth with important investments
-from both research labs and private companies (\eg Google, Facebook, Heuritech, \etc). Applications
-are widely available to the general public with improved web and search engines, automatic
-translation, face recognition, speech recognition, autonomous driving, \etc.
+% what is ai
+% application of ai
+% ethical limits
 
-A particular domain of \ac{AI} is \ac{CV} where a model must be able to automatically process images
-and extract useful information. This domain is particularly important as the amount of images and
-videos uploaded grow exponentially each year. This trove of data is hard to exploit due to the
-unstructured nature of images. The best performing approaches of the 2000's were based on
-handcrafted features such as SIFT \citep{lowe1999sift} or Fisher Vectors \citep{csurka2010fishervectors} followed by
-machine learning models like Gradient Boosting \citep{friedman2001gradientboosting}, \acs{SVM} \citep{cortes1995svm}, or
-random forest \citep{ho1995randomforest}. From the year 2012, \acf{DL} models, a specific kind of machine learning
-model, started to outperform previous approaches by a large margin. Specifically, a particular type
-of \ac{DL} models called \acs{ConvNet}, well fitted for \ac{CV}, dominated the ILSVC competition
-\citep{russakovsky2015imagenet_ilsvrc} with 2012's AlexNet architecture
-\citep{krizhevsky2012alexnet}. All following state-of-the-art models without exception were also based on the
-\ac{DL} paradigm.
+% computer vision, input/output
+% M/D Learning, abstract, no math
+% heuritech
+% continual learning what are the problems
+% outline, maybe fusionned with CL
 
-\ac{DL} models are a succession of linear transformations and non-linear functions and are supposed
-to be able to approximate any function \citep{gelenbe1999universalapprox}. For example, the most simple \ac{DL}
-model, a \ac{MLP} with a single hidden layer for classification can be defined likewise:
-%
-\begin{equation}
-      \hat{\vy} = f_\theta(\vx) = \operatorname{softmax}(\vW_o + \sigma(\vW_h \vx + \vb_h) + \vb_o))\,,
-      \label{eq:intro_mlp}
-\end{equation}
-%
-with $\vW_h \in \mathbb{R}^{H \times D}$, $\vb_h \in \mathbb{R}^{H}$,
-$\vW_o \in \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters and of the
-network. $\vx \in \mathbb{R}^D$ the input data as a vector, and $\tilde{\vy} \in \mathbb{R}^C$ the
-predicted probabilities per classes. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
-($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\operatorname{softmax}(\tilde{\vy}) =
-      \nicefrac{e^{\tilde{\vy}}}{\sum_{i} \tilde{\vy}_i}$ the final non-linear activation. This small
-neural network is trained to minimize a loss function. In classification, the most common is the
-cross-entropy:
-%
-\begin{equation}
-      \mcL(\hat{\vy}, \vy) = -\sum_i y_i \log \hat{y}_i\,,
-      \label{eq:intro_ce}
-\end{equation}
-%
-with $\vy$ a one-hot vector of the labels. Finally, to optimize the parameters of the neural
-network, we often use the mini-batch \ac{SGD} algorithm or a variation thereof:
+\epigraph{I believe that at the end of the century the use of words and general educated opinion
+      will have altered so much that one will be able to speak of machines thinking without expecting to
+      be contradicted}{\textit{Alan Turing}}
 
-\begin{algorithm}
-      \begin{algorithmic}[1]
-            \Statex \textbf{input:} a dataset $\mathbb{D}$ with pairs of $(\vx, \vy)$
-            \Statex \textbf{input:} a loss function $\mcL(\hat{\vy}, \vy)$
-            \Statex \textbf{input:} a model function $f_\theta$
-            \Statex \textbf{input:} a learning rate $\eta$ and a batch size $b$
-            \Statex
+In this thesis introduction, using layman terms, I'll describe what is Artificial Intelligence, and
+more particularly one of its instance: Deep Learning. Then, I'll lay out the challenges of this
+thesis and what I've developed to solve them.
 
-            \While{stopping criterion not satisfied}
-            \State $\vx$, $\vy$ $\gets$ sample mini-batch from $\mathbb{D}$
-            \State Forward pass: $\hat{\vy}$ $\gets$ $f_\theta(\vx)$
-            \State Compute loss: $\mcL$ $\gets$ $\mcL(\hat{\vy}, \vy)$
-            \State Compute the gradients: $\delta$ $\gets$ $\nabla_\theta \mcL$
-            \State Update all parameters: $\theta$ $\gets$ $\theta - \eta \delta$
-            \EndWhile
-      \end{algorithmic}
-      \caption{Procedure to optimize a neural network with gradient descent.}
-      \label{algo:intro_sgd}
-\end{algorithm}
+%\section{Artificial Intelligence}
 
-Almost all \ac{DL} models, in \ac{CV}, \ac{NLP}, or even Speech use a form of gradient descent to
-optimize differentiable functions.
+The idea of thinking machines began in the previous century, from Karel Çapek's invention of the
+"\textit{robot}" to the 1956's Dartmouth workshop passing by Turing \& von Neumann's reflections.
+Despite suffering from multiple "AI winters" filled with disappointments and criticisms, Turing's
+prediction on the rising importance of \ac{AI} proved to be right as the first decade and second
+decade of the XXI century saw the advent of respectively \acf{ML} and \acf{DL}, two major subfields
+of \ac{AI}.
 
-In 2022, a majority of \ac{DL} models for computer vision are based on learned convolutions.
-Handcrafted convolutions can be used to extract crude patterns such as edges \citep{lowe1999sift}.
-Early works proposed to learn the convolution kernels
-\citep{fukushima1980neocognitron,lecun1999lenet} as parameters of the neural networks. Those networks
-are then called \ac{CNN}. In 2012, thanks to a large dataset and more efficient code working on
-\acs{GPU}, \cite{krizhevsky2012alexnet} won the ILSVC competition
-\citep{russakovsky2015imagenet_ilsvrc} where they had to classify a large dataset ---ImageNet---
-made of 1M2 training images among 1000 classes. From that point forward, multiple improvements were
-made to \ac{CNN} \citep{ioffe2015batchnorm,he2016resnet} and these methods have been applied not only
-to classification but also object detection \citep{ren20fasterrcnn}, semantic segmentation
-\citep{chen2018deeplab}, visual question answering \citep{benyounes2017mutan}, \etc.
+Providing a definition of \ac{AI} is difficult, but its foremost domains, \ac{ML} and \ac{DL}, can be
+defined as statistical methods aiming to discover patterns in data. These methods are already
+ubiquitous: speech recognition allow us to control devices remotely, recommender
+systems propose us movies according to our taste, automatic translation, face recognition,
+autonomous driving, \etc.
 
-\section{Motivations for Continual Learning}
+Because \ac{AI} is increasingly more important in our daily lives, some ethical considerations must
+also be raised. \todo{IDK}
 
-Usually, when training a \ac{CNN}, we assume the dataset is immutable and \textit{i.i.d.}: no new
-image nor new classes will be learned. The knowledge acquired on one dataset A can be
-\textit{transferred} to another dataset B with different classes using \textbf{transfer learning}
-\citep{razavian2014transferlearning}. However, in that case, the new model, while being efficient on
-the dataset B, cannot classify the classes of dataset A.
+\section{Deep Learning}
 
-\textbf{Continual Learning} aims to learn a continually changing dataset without forgetting the
-previous knowledge. \eg a model could learn at first to classify among 10 classes, then add 10 more
-classes, \etc. Continually learning an increasing number of classes is easily doable if the data of
-previous classes is accessible. However, it may not always be the case: privacy reasons are often
-raised ---think medical data or federated learning's user data. In that situation, learning new
-classes lead to a \textbf{catastrophic forgetting} \citep{robins1995catastrophicforgetting} of
-previous classes.
+While many domains exist in \acf{AI}, this thesis is focused on using \acf{DL} applied to \acf{CV}.
+In this section, I'll describe briefly what are the learning methods, what do the data looks like.
+Finally, I'll detail what does this thesis try to solve and why.
 
-\section{Outline}
+\paragraph{Deep Learning} belongs to the statistical learning methods. As other statistical methods,
+such as \acf{ML}, these methods usually work on an input/output level. Given an input, the model is
+expected to produce an output. This output, called a \textit{prediction}, will be compared to what
+the model should actually predict, the \textit{ground-truth}. Like in human learning, the model is
+informed when it's wrong in order to avoid making the same mistake twice. \acf{DL} models are based
+on artificial neural networks, which as the name implies originally bears some similarity with
+humans' neurons.
+
+\paragraph{Computer Vision} is an application topic in \acf{AI}. Its goal is to analyze images using
+computer-assisted method. The most common tasks in \acf{CV} includes image classification where a
+label must be predicted per image, semantic segmentation where each pixel must be attributed a
+label, or even \ac{VQA} where questions about an image must be answered. Many families of methods can
+be used to tackle \ac{CV} problems, but as of 2012 and onwards, \acf{DL} is the best
+performing method for this type of data.
+
+\section{Thesis' goal}
+
+Now that the type of methods and data (Deep Learning, and images) have been defined, I'll
+contextualize my thesis w.r.t. my sponsor, how it influenced my research, and what challenges I've
+aimed to tackle.
+
+\paragraph{Heuritech} This thesis was sponsored by the Parisian startup
+Heuritech\footnote{\url{https://heuritech.com}} as a \textit{CIFRE PhD}. The company analyses social
+networks such as Instagram and Weibo, recognizes what are the weared clothes in pictures, estimates
+volumes of fine-grained types of garments, and finally forecasts future trends. The company's
+\acf{CV} models must recognize an ever-growing number of entities from features (\eg knitted, blue
+color, short cut) to brand models (\eg Nike Air Max, Adidas Stan Smith, Puma Suede). This
+requirement leads to two problems: \textbf{(1)} the time spent to re-train a model is growing
+linearly, and \textbf{(2)} learning a new entity can incur a performance loss on previously learned
+entities. The scientific literature names the domain of learning new concepts regularly
+``\textbf{Continual Learning}'', and the loss of performance ``\textbf{Catastrophic Forgetting}''.
+
+\paragraph{Continual Learning} is a field that emerged in the 1990s but saw renewed interest only
+very recently around the second half of the 2010s. The goal is to deal with non-static datasets that
+evolve through time. This evolution can take many forms, including adding new entities to predict in
+a classification task (\eg learning sneaker brands, then high-heel brands) or adding samples from
+new sources (\eg commercial photoshoot then images from social medias). Unfortunately, current
+State-of-the-Art models struggle to learn continually without forgetting. This loss is so important,
+that the literature nicknamed it a ``catastrophic forgetting''. Multiple methods have been designed
+to reduce it with the two major ones being rehearsal and constraints. Rehearsal involves reviewing
+previously learned knowledge, as a human student would \textit{rehearse} the last semester's course.
+However, this rehearsal is often limited in order to reduce computational cost and because past data
+may not always be available for a variety of reasons. Constraints enforce that the model keeps a
+similar \textit{behavior} as it learns new concepts.
+
+\paragraph{Thesis's Outline:} This thesis is focused on bringing Continual Learning capacity to
+Computer Vision models. In the next chapter (\autoref{chapter:related}), I detail the learning
+procedure, state the exact benchmarks considered in Continual Learning, and review the
+State-of-the-Art in this domain. After this chapter, I cover the various papers published during
+this thesis over three chapters as follows:
 
 \begin{itemize}
       \item \autoref{chapter:regularization}: \nameref{chapter:regularization}\\
@@ -139,9 +130,7 @@ previous classes.
             while our memory and computational complexities barely grow.
 \end{itemize}
 
-\section{Related Publications}
-
-This thesis is based on the materials published in the following papers:
+\paragraph{Related Publications:} This thesis is based on the materials published in the following papers:
 
 \begin{itemize}
       \item \fullcite{douillard2020podnet}
@@ -155,5 +144,6 @@ I've also published other papers that can be found in the \autoref{chapter:appen
 
 \begin{itemize}
       \item \fullcite{douillardlesort2021continuum}
+      \item \todo{Add ICML submission on foundational models}
 \end{itemize}
 

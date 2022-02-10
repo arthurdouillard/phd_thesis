@@ -4,6 +4,36 @@
 \chapter{Abstract}
 
 My Summary.
+
+\begin{itemize}
+      \item \autoref{chapter:regularization}: \nameref{chapter:regularization}\\
+            I first review the existing methods based on regularization for continual learning. While
+            regularizing a model's probabilities is very efficient to reduce forgetting in large-scale
+            datasets, there are few works considering constraints on intermediate features. I cover in this
+            chapter two contributions aiming to regularize directly the latent space of \acs{ConvNet}. The
+            first one, \acf{PODNet} aims to reduce the drift of spatial statistics between the old and new
+            model, which in effect reduces drastically forgetting even on large amount of tasks. I show in a
+            second part a complementary method where we avoid pre-emptively forgetting by allocating
+            locations in the latent space for yet unseen future class.
+      \item \autoref{chapter:segmentation}: \nameref{chapter:segmentation}\\
+            Then, I describe a recent application of \acf{CIL} to semantic segmentation. I show that
+            the very nature of \acf{CSS} offer new specific challenges, namely forgetting on large
+            images and a background shift. We tackle the first problem by extending our distillation
+            loss introduced in the previous chapter to multi-scales. The second problem is solved by
+            an efficient pseudo-labeling strategy. Finally, we consider the common rehearsal learning,
+            but applied this time to \ac{CSS}. I show that it cannot be used naively because of memory
+            complexity and design a light-weight rehearsal that is even more efficient.
+      \item \autoref{chapter:dynamic}: \nameref{chapter:dynamic}\\
+            Finally, I consider a completely different approach to continual learning: dynamic networks
+            where the parameters are extended during training to adapt to new tasks. Previous works on
+            this domain are hard to train and often suffer from parameter count explosion. For the
+            first time in continual computer vision, we propose to use the Transformer architecture:
+            the model dimension mostly fixed and shared across tasks, except for an
+            expansion of learned task tokens. With an encoder/decoder strategy where the decoder
+            forward is specialized by a task token, we show state-of-the-art robustness to forgetting
+            while our memory and computational complexities barely grow.
+\end{itemize}
+
 \cleardoublepage
 
 
@@ -11,37 +41,37 @@ My Summary.
 
 \selectlanguage{french}
 
-Mon résumé.
-\selectlanguage{english}
+Depuis le début des années 2010 la recherche en apprentissage automatique a orienté son attention
+vers les efficaces réseaux de neurones profonds. Plus particulièrement, toutes les tâches de vision
+par ordinateur utilisent désormais des réseaux convolutionnels. Ces modèles apprennent à détecter
+des motifs d'abord simples (countours, textures) puis de plus en plus complexes jusqu'à apprendre
+le concept d'objets en particulier.
 
-\begin{itemize}
-    \item \autoref{chapter:regularization}: \nameref{chapter:regularization}\\
-          I first review the existing methods based on regularization for continual learning. While
-          regularizing a model's probabilities is very efficient to reduce forgetting in large-scale
-          datasets, there are few works considering constraints on intermediate features. I cover in this
-          chapter two contributions aiming to regularize directly the latent space of \acs{ConvNet}. The
-          first one, \acf{PODNet} aims to reduce the drift of spatial statistics between the old and new
-          model, which in effect reduces drastically forgetting even on large amount of tasks. I show in a
-          second part a complementary method where we avoid pre-emptively forgetting by allocating
-          locations in the latent space for yet unseen future class.
-    \item \autoref{chapter:segmentation}: \nameref{chapter:segmentation}\\
-          Then, I describe a recent application of \acf{CIL} to semantic segmentation. I show that
-          the very nature of \acf{CSS} offer new specific challenges, namely forgetting on large
-          images and a background shift. We tackle the first problem by extending our distillation
-          loss introduced in the previous chapter to multi-scales. The second problem is solved by
-          an efficient pseudo-labeling strategy. Finally, we consider the common rehearsal learning,
-          but applied this time to \ac{CSS}. I show that it cannot be used naively because of memory
-          complexity and design a light-weight rehearsal that is even more efficient.
-    \item \autoref{chapter:dynamic}: \nameref{chapter:dynamic}\\
-          Finally, I consider a completely different approach to continual learning: dynamic networks
-          where the parameters are extended during training to adapt to new tasks. Previous works on
-          this domain are hard to train and often suffer from parameter count explosion. For the
-          first time in continual computer vision, we propose to use the Transformer architecture:
-          the model dimension mostly fixed and shared across tasks, except for an
-          expansion of learned task tokens. With an encoder/decoder strategy where the decoder
-          forward is specialized by a task token, we show state-of-the-art robustness to forgetting
-          while our memory and computational complexities barely grow.
-\end{itemize}
+Malgré les grandes avancées dans le domaine des réseaux de neurones profonds, un problème important
+subsiste : comment apprendre une quantité croissante de concepts, à la manière d'un élève durant sa
+scolarité, sans oublier les précédentes connaissances. Ce problème d'apprentissage continu est
+complexe : si non traité, les réseaux de neuronnes oublient catastrophiquement. L'objectif de cette
+thèse était donc de résoudre de ce problème.
+
+J'ai pu dans un premier temps développer plusieurs méthodes pour forcer un comportement similaire
+entre la version du modèle ayant appris de nouveaux concepts et sa précédente itération.
+Contrairement au reste de la littérature, qui imposait des contraintes sur le comportement final du
+modèle, je me suis intéressé aux représentations internes.
+
+Dans un second temps, j'ai considéré l'apprentissage continu pour la tâche de segmentation
+sémantique. Cette tâche complexe possède des problèmes inédits dans un contexte continu en plus de
+l'oubli catastrophique. J'ai pu proposer plusieurs approches complémentaires pour les résoudre. Plus
+précisément: une nouvelle méthode de contraintes, une technique de pseudo-annotations et une
+manière efficace de révisions d'objets.
+
+Et enfin, dans un troisième et dernier temps, je m'intéresse aux réseaux de neurones dynamiques,
+pouvant créer de nouveaux neuronnes à travers leur existence pour résoudre un nombre croissant de
+tâche. Les méthodes précédentes grandissent avec peu de controles, résultant en des modèles
+extrêmement lourd, et souvent aussi lents. Donc, en m'inspirant des récents \textit{transformers},
+j'ai conçu une stratégie dynamique avec un coût pratiquement nul, mais ayant malgré tout des
+performances à l'état-de-l'art.
+
+\selectlanguage{english}
 
 \cleardoublepage
 \chapter{Remerciements}
