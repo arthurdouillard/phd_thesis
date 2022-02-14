@@ -3,7 +3,7 @@
     \begin{tabular}{@{}l|cccc@{}}
         \toprule
                                                       & \multicolumn{4}{c}{\textbf{VOC 10-1} (11 tasks)}                                                          \\
-        \textbf{Method}                               & 0-10                                             & 11-20             & \textit{all}      & \textit{avg}   \\
+        \textbf{Method}                               & 0-10                                             & 11-20             & \textit{final}    & \textit{avg}   \\
         \midrule
         ILT \citep{michieli2019ilt}                   & \tableindent 7.15                                & \tableindent 3.67 & \tableindent 5.50 & 25.71          \\
         MiB \citep{cermelli2020modelingthebackground} & 12.25                                            & 13.09             & 12.65             & 42.67          \\
@@ -12,7 +12,7 @@
         %{\color{red}\ourslong + OR} & \textbf{59.82} & \textbf{22.28} & \textbf{41.95} & \textbf{58.74}\\
         \bottomrule
     \end{tabular}
-    \caption{\ac{mIoU} on Pascal-VOC 2012 10-1.}
+    \caption{\textbf{Pascal-VOC 2012 10-1} in \ac{mIoU} (\%).}
     \label{tab:seg_voc_hard}
 \end{table}
 
@@ -21,7 +21,7 @@
     \begin{tabular}{@{}l|cccc@{}}
         \toprule
                                                       & \multicolumn{4}{c}{\textbf{ADE 100-5} (11 tasks)}                                                                      \\
-        \textbf{Method}                               & 0-100                                             & 101-150                    & \textit{all}      & \textit{avg}      \\
+        \textbf{Method}                               & 0-100                                             & 101-150                    & \textit{final}    & \textit{avg}      \\
         \midrule
         ILT \citep{michieli2019ilt}                   & \tableindent 0.08                                 & \tableindent 1.31          & \tableindent 0.49 & \tableindent 7.83 \\
         MiB \citep{cermelli2020modelingthebackground} & 36.01                                             & \tableindent 5.66          & 25.96             & 32.69             \\
@@ -29,7 +29,7 @@
         % \ourslong & 24.78 & 10.23 & 19.97 & 30.03\\
         \bottomrule
     \end{tabular}
-    \caption{\ac{mIoU} on ADE20k 100-5.}
+    \caption{\textbf{ADE20k 100-5} in \ac{mIoU} (\%).}
     \label{tab:seg_ade_hard}
 \end{table}
 

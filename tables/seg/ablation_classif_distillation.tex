@@ -3,7 +3,7 @@
         \centering
         \begin{tabular}{@{}l|cccc@{}}
             \toprule
-            Distillation loss                           & 0-15           & 16-20             & \textit{all}   & \textit{avg}   \\
+            Distillation loss                           & 0-15           & 16-20             & \textit{final} & \textit{avg}   \\
             \midrule
             ILT \citep{michieli2019ilt}'s distill       & 19.91          & \tableindent 5.49 & 16.48          & 49.43          \\
             CSC \citep{park2020csc}                     & 25.49          & \tableindent 4.72 & 20.48          & 44.97          \\
@@ -13,7 +13,7 @@
             Local POD (\autoref{eq:seg_local_pod_loss}) & \textbf{63.06} & \textbf{17.92}    & \textbf{52.31} & \textbf{65.71} \\
             \bottomrule
         \end{tabular}
-        \caption{Pseudo loss (\autoref{eq:seg_pseudo_loss}) with different distillation losses.}
+        \caption{\textbf{Distillation loss ablations:} Pseudo loss (\autoref{eq:seg_pseudo_loss}) with different distillation losses.}
         \label{tab:seg_ablation_distillation}
     \end{subtable}
     \hfill
@@ -22,7 +22,7 @@
         \centering
         \begin{tabular}{@{}l|cccc@{}}
             \toprule
-            Classification loss                   & 0-15           & 16-20             & \textit{all}   & \textit{avg}   \\
+            Classification loss                   & 0-15           & 16-20             & \textit{final} & \textit{avg}   \\
             \midrule
             CE only on new                        & 12.95          & \tableindent 2.54 & 10.47          & 47.02          \\
             CE                                    & 33.80          & \tableindent 4.67 & 26.87          & 50.79          \\
@@ -34,10 +34,10 @@
             \textit{(Oracle) CE + all labels}     & \textit{71.45} & \textit{10.78}    & \textit{57.00} & \textit{67.04} \\
             \bottomrule
         \end{tabular}
-        \caption{Local POD loss (\autoref{eq:seg_local_pod_loss}) with different classification losses.}
+        \caption{\textbf{Classification loss ablations:} Local POD loss (\autoref{eq:seg_local_pod_loss}) with different classification losses.}
         \label{tab:seg_ablation_classif}
     \end{subtable}
-    \caption{Comparison studies on Pascal-VOC 2012 15-1 on a validation subset of 20\% of the training set.}
+    \caption{\textbf{Comparison studies} on Pascal-VOC 2012 15-1 on a validation subset of 20\% of the training set.}
     \label{tab:seg_ablation_distill_classif}
 \end{table}
 

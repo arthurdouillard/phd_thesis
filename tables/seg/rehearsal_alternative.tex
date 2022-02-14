@@ -3,7 +3,7 @@
     \begin{tabular}{@{}llc|c|cc|r@{}}
         \toprule
                                 &                 &                &                                & \multicolumn{2}{c}{\textbf{15-1} (6 tasks)}                         \\
-        \textbf{Type}           & \textbf{Mixing} & \textbf{Erase} & \textbf{Memory} $\downarrow$   & \textit{all}                                & \textit{avg}   &      \\
+        \textbf{Type}           & \textbf{Mixing} & \textbf{Erase} & \textbf{Memory} $\downarrow$   & \textit{final}                              & \textit{avg}   &      \\
         \midrule
         \multirow{2}{*}{Image}  & Mixup           & ---            & \multirow{2}{*}{22.20}         & 61.77                                       & 69.88          & I    \\
                                 & \,\,\,\,\,---   & ---            &                                & 66.81                                       & \textbf{72.48} & II   \\
@@ -19,7 +19,7 @@
                                 & Pasting         & Foreground     &                                & \textbf{67.12}                              & \textbf{72.42} & X    \\
         \bottomrule
     \end{tabular}
-    \caption{Rehearsal alternative on Pascal-VOC 2012 in \ac{mIoU} (\%). Object/Patch-based methods
+    \caption{\textbf{Rehearsal alternatives} on Pascal-VOC 2012 in \ac{mIoU} (\%). Object/Patch-based methods
         with 10 objects/patches per class, and Image-based with 10 images per class. All
         experiments done with PLOPLong.}
     \label{tab:seg_rehearsal_alternative}

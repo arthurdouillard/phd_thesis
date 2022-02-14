@@ -4,7 +4,7 @@
         \begin{tabular}{@{}l|ccc|cccc@{}}
             \toprule
                                                            & \multicolumn{7}{c}{\textbf{15-1} (6 tasks)}                                                                                                                                              \\
-            \textbf{Method}                                & \textbf{Rehearsal}                          & \textbf{Memory} (Mb) $\downarrow$ & \textbf{Time} (Hours) $\downarrow$ & 0-15           & 16-20          & \textit{all}   & \textit{avg}   \\
+            \textbf{Method}                                & \textbf{Rehearsal}                          & \textbf{Memory} (Mb) $\downarrow$ & \textbf{Time} (Hours) $\downarrow$ & 0-15           & 16-20          & \textit{final} & \textit{avg}   \\
             \midrule
             PLOP                                           & ---                                         & 0                                 & 1.8                                & 65.12          & 21.11          & 54.64          & 67.21          \\
             PLOPLong                                       & ---                                         & 0                                 & 1.8                                & 72.00          & 26.66          & 61.20          & 70.02          \\
@@ -25,6 +25,6 @@
             \bottomrule
         \end{tabular}
     \end{adjustbox}
-    \caption{Comparison of rehearsal-based methods on Pascal-VOC 2012 15-1 overlap in \ac{mIoU} (\%). We only consider the time overhead spent after the first task whose computation overhead is similar for all methods.}
+    \caption{\textbf{Pascal-VOC quantitative experiments with rehearsal} on Pascal-VOC 2012 15-1 overlap in \ac{mIoU} (\%). We only consider the time overhead spent after the first task whose computation overhead is similar for all methods.}
     \label{tab:seg_voc_rehearsal_learning}
 \end{table*}

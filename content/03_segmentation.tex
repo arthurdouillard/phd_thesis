@@ -135,10 +135,11 @@ with low memory footprint.
 \label{sec:seg_related}
 
 Continual Semantic Segmentation is a relatively young field that started getting traction following
-\cite{michieli2019ilt,cermelli2020modelingthebackground}. However, this field is at the intersection
-of many popular topics. Therefore, we start this section with an overview of recent advances in
-segmentation. We then follow with a more in-depth discussion of existing approaches to \ac{CSS}. For
-a thorough discussion of Continual Learning, please refer to \autoref{chapter:related}.
+\cite{michieli2019ilt} and \cite{cermelli2020modelingthebackground}. However, this field is at the
+intersection of many popular topics. Therefore, we start this section with an overview of recent
+advances in segmentation. We then follow with a more in-depth discussion of existing approaches to
+\ac{CSS}. For a thorough discussion of Continual Learning, please refer to
+\autoref{chapter:related}.
 
 \paragraph{Semantic Segmentation} methods based on Fully Convolutional Networks (FCN)
 \citep{long2015fcn,sermanet2014overfeat} have achieved impressive results on several segmentation
@@ -172,9 +173,9 @@ learning new classes under background shift. We introduce our PLOP framework tha
 effectively those two aspects. \cite{yu2020continualsegmentationselftraining} proposed to
 exploit an external unlabeled dataset in order to do self-training with a pseudo-labeling loss; we
 show that our model while not designed with this assumption in mind can outperform their
-performance. \cite{cermelli2020fewshotcontinualsegm} creates a novel setting of
+performance. \cite{cermelli2020fewshotcontinualsegm} create a novel setting of
 continual \textit{few-shots} segmentation, we implement their method in our setting and draw
-inspiration from it to further improve PLOP. \cite{michieli2021sdr} draws
+inspiration from it to further improve PLOP. \cite{michieli2021sdr} draw
 inspiration from the metric learning literature to conceive a model for continual segmentation that
 exploits prototypes updated with an exponential moving average of the mean batch features.
 
@@ -217,12 +218,12 @@ designed method.
 
 \subsection{Framework and notations}\label{sec:seg_overview}
 
-For most of the notations, please refer to \autoref{tab:related_notation}. The slight difference in
-this chapter, is that instead of working on pair of classification image with a single label $(\vx,
-    y)$, we'll work on pairs of image and segmentation maps where each pixel has a class $(\mcI^t,
-    \mcS^t)$. Here, the task identifier $t$ is even more important because the segmentation maps $\mcS$,
+For the notations, please refer to \autoref{tab:related_notation}. The slight difference with
+previous chapters, is that instead of working on pair of classification image with a single label $(\vx,
+    y)$, we'll work on pairs of image and segmentation maps where each pixel has a class $(\vx^t,
+    \vy^t)$. Here, the task identifier $t$ is even more important because the segmentation maps $\vy$,
 for a same image, will evolve through the tasks. Indeed, in the considered benchmarks (detailed
-later in \autoref{sec:seg_exp}), an image is only labeled for the current classes $\mcS^t$. The
+later in \autoref{sec:seg_exp}), an image is only labeled for the current classes $\vy^t$. The
 previous $\mcC^{1:t-1}$ or future classes $\mcC^{t+1:T}$ the image may contain are not labeled, and
 considered as the special class ``\textit{background}''. However, at test-time, a model at step $t$
 must be able to discriminate between all the classes that have been seen so far, \textit{i.e.}
@@ -239,8 +240,8 @@ classes.
 
 We define our model at step $t$ as a composition of a feature extractor $f^t(\cdot)$ (a ResNet 101
 \cite{he2016resnet} backbone and a classifier $g^t(\cdot)$. The output predicted segmentation map
-can then be written $\hat{\mcS}^t = g^t \circ f^t(\mcI)$. We denote the intermediate features at
-each layer of the feature extractor $f_l^t(\cdot)\,,\, l \in \{1, \dots L\}$. Finally, we denote the
+can then be written $\hat{\vy}^t = g^t \circ f^t(\vx)$. We denote the intermediate features at
+each layer of the feature extractor $\vh_l^t = f_l^t(\cdot)\,,\, l \in \{1, \dots L\}$. Finally, we denote the
 set of learnable parameters of $f^t$ and $g^t$ as $\Theta^t$.
 
 
@@ -264,7 +265,7 @@ enforces consistently between intermediary statistics of both models. In practic
 $\vx$, we define a POD embedding $\Phi(\cdot)$ as:
 %
 \begin{equation}
-    \Phi(\vx) = \left[\frac{1}{W} \sum_{w=1}^W \vx[:,w,:] \bigg\Vert \frac{1}{H} \sum_{h=1}^H \vx[h,:,:]\right] \in \mathbb{R}^{(H + W) \times C}\,,
+    \Phi(\vx) = \left[\frac{1}{W} \sum_{w=1}^W \vx[:,w,:] \bigg\Vert \frac{1}{H} \sum_{h=1}^H \vx[:,:,h]\right] \in \mathbb{R}^{(H + W) \times C}\,,
     \label{eq:seg_pod_embedding}
 \end{equation}
 %
@@ -276,7 +277,7 @@ embeddings computed at several layers $l \in \{1, \dots, L\}$, w.r.t the current
 $\Theta^t$:
 %
 \begin{equation}
-    \mcL_\text{pod}(\Theta^t) = \frac{1}{L} \sum_{l = 1}^L \left\Vert  \Phi(f^t_l(\mcI)) -  \Phi(f^{t-1}_l(\mcI)) \right\Vert^2\,.
+    \mcL_\text{pod}(\Theta^t) = \frac{1}{L} \sum_{l = 1}^L \left\Vert  \Phi(\vh^t_l) -  \Phi(\vh^{t-1}_l) \right\Vert^2\,.
     \label{eq:seg_pod_loss}
 \end{equation}
 %
@@ -300,17 +301,17 @@ given level $l$ of the feature extractor, $s^2$ POD embeddings are computed per 
 concatenated:
 %
 \begin{equation}
-    \Psi^s(\vx) = \left[ \Phi(\vx^s_{0,0}) \| \dots \| \Phi(\vx^s_{s-1,s-1}) \right] \in \mathbb{R}^{S \times (H + W) \times C}\,,
+    \Psi^s(\vx) = \left[ \Phi(\vx^s_{1,1}) \| \dots \| \Phi(\vx^s_{s,s}) \right] \in \mathbb{R}^{\times (H + W) \times C}\,,
     \label{eq:seg_localpod_embedding1}
 \end{equation}
 %
-where $\forall i = 0 \dots s-1$, $\forall j = 0 \dots s-1$, $\vx^s_{i,j} = \vx[i H/s:(i+1) H/s, j
-        W/s:(j+1) W/s,:]$ is a sub-region of the embedding tensor $\vx$ of size $W/s \times H/s$. We
-then concatenate (along the channel axis) the Local POD embeddings $\Psi^s(\vx)$ of each
+where $\forall i = 1 \dots s$, $\forall j = 1 \dots s$, $\vx^s_{i,j} = \vx[:, i W/s:(i+1) W/s, j
+        H/s:(j+1) H/s]$ is a sub-region of the embedding tensor $\vx$ of size $W/s \times H/s$.
+Then, we concatenate (along the channel axis) the Local POD embeddings $\Psi^s(\vx)$ of each
 scale $s$ to form the final embedding:
 %
 \begin{equation}
-    \Psi(\vx) = \left[ \Psi^1(\vx) \| \dots \| \Psi^S(\vx) \right] \in \mathbb{R}^{(1 + \dots + S) \times (H + W) \times C}\,.
+    \Psi(\vx) = \left[ \Psi^1(\vx) \| \dots \| \Psi^S(\vx) \right] \in \mathbb{R}^{S \times (H + W) \times C}\,.
     \label{eq:seg_local_pod}
 \end{equation}
 %
@@ -347,21 +348,20 @@ for some pixels due to inherent bias to the optimization and because of the forg
 in order to avoid propagate errors through incorrect pseudo-labels, we filter out the most uncertain
 ones based on an adaptive entropy-based threshold.
 
-Formally, let $\mcN^t=\operatorname{card}(\mcC^{t})-1$ the cardinality of the current classes
-excluding the background class. Let $\hat{\mcS}^{t} \in \mathbb{R}^{W,H,1+\mcN^1 +\dots + \mcN^t}$
-denotes the predictions of the current model (which includes the real background class, all the old
-classes as well as the current ones). We define $\tilde{\mcS}^{t} \in \mathbb{R}^{W,H,1+\mcN^1
-        +\dots + \mcN^t}$ the target as step $t$, computed using the one-hot ground-truth segmentation map
-$\mcS^{t} \in \mathbb{N}^{W,H,1+\mcN^t}$ at step $t$ as well as pseudo-labels extracted using the
-old model predictions $\hat{\mcS}^{t-1} \in \mathbb{R}^{W,H,1+\mcN^1 +\dots + \mcN^{t-1}}$ as
-follows:
+Formally, let $\mcN^t=\operatorname{card}(\mcC^{t})$ the cardinality of the current classes,
+excluding the background class. Let $\hat{\vy}^{t} \in \mathbb{R}^{W,H,1+\mcN^{1:t}}$ denotes the
+predictions of the current model (which includes the real background class, all the old classes as
+well as the current ones). We define $\tilde{\vy}^{t} \in \mathbb{R}^{W,H,1+\mcN^{1:t}}$ the target
+as step $t$, computed using the one-hot ground-truth segmentation map $\vy^{t} \in
+    \mathbb{N}^{W,H,1+\mcN^t}$ at step $t$ as well as pseudo-labels extracted using the old model
+predictions $\hat{\vy}^{t-1} \in \mathbb{R}^{W,H,1+\mcN^{1:t-1}}$ as follows:
 %
 \begin{equation}
     \footnotesize
     \tilde \mcS^{t}\left(w,h,c\right)= \mkern-5mu \left\{\begin{array}{ll}
-        \mkern-10mu 1 \mkern-27mu & \text { if } S^{t} (w,h,c_{bg})=0 \text { and } c = \argmax \limits_{c' \in \mcC^{t}} \mcS^{t}(w,h,c')                                     \\
-        \mkern-10mu 1 \mkern-27mu & \text { if } \mcS^{t}(w,h,c_{bg})=1 \text { and } c = \mkern-8mu \argmax \limits_{c' \in \mcC^{1:t-1}} \mkern-6mu \hat{\mcS}^{t-1}(w,h,c') \\
-        \mkern-10mu 0 \mkern-27mu & \text { otherwise }                                                                                                                        \\
+        \mkern-10mu 1 \mkern-27mu & \text { if } \vy^{t} [c_{bg},w,h]=0 \text { and } c = \argmax \limits_{c' \in \mcC^{t}} \vy^{t}[c',w,h])                                 \\
+        \mkern-10mu 1 \mkern-27mu & \text { if } \vy^{t}[c_{bg},w,h]=1 \text { and } c = \mkern-8mu \argmax \limits_{c' \in \mcC^{1:t-1}} \mkern-6mu \hat{\vy}^{t-1}[c',w,h] \\
+        \mkern-10mu 0 \mkern-27mu & \text { otherwise }                                                                                                                      \\
     \end{array}\right.
     \label{eq:seg_pseudo_bis}
 \end{equation}
@@ -377,26 +377,26 @@ pseudo-labels where the old model is deemed ``\textit{confident}'' enough.
 \begin{equation}
     \scriptsize
     \tilde \mcS^{t}\left(w,h,c\right)\mkern-5mu = \mkern-5mu \left\{\begin{array}{ll}
-        \mkern-14mu 1 \mkern-27mu & \mkern-8mu \text { if } \mcS^{t} \mkern-4mu (w,h,c_{bg})\mkern-4mu = \mkern-4mu 0 \text { and } c \mkern-4mu = \mkern-4mu \argmax \limits_{c' \in \mathcal{C}^{t}} \mcS^{t} \mkern-4mu (w,h,c')                                                                         \\
-        \mkern-14mu 1 \mkern-27mu & \mkern-8mu \text { if } \mcS^{t} \mkern-4mu (w,h,c_{bg}) \mkern-4mu = \mkern-4mu 1 \text { and } c \mkern-4mu = \mkern-12mu \argmax \limits_{c' \in \mathcal{C}^{1:t-1}} \mkern-6mu \hat \mcS^{t-1} \mkern-4mu (w,h,c') \text{ and } u \mkern-4mu < \mkern-4mu \tau_{c} \\
-        \mkern-14mu 0 \mkern-27mu & \mkern-4mu \,\text { otherwise\,, }                                                                                                                                                                                                                                     \\
+        \mkern-14mu 1 \mkern-27mu & \mkern-8mu \text { if } \vy^{t} \mkern-4mu [c_{bg},w,h]\mkern-4mu = \mkern-4mu 0 \text { and } c \mkern-4mu = \mkern-4mu \argmax \limits_{c' \in \mcC^{t}} \vy^{t} \mkern-4mu [c',w,h]                                                                          \\
+        \mkern-14mu 1 \mkern-27mu & \mkern-8mu \text { if } \vy^{t} \mkern-4mu [c_{bg},w,h] \mkern-4mu = \mkern-4mu 1 \text { and } c \mkern-4mu = \mkern-12mu \argmax \limits_{c' \in \mcC^{1:t-1}} \mkern-6mu \hat \vy^{t-1} \mkern-4mu [c',w,h]  \text{ and } u \mkern-4mu < \mkern-4mu \tau_{c} \\
+        \mkern-14mu 0 \mkern-27mu & \mkern-4mu \,\text { otherwise\,, }                                                                                                                                                                                                                             \\
     \end{array}\right.
     \label{eq:seg_pseudo_bis_uncertain}
 \end{equation}
 %
-By notation abuse, $u$ is function $u(\mcS^t(w, h))$ that measures the uncertainty of the current
-model given a pixel $\mcI(w,h)$. $\tau_{c}$ denotes a class-specific uncertainty threshold. Hence,
+By notation abuse, $u$ is function $u(\vy^t(w, h))$ that measures the uncertainty of the current
+model given a pixel $\vx[:,w,h]$. $\tau_{c}$ denotes a class-specific uncertainty threshold. Hence,
 in the case where the old model is uncertain ($u \ge \tau_c$) about some pixels, they will be
 ignored in the final classification loss. Our framework is agnostic to the type of uncertainty used,
 but in practice we define it as the entropy. Therefore, we use for $u$ the current model's per-pixel
-entropy $u(\mcS^t(w, h)) = -\sum_{c \in C^{1:t}} \mcS^t(w, h, c) \log \mcS^t(w, h, c)$. Likewise,
+entropy $u(\vy^t[:,w, h]) = -\sum_{c \in C^{1:t}} \vy^t[c,w, h] \log \vy^t[c,w, h]$. Likewise,
 the class-specific threshold $\tau_c$ is computed from the median entropy of the old model over all
 pixels of $\mcD^t$ predicted the class $c$ for all $c \in \mcC^{1:t-1}$ as proposed by
 \cite{saporta2020esl}. Consequently, the cross-entropy loss with pseudo-labeling of the old classes
 can be written as:
 %
 \begin{equation}
-    \mcL_\text{pseudo}(\Theta^t)=- \frac{\nu}{WH} \sum_{w,h}^{W,H} \sum_{c \in \mathcal{C}^{t}} \tilde \mcS\left(w,h,c\right) \log \hat \mcS^{t}\left(w,h,c\right)\,.
+    \mcL_\text{pseudo}(\Theta^t)=- \frac{\nu}{WH} \sum_{w,h}^{W,H} \sum_{c \in \mcC^{t}} \tilde \vy\left(w,h,c\right) \log \hat \vy^{t}\left[c,w,h]\right)\,.
     \label{eq:seg_pseudo_loss}
 \end{equation}
 %
@@ -440,7 +440,7 @@ Therefore, the classifier $g^t$ has $\{\theta_c^t \in \mathbb{R}^{ch} | \forall 
 The cosine normalization can then be express as:
 %
 \begin{equation}
-    \hat{\mcS}(w, h, c) = \frac{\alpha \langle \theta^t_c, \vh(w, h) \rangle}{\Vert \theta^t_c \Vert^2 \Vert \vh(w, h) \Vert^2}\,
+    \hat{\mcS}(w, h, c) = \frac{\alpha \langle \theta^t_c, \vh(w, h) \rangle}{\Vert \theta^t_c \Vert^2 \Vert \vh[:,w, h] \Vert^2}\,
     \label{eq:seg_cosine_classifier}
 \end{equation}
 %
@@ -465,12 +465,12 @@ the Local POD embeddings.
 \begin{figure*}[ht!]
     \centering
     \includegraphics[width=\linewidth]{images/seg/rehearsal_strategy.pdf}
-    \caption{\textbf{Our Object Rehearsal strategy}. In task $t-1$, we select from $\{\mcI^{t-1},
+    \caption{\textbf{Our Object Rehearsal strategy}. In task $t-1$, we select from $\{\vx^{t-1},
             \dots \}$ a limited amount of objects (here \texttt{bus}, \texttt{bird}, and
-        \texttt{dog}), which will be then mixed in the images $\{\mcI^{t}, \dots \}$ from the
+        \texttt{dog}), which will be then mixed in the images $\{\vx^{t}, \dots \}$ from the
         current task $t$; after pasting, the other present objects are erased. Finally, the
         current model $g^t \circ f^t$ will be given the concatenation of the original images
-        and the augmented images $\{\mcI''^t, \dots\}$. Our Object Rehearsal allows to generate
+        and the augmented images $\{\vx''^t, \dots\}$. Our Object Rehearsal allows to generate
         a wider diversity of images, resulting in higher accuracies while being up to 146x more
         memory efficient.}
     \label{fig:seg_model_objectrehearsal}
@@ -537,15 +537,15 @@ described previously in \autoref{sec:seg_overview}, the segmentation maps are pa
 given task $t$, when rehearsing an image stored from task $t-i$, we only have labels of classes
 $C^{t-1}$. Because of these two problems, we cannot naively apply image rehearsal on \ac{CSS}. To tackle
 the former problem, we propose to select $M$ images for each class $c \in C^t$, resulting in $M
-    \times |C^t|$ images for step $t$. We ensure that the selected images are unique: as multiple
+    \times \mcN^t$ images for step $t$. We ensure that the selected images are unique: as multiple
 classes can co-exist in the same image, the resulting amount of sampled classes may be above $M
-    \times |C^t|$. We select the images with a simple random selection, which has been proved to
+    \times \mcN^t$. We select the images with a simple random selection, which has been proved to
 generally perform as good as more elaborate methods \citep{castro2018end_to_end_inc_learn}. The
 memory footprint will grow until all tasks but the last are seen, resulting in a total amount of $M
-    \times |C^{1:T-1}|$ stored images. To address the second problem (partial labelization, see also
+    \times \mcN^{1:T-1}$ stored images. To address the second problem (partial labelization, see also
 Section \ref{sec:seg_hardpl}), we fill the background using our proposed hard pseudo-labeling (see
 \autoref{sec:seg_hardpl}) which \textit{completes} the segmentation maps with old classes
-$C^{1:t-i}$ as well as new classes $C^{t-i+1:t}$.
+$\mcC^{1:t-i}$ as well as new classes $\mcC^{t-i+1:t}$.
 
 \subsection{Object Rehearsal}
 \label{sec:seg_object_rehearsal}
@@ -563,12 +563,12 @@ Image mixing is popular for classification
 yet, to the best of our knowledge, sees limited use for semantic segmentation
 \citep{fang2019instaboost,olsson2021classmix,zhang2021objectaug,tranheden2021dacs,ghiasi2020simplecopypaste},
 and has never been considered to design memory-efficient rehearsal learning systems. Formally, given
-an image $I$ and the corresponding ground truth segmentation maps $S^t$, we define a binary mask
-$\Pi_c$  such that $\forall c \in C^t$:
+an image $\vx$ and the corresponding ground truth segmentation maps $\vy^t$, we define a binary mask
+$\Pi_c$  such that $\forall c \in \mcC^t$:
 %
 \begin{equation}
-    O_c = I \odot \Pi_c\,\text{where}\,\Pi_c(x, y) = \left\{\begin{array}{l}
-        1, \text{if} S^t(x, y) = c \\
+    O_c = I \odot \Pi_c\,\text{where}\,\Pi[:, w, h] = \left\{\begin{array}{l}
+        1, \text{if} \vy^t[:,w, h] = c \\
         0, \text{otherwise}
     \end{array}\right.\,,
     \label{eq:seg_mask_object}
@@ -576,12 +576,13 @@ $\Pi_c$  such that $\forall c \in C^t$:
 %
 \noindent with $O_c$ the selected object for class $c$. By nature, this patch is extremely sparse
 and can be efficiently stored on disk by modern compression algorithms \citep{ISO)10918}. The total
-memory footprint at task t is thus $M \times |C^{1:t}|$ objects.
+memory footprint at task t is thus $M \times \mcN^{1:t}$ objects.
 
-Then, when learning a task $t > 1$, the model will learn on both the task dataset $\cup_i^n (I^t_i,
-    S^t_i)$ and the object memory $\cup_{c \in C^{1:t-1}} \cup_i^M O_{c,i}$. The latter will augment
-the former through object pasting. We augment each object by applying an affine transformation
-matrix \citep{fang2019instaboost}:
+Then, when learning a task $t > 1$, the model will learn on both the task dataset $\cup_i^N
+    (\vx^t_i, \vy^t_i)$ and the object memory $\cup_{c \in \mcC^{1:t-1}} \cup_i^M O_{c,i}$, with $N$
+being the total number of images in the task dataset. The latter will augment the former through
+object pasting. We augment each object by applying an affine transformation matrix
+\citep{fang2019instaboost}:
 %
 \begin{equation}
     \mathbf{T}=\left[\begin{array}{ccc}
@@ -596,20 +597,20 @@ matrix \citep{fang2019instaboost}:
 translate the object as its original position is often a good prior: indeed, objects are usually
 located at the same location (e.g. pedestrian on the left and right sidewalk, car on the middle
 road, etc.) We abuse the notation by denoting $T(.)$ the application of this transformation matrix.
-Once the data augmentation is done on the object (and its mask), we paste it on an image $I^t$ that
+Once the data augmentation is done on the object (and its mask), we paste it on an image $\vx^t$ that
 refers to the current task:
 %
 \begin{equation}
-    {I'}^t = I^t \odot (\mathbf{1} - T(\Pi_c)) + T(O_c) \odot T(\Pi_c)\,.
+    {\vx'}^t = \vx^t \odot (\mathbf{1} - T(\Pi_c)) + T(O_c) \odot T(\Pi_c)\,.
     \label{eq:seg_pasting}
 \end{equation}
 %
 The pasting can result in local incoherence where the pixel of a \texttt{cow} is pasted on top or
 next to the pixel of a \texttt{television}. Naively the object borders can be smoothed into the
-image with a Gaussian filter. Unfortunatly it results in inprecise countours which are important in
+image with a Gaussian filter. Unfortunately, it results in imprecise contours which are important in
 segmentation \citep{chen2020semeda}.
 
-This approach has already been envisoned as a form of data augmentation in semantic segmentation,
+This approach has already been envisioned as a form of data augmentation in semantic segmentation,
 although the gains were small and to avoid the noise induced by this pasting, the batch size is
 prohibitively large (up to 512) \citep{ghiasi2020simplecopypaste}. We propose to reduce interference
 between the pasted object and the destination images by \textbf{selective erasing} of the
@@ -617,7 +618,7 @@ surrounding pixels. Indeed, given a binary matrix $\Xi(\Pi, S)$ of the same dime
 $\Pi$:
 %
 \begin{equation}
-    {I''}^t = {I'}^t \odot (\mathbf{1} - \Xi) + \kappa \odot \Xi\,.
+    {\vx''}^t = {\vx'}^t \odot (\mathbf{1} - \Xi) + \kappa \odot \Xi\,.
     \label{eq:seg_erasing_pixel}
 \end{equation}
 %
@@ -627,21 +628,21 @@ but in practice we choose a constant color gray. We also update accordingly the 
 likewise:
 %
 \begin{equation}
-    {S''}^t = {S''}^t \odot (\mathbf{1} - \Xi) + 255 \odot \Xi\,,
+    {\vy''}^t = {\y'}^t \odot (\mathbf{1} - \Xi) + 255 \odot \Xi\,,
     \label{eq:seg_erasing_label}
 \end{equation}
 %
-where \texttt{255} is the default value used in segmentation to ignore some pixel labels which won't
-be counted in the classification loss \autoref{eq:seg_pseudo_loss}. We illustrate our rehearsal
-strategy in \autoref{fig:seg_model_objectrehearsal}.
+\noindent where \texttt{255} is a dummy class id used in segmentation to ignore some pixel labels
+which won't be counted in the classification loss \autoref{eq:seg_pseudo_loss}. We illustrate our
+rehearsal strategy in \autoref{fig:seg_model_objectrehearsal}.
 
 \input{tables/seg/datasets}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{images/seg/dataset_viz.pdf}
-    \vspace*{-0.3cm}
-    \caption{Visualization of an example image and its segmentation maps for Pascal-VOC, ADE20k, and Cityscapes.}
+    %\vspace*{-0.3cm}
+    \caption{\textbf{Dataset visualization:} of an example image and its segmentation maps for Pascal-VOC, ADE20k, and Cityscapes.}
     \label{fig:seg_dataset_viz}
 \end{figure}
 
@@ -684,15 +685,17 @@ Similarly, on Cityscapes 14-1 means 14 followed by five times 1 class ($6$ steps
 means 100 followed by 50 classes ($2$ steps). We provide a summary of all these settings in
 \autoref{tab:seg_setting_description}.
 
-\paragraph{Metrics:} we compare the different models using traditional \acf{mIoU}.
-Specifically, we compute \ac{mIoU} after the last step $T$ for the initial classes $\mcC^{1}$, for
-the incremented classes $\mcC^{2:T}$, and for all classes $\mcC^{1:T}$ (\textit{all}). These metrics
-respectively reflect the robustness to catastrophic forgetting (the model rigidity), the capacity to
-learn new classes (plasticity), as well as its overall performance (trade-of between both). We also
-introduce a novel \textit{avg} metric (short for \textit{average}), which measures the average of
-\ac{mIoU} scores measured step after step, integrating performance over the whole continual learning
-process. We stress that all four metrics are important, and we shouldn't disregard one for the other:
-a model suffering no forgetting but not able to learn anything new is useless.
+\paragraph{Metrics:} In \autoref{sec:related_metrics}, I defined the \textbf{final} and
+\textbf{average} incremental accuracies. In the context of semantic segmentation, we generalize
+those metrics to the \acf{mIoU}. Specifically, we compute \ac{mIoU} after the last step $T$ for the
+initial classes $\mcC^{1}$, for the incremented classes $\mcC^{2:T}$, and for all classes
+$\mcC^{1:T}$ (\textit{final}). These metrics respectively reflect the robustness to catastrophic
+forgetting (the model rigidity), the capacity to learn new classes (plasticity), as well as its
+overall performance (trade-of between both). We also introduce the \textit{avg} metric (short for
+\textit{average}), novel in \ac{CSS}, which measures the average of \ac{mIoU} scores measured step
+after step, integrating performance over the whole continual learning process. We stress that all
+four metrics are important, and we shouldn't disregard one for the other: a model suffering no
+forgetting but not able to learn anything new is useless.
 
 \input{tables/seg/cityscapes_class}
 
@@ -785,8 +788,8 @@ of both methods when dealing with longer task learning sequences.
 \paragraph{ADE20K:} \autoref{tab:seg_ade_sota} shows experiments on ADE 100-50, 100-10, and
 50-50. This dataset is notoriously hard, as the joint model baseline \ac{mIoU} is only 38.90\%. ILT
 has poor performance in all three scenarios. PLOP shows comparable performance with MiB on the short
-setting 100-50 (only 2 tasks), improves by 1.09 \textit{p.p} on the medium setting 50-50 (3 tasks),
-and significantly outperforms MiB with a wider margin of 2.35 \textit{p.p} on the long setting
+setting 100-50 (only 2 tasks), improves by 1.09 \pp on the medium setting 50-50 (3 tasks),
+and significantly outperforms MiB with a wider margin of 2.35 \pp on the long setting
 100-10 (6 tasks). In addition to being better on all settings, PLOP showcased an increased
 performance gain on longer \ac{CSS} (e.g. 100-10) scenarios, due to increased robustness to catastrophic
 forgetting and background shift.
@@ -871,7 +874,7 @@ information of the old classes, which again is more conspicuous on longer \ac{CS
 \begin{figure}
     \includegraphics[width=\linewidth]{images/seg/order_voc_15-1.png}
     \vspace*{-0.3cm}
-    \caption{Boxplots of the \ac{mIoU} of initial classes (1-15), new (16-20), all, and average for
+    \caption{\textbf{Robustness to class ordering:} Boxplots of the \ac{mIoU} of initial classes (1-15), new (16-20), all, and average for
         20 random class orderings. PLOP is significantly better and more stable than MiB. PLOPLong
         further improves upon PLOP by better retaining old class information.}
     \label{fig:seg_order_voc_15-1}
@@ -949,7 +952,7 @@ rehearsal providing the large gain (+9 \pp in \textit{all}).
     \centering
     \includegraphics[width=\linewidth]{images/seg/distribution_5step_voc.png}
     \vspace*{-0.3cm}
-    \caption{Distribution of the pixel per class during the $5^{\text{th}}$ step of Pascal-VOC
+    \caption{\textbf{Pixel distribution per class} during the $5^{\text{th}}$ step of Pascal-VOC
         15-1.}
     \label{fig:seg_distribution_voc_5th}
 \end{figure}
@@ -957,7 +960,7 @@ rehearsal providing the large gain (+9 \pp in \textit{all}).
 \begin{figure*}
     \centering
     \includegraphics[width=\linewidth]{images/seg/visualization2.pdf}
-    \caption{Visualization of the predictions of MiB, PLOP, PLOPLong, and PLOPLong with Object
+    \caption{\textbf{Visualization of the predictions} of MiB, PLOP, PLOPLong, and PLOPLong with Object
         Rehearsal on three test images at the $6^\text{th}$ and final step on VOC 15-1 scenario. The
         first image contains \texttt{car}, \texttt{cow}, and \texttt{person}; the second
         \texttt{plane} and \texttt{bus}, and the third \texttt{bicycle} and \texttt{person}. While
@@ -1001,7 +1004,7 @@ performance using our novel object rehearsal which was also the most memory-effi
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{images/seg/visualization_gt_shift2.pdf}
-    \caption{Visualization of the predictions of MiB, PLOP, PLOPLong, and PLOPLong with Object
+    \caption{\textbf{Visualization of the predictions with a background shift} of MiB, PLOP, PLOPLong, and PLOPLong with Object
         Rehearsal across time in VOC 15-1 on a test set image. At steps 1-4 only class
         \texttt{person} has been seen. At step 5, the class \texttt{train} is introduced, causing
         dramatic background shift. While MiB overfits on the new class and forget the old class,
