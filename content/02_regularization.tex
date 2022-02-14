@@ -122,16 +122,10 @@ the cosine similarity~\citep{luo2018cosine_classifier}.
 \subsection{Model}
 \label{sec:podnet_model}
 
-Our base model is a deep convolutional network $\vyh = g(f(\vx))$, where $\vx$ is the input image,
-$\mathbf{y}$ is the output vector of class probabilities, $\vh = f(\vx)$ is the ``feature
-extraction'' part of the network (all layers up to the next-to-last), $\vyh = g(\vh)$ is the final
-classification layer, and $\vh$ is the final embedding of the network before classification
-(\autoref{fig:podnet_model}). The superscript $t$ denotes the model learned at task $t$:$f^{t}$,
-$g^{t}$, $\vh^{t}$, etc. We frame our model in the class incremental setting with rehearsal memory
-as illustrated in \autoref{fig:podnet_protocol}.
-
-Our strategy is made of two keys components: a distillation loss applied at the intermediate
-feature-level, and a local-similarity classifier.
+We follow the notations defined in the \hyperref[chap:notations]{Notations chapter}. Our model is
+evaluated in the class incremental setting with rehearsal memory (\autoref{sec:related_rehearsal})
+depicted \autoref{fig:podnet_protocol}. Our strategy is made of two keys components: a distillation
+loss applied at the intermediate feature-level, and a local-similarity classifier.
 
 \subsubsection{POD: Pooled Outputs Distillation loss}
 \label{sec:podnet_pod}
@@ -148,7 +142,7 @@ $f^{t}_\ell(\vx)\equiv f^{t}_\ell\circ\ldots\circ f^{t}_1(\vx)$, and thus $f^{t}
     f^{t}_L\ldots\circ f^{t}_\ell\circ\ldots f^{t}_1(\vx)$).
 
 The convolutional layers of the network output tensors $\vh^{t}_{\ell}$ with components
-$\vh^{t}_{\ell,c,w,h}$, where $c$ stands for channel (filter), and $w\times h$ for column and row of
+$\vh^{t}_\ell[c,w,h]$, where $c$ stands for channel (filter), and $w\times h$ for column and row of
 the spatial coordinates. The loss used by POD may pool (sum over) one or several of those indexes,
 more aggressive poolings (\autoref{fig:podnet_pooling}) providing more freedom, and thus,
 plasticity: the lowest possible plasticity imposes an exact similarity between the previous and
@@ -171,24 +165,23 @@ next.
         \includegraphics[width=0.90\linewidth]{images/podnet/pooling}
     \end{center}
     \caption{\textbf{Different possible poolings}. The output from a convolutional layer
-        $\vh^{t}_{\ell,c,w,h}$ may be pooled (summed over) one or more axes. The resulting loss
+        $\vh^{t}_\ell[c,w,h]$ may be pooled (summed over) one or more axes. The resulting loss
         considers only the pooled activations instead of the individual components, allowing more
         plasticity across the pooled axes.}
     \label{fig:podnet_pooling}
 \end{figure}
 
 \paragraph{Pooling of convolutional outputs} As explained before, POD constrains the output of each
-intermediate convolutional layer $\vh^{t}_{\ell,c,w,h} = f^{t}_\ell(\cdot)$ (in practice, each stage
-of a ResNet~\citep{he2016resnet}). As a reminder, $c$ is the channel and $w\times h$ are the spatial
-coordinates. All POD variants use the Euclidean distance of $\ell^2$-normalize tensors, here noted
-as $\left\Vert\cdot-\cdot\right\Vert$. They differ on the type of pooling applied before that
-distance is computed.
+intermediate convolutional layer $\vh^{t}_\ell = f^{t}_\ell(\cdot)$ (in practice, each stage of a
+ResNet~\citep{he2016resnet}). All POD variants use the Euclidean distance of $\ell^2$-normalize
+tensors, here noted as $\left\Vert\cdot-\cdot\right\Vert$. They differ on the type of pooling
+applied before that distance is computed.
 %
 On one extreme, one can apply no pooling at all, resulting in the most strict loss, the most rigid
 constrains, and the lowest plasticity:
 %
 \begin{equation}
-    \mcL_{\text{POD-pixel}}(\vh^{t-1}_\ell, \vh^t_\ell) = \sum_{c=1}^C \sum_{w=1}^{W} \sum_{h=1}^{H} \left\Vert \vh^{t-1}_{\ell,c,w,h} - \vh^t_{\ell,c,w,h} \right\Vert^2\,.
+    \mcL_{\text{POD-pixel}}(\vh^{t-1}_\ell, \vh^t_\ell) = \sum_{c=1}^C \sum_{w=1}^{W} \sum_{h=1}^{H} \left\Vert \vh^{t-1}_\ell[c,w,h] - \vh^t_\ell[c,w,h] \right\Vert^2\,.
     \label{eq:podnet_pod_pixel}
 \end{equation}
 %
@@ -197,7 +190,7 @@ loss, allowing the activations to reorganize across the channels, but penalizing
 those activations across the space,
 %
 \begin{equation}
-    \mcL_{\text{POD-channel}}(\vh^{t-1}_\ell, \vh^t_\ell)  = \sum_{w=1}^{W} \sum_{h=1}^{H} \left\Vert \sum_{c=1}^C \vh^{t-1}_{\ell,c,w,h} - \sum_{c=1}^C \vh^{t}_{\ell,c,w,h} \right\Vert^2\,;
+    \mcL_{\text{POD-channel}}(\vh^{t-1}_\ell, \vh^t_\ell)  = \sum_{w=1}^{W} \sum_{h=1}^{H} \left\Vert \sum_{c=1}^C \vh^{t-1}_\ell[c,w,h] - \sum_{c=1}^C \vh^{t}_\ell[c,w,h] \right\Vert^2\,;
     \label{eq:podnet_pod_channel}
 \end{equation}
 %
@@ -205,7 +198,7 @@ or, contrarily, by pooling the space (equivalent, up to a factor, to a Global Av
 preserves \textit{only} the channels:
 %
 \begin{equation}
-    \mcL_{\text{POD-gap}}(\vh^{t-1}_\ell, \vh^t_\ell) = \sum_{c=1}^{C} \left\Vert \sum_{w=1}^{W} \sum_{h=1}^H \vh^{t-1}_{\ell,c,w,h} - \sum_{w=1}^{W} \sum_{h=1}^H \vh^{t}_{\ell,c,w,h} \right\Vert^2\,.
+    \mcL_{\text{POD-gap}}(\vh^{t-1}_\ell, \vh^t_\ell) = \sum_{c=1}^{C} \left\Vert \sum_{w=1}^{W} \sum_{h=1}^H \vh^{t-1}_\ell[c,w,h] - \sum_{w=1}^{W} \sum_{h=1}^H \vh^{t}_\ell[c,w,h] \right\Vert^2\,.
     \label{eq:podnet_pod_gap}
 \end{equation}
 %
@@ -218,7 +211,7 @@ We can trade a little plasticity for rigidity, with less aggressive pooling by a
 statistics across just one of the spatial dimensions:
 %
 \begin{equation}
-    \mcL_{\text{POD-width}}(\vh^{t-1}_\ell, \vh^t_\ell)  = \sum_{c=1}^{C} \sum_{h=1}^{H} \left\Vert \sum_{w=1}^W \vh^{t-1}_{\ell,c,w,h} - \sum_{w=1}^W \vh^{t}_{\ell,c,w,h} \right\Vert^2\,;
+    \mcL_{\text{POD-width}}(\vh^{t-1}_\ell, \vh^t_\ell)  = \sum_{c=1}^{C} \sum_{h=1}^{H} \left\Vert \sum_{w=1}^W \vh^{t-1}_\ell[c,w,h] - \sum_{w=1}^W \vh^{t}_\ell[c,w,h] \right\Vert^2\,;
     \label{eq:podnet_pod_width}
 \end{equation}
 %
