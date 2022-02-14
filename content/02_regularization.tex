@@ -14,7 +14,8 @@
     Regularization-based methods are powerful approaches to reduce catastrophic forgetting,
     especially in challenging setting such as \ac{CIL} with single-head where task identity is not
     known at test-time. However, they often consider only constraining the final probability
-    predictions of the network which falls short to forgetting when faced to large amount of tasks.
+    predictions of the network, weakly constraining the model's behavior and in turns falls short to
+    forgetting when faced to large amount of tasks.
     \\
     In this chapter, we propose two methods exploiting explicitly the intermediate features to
     reduce forgetting. The first approach, nicknamed PODNet, aims to constrain similar statistics to
@@ -95,11 +96,11 @@ distillation losses.
 \paragraph{Representation learning} was already implicitly present in
 iCaRL~\citep{rebuffi2017icarl}: it introduced the Nearest Mean Exemplars (NME) strategy which
 averages the outputs of the deep convolutional network to create a single proxy feature vector per
-class that are then used by a nearest-neighbor classifier predict the final classes. Hou et
-al.~\citep{hou2019ucir} adopted this method and also introduced another, named CNN, which uses the
-output class probabilities to classify incoming samples, freezing (during training) the classifier
-weights associated with old classes, and then fine-tuning them on an under-sampled dataset. Hou et
-al.~\citep{hou2019ucir}, in the method called here UCIR, made representation learning explicit, by
+class that are then used by a nearest-neighbor classifier predict the final classes.
+\cite{hou2019ucir} adopted this method and also introduced another, named CNN, which uses the output
+class probabilities to classify incoming samples, freezing (during training) the classifier weights
+associated with old classes, and then fine-tuning them on an under-sampled dataset.
+\cite{hou2019ucir}, in the method called here UCIR, made representation learning explicit, by
 noticing that the limited memory imposed a severe imbalance on the training samples available for
 the old and for the new classes. To overcome that difficulty, they designed a metric-learning model
 instead of a classification model. That strategy is often used in few-shot
@@ -194,7 +195,7 @@ those activations across the space,
     \label{eq:podnet_pod_channel}
 \end{equation}
 %
-or, contrarily, by pooling the space (equivalent, up to a factor, to a Global Average Pooling), one
+\noindent or, contrarily, by pooling the space (equivalent, up to a factor, to a Global Average Pooling), one
 preserves \textit{only} the channels:
 %
 \begin{equation}
@@ -215,7 +216,7 @@ statistics across just one of the spatial dimensions:
     \label{eq:podnet_pod_width}
 \end{equation}
 %
-or, likewise, for the vertical dimension, resulting in POD-height. Each of those variants measure
+\noindent or, likewise, for the vertical dimension, resulting in POD-height. Each of those variants measure
 the distribution of activation pixels across their respective axis. These two complementary
 intermediate statistics can be further combined:
 %
@@ -294,7 +295,7 @@ product. For each class $c$, their last layer becomes
     \vyh_{c}=\frac{\exp\left(\eta\langle\theta_{c},\vh\rangle\right)}{\sum_{i} \exp \left(\eta\langle\theta_{i}, \vh\rangle\right)}\,,
 \end{equation}
 %
-where $\theta_c$ are the last-layer weights for class $c$, $\eta$ is a learned scaling parameter,
+\noindent where $\theta_c$ are the last-layer weights for class $c$, $\eta$ is a learned scaling parameter,
 and $\langle\cdot,\cdot\rangle$ is the cosine similarity.
 
 However, this strategy optimizes a \textit{global similarity}: its training objective increases the
@@ -427,7 +428,7 @@ Please see \autoref{sec:appendix_podnet} in the appendix for the full implementa
 \subsubsection{Quantitative results}
 \label{sec:podnet_quantitative_results}
 
-The comparisons with all the state of the art are tabulated in
+The comparisons with all the State-of-the-Art are tabulated in
 \autoref{tab:podnet_quantitative_cifar} for CIFAR100 and \autoref{tab:podnet_quantitative_imagenet}
 for ImageNet100 and ImageNet1000. All tables show the average incremental accuracy for each
 considered models with various number of steps on the incremental learning run. The ``New classes
@@ -437,12 +438,12 @@ per step'' row shows the amount of new classes introduced per task.
 and 1 classes per step. We created three random class orders to run each experiment thrice,
 reporting averages and standard deviations. For CIFAR100 only, we evaluated our model with two
 different kinds of inference: \ac{NME} and CNN. With both methods, our model surpasses all previous
-state of the art models on all steps. Moreover, our model relative improvement grows as the number
+State-of-the-Art models on all steps. Moreover, our model relative improvement grows as the number
 the steps increases, surpassing existing models by 0.82, 2.81, 5.14, and 12.1 percent points (\pp)
 for respectively 5, 10, 25, and 50 steps. Larger numbers of steps imply  stronger forgetting; those
 results confirm that \ac{PODNet} manages to reduce drastically the said forgetting. While
 \ac{PODNet} with \ac{NME} has the largest gain, \ac{PODNet} with CNN also outperforms the previous
-state of the art by up to 8.68\pp. See \autoref{fig:podnet_plots} for a plot of the incremental
+State-of-the-Art by up to 8.68\pp. See \autoref{fig:podnet_plots} for a plot of the incremental
 accuracies on this dataset. In the extreme setting of 50 increments of 1 class
 (\autoref{fig:podnet_cifar_inc1}), our model showcases large differences, with slow degradation
 (``\textit{gradual forgetting}'' \citep{french1999catastrophicforgetting}) due to forgetting
@@ -452,7 +453,7 @@ throughout the run, while the other models show a quick performance collapse (``
 \paragraph{ImageNet100} We run our comparisons on 5, 10, 25, and 50 steps with respectively 10, 5,
 2, and 1 classes per step. For both ImageNet100, and ImageNet1000 we report only \ac{PODNet} with
 CNN, as the kNN-based \ac{NME} classifier did not generalize as well to larger-scale datasets. With
-the more complex images of ImageNet100, our model also outperforms the state of the art on all
+the more complex images of ImageNet100, our model also outperforms the State-of-the-Art on all
 tested runs, by up to 6.51\pp.
 
 \paragraph{ImageNet1000} This dataset is the most challenging, with much greater image complexity
@@ -535,6 +536,8 @@ model.
 \input{tables/podnet/initialincrement}
 
 
+\FloatBarrier
+
 \section{Ghost: avoid pre-emptively forgetting via ghost features}
 \label{sec:ghost}
 
@@ -608,17 +611,18 @@ pre-allocated, reducing their ---yet not happened--- forgetting.
 
 
 We propose an enriched experimental setting, prescient continual learning, that extend the class
-incremental setting used in \autoref{fig:podnet_model}, in which each task is evaluated on \textit{all
-    classes} $C^{1:T}$: past ($C^{1:t-1}$), present ($C^t$), and future ($C^{t+1:T}$). In that
-challenging new setting, we must not only avoid the catastrophic forgetting of past classes (using
-the limited rehearsal training samples), but also give our best estimates for future classes (using
-no training samples at all). That will only be possible if we have some prior information about the
-classes, e.g., their hierarchy in a semantic network (like WordNet \citep{fellbaum1998wordnet}), an associated word embedding
-(like Word2Vec \citep{mikolov2013word2vec}), or an attribute matrix. Such setting is illustrated in
-\autoref{fig:ghost_protocol}. We will shorthand the set of past and present classes
-$C^{1:t}$ as the \textit{seen} classes, and the set of future classes $C^{t+1:T}$ as the
-\textit{unseen} classes. We denote individual samples by a superscript $\vx^(i)$, the class label by
-a subscript $\vx_c$, and on which parameters a loss is applied by a subscript $\mcL_\Theta$.
+incremental setting used in \autoref{fig:podnet_model}, in which each task is evaluated on
+\textit{all classes} $\mcC^{1:T}$: past ($\mcC^{1:t-1}$), present ($\mcC^t$), and future
+($\mcC^{t+1:T}$). In that challenging new setting, we must not only avoid the catastrophic
+forgetting of past classes (using the limited rehearsal training samples), but also give our best
+estimates for future classes (using no training samples at all). That will only be possible if we
+have some prior information about the classes, e.g., their hierarchy in a semantic network (like
+WordNet \citep{fellbaum1998wordnet}), an associated word embedding (like Word2Vec
+\citep{mikolov2013word2vec}), or an attribute matrix. Such setting is illustrated in
+\autoref{fig:ghost_protocol}. We will shorthand the set of past and present classes $\mcC^{1:t}$ as
+the \textit{seen} classes, and the set of future classes $\mcC^{t+1:T}$ as the \textit{unseen}
+classes. We denote individual samples by a superscript $\vx^(i)$, the class label by a subscript
+$\vx_c$, and on which parameters a loss is applied by a subscript $\mcL_\Theta$.
 
 \subsection{Model}
 \label{sec:ghost_model}
@@ -666,25 +670,28 @@ agnostic to the generator model as long as it can be conditioned by class attrib
 as detailed in \autoref{sec:ghost_quantitative}, we choose a Generative Moment Matching Network
 \citep{li2015gmmn}: a shallow multi-layer perceptron conditioned by class attributes and a noise
 vector trained to minimize the Maximum Mean Discrepancy
-\citep{gretton2007twosampleMMD,gretton2012twosampletestMMD}.
+\citep{gretton2007twosampleMMD,gretton2012twosampletestMMD} between the estimated features
+$\tilde{\vh}^t_c$ and the actual features $\vh^t_c$ for each class $c$ among the current classes
+$\mcC^t$, produced by the feature extractor $f$.
 
 \input{tables/ghost/model.tex}
 
 \label{sec:ghost_generator}
 
-\paragraph{Complete classifier} Remind that the parameters  $\{\vt_c\,,\forall c \in C^{1:t}\}$
-on the representation-based classifier (\autoref{eq:podnet_lsc}) may be interpreted as proxies for
-the classes $C^{1:t}$. The base model for task $t$ will, thus, learn $|C^{1:t}|$ such proxies, one
-for each of the seen classes. To extend the model for the unseen future classes, the complete
-classifier will learn $|C^{1:t}| + |C^{t+1:T}|$ proxies, which changes \autoref{eq:podnet_nca} to:
+\paragraph{Complete classifier} Remind that the parameters  $\{\theta_c\,,\forall c \in \mcC^{1:t}\}$ on
+the representation-based classifier (\autoref{eq:podnet_lsc}) may be interpreted as proxies for the
+classes $\mcC^{1:t}$. The base model for task $t$ will, thus, learn $\mcN^{1:t} = |\mcC^{1:t}|$ such
+proxies, one for each of the seen classes. To extend the model for the unseen future classes, the
+complete classifier will learn $\mcN^{1:t} + \mcN^{t+1:T}$ proxies, which changes
+\autoref{eq:podnet_nca} to:
 %
 \begin{equation}
-    \mcL^\text{\tiny{nca-ghost}}_{\Theta_f,\Theta_{\clf}} = \left[- \log\frac{\exp\left(\vyh_y - \delta\right)}{\sum_{\substack{c \neq y\\c \in C^{1:t}}} \exp \vyh_{c} + \sum_{\substack{c \neq y\\c \in C^{t+1:T}}} \exp \vyh_{c}} \right]_+ \,.
+    \mcL^\text{\tiny{nca-ghost}}_{\Theta_f,\Theta_{\clf}} = \left[- \log\frac{\exp\left(\vyh_y - \delta\right)}{\sum_{\substack{c \neq y\\c \in \mcC^{1:t}}} \exp \vyh_{c} + \sum_{\substack{c \neq y\\c \in \mcC^{t+1:T}}} \exp \vyh_{c}} \right]_+ \,.
     \label{eq:ghost_nca}
 \end{equation}
 %
 This classification loss maximizes the similarity $\vyh_y$ (or, conversely, minimizes the distance)
-between sample feature $\vh_y$ and correct class proxy $\vt_y$ in the numerator. In the denominator,
+between sample feature $\vh_y$ and correct class proxy $\theta_y$ in the numerator. In the denominator,
 the loss pushes away all wrong class proxies, from both seen and unseen (future) classes, by
 minimizing the similarities with $\vy_c, \, \forall c \neq y$.
 
@@ -726,15 +733,15 @@ could have similar behavior. To compute that loss, we learn binary
 one-unseen-class-Vs-all-seen-classes SVM classifiers, one for each unseen class. We employ a linear
 kernel, since the feature extractor and feature vector dimensionality (512) allows good linear
 separation, but more complex kernels could be used. Those \acs{SVM} define hyperplanes
-$\mathbf{w}_c$ and biases $b_c,\, \forall c \in C^{t+1:T}$, separating each unseen region from the
+$\mathbf{w}_c$ and biases $b_c,\, \forall c \in \mcC^{t+1:T}$, separating each unseen region from the
 mass of seen features $\mathbf{h}^{(i)}$ (\autoref{fig:ghost_svm_reg}):
 %
 \begin{equation}
-    \mcL^\text{\tiny{svm-reg}}_{\Theta_f} = \frac{1} {N\times |C^{t+1:T}|}\sum_{i=1}^N \sum_{c\in C^{t+1:T}} [\mathbf{w}_c \cdot \mathbf{h}^{(i)} + b_c + \tau]_+\,,
+    \mcL^\text{\tiny{svm-reg}}_{\Theta_f} = \frac{1}{\mcN^{t+1:T}} \sum_{c\in \mcC^{t+1:T}} [\mathbf{w}_c \cdot \vh^t + b_c + \tau]_+\,,
     \label{eq:ghost_svm}
 \end{equation}
 %
-where $\mathbf{h}^{(i)}$ are seen features (classes in $C^{1:t}$), $[\,\cdot\,]_+$ the hinge loss,
+\noindent where $\vh^t$ are seen features (classes in $\mcC^{1:t}$), $[\,\cdot\,]_+$ the hinge loss,
 and $\tau$ an additional margin (higher values of $\tau$ push seen features further away from the
 ghost regions, in practice, we set $\tau=1$ to repel beyond the support vectors).
 
@@ -759,7 +766,6 @@ loss, in addition to a distillation loss to counter-act catastrophic forgetting
     \label{eq:ghost_loss}
 \end{equation}
 %
-
 The model is illustrated in \autoref{fig:ghost_training_procedure} and \autoref{algo:ghost_task_training} is the
 algorithm of our model in pseudocode, showcasing a procedural view of the execution of one task.
 
@@ -771,15 +777,15 @@ algorithm of our model in pseudocode, showcasing a procedural view of the execut
         \Statex Data from new task and rehearsal memory $(X, y)$
 
         \If{$t = 1$ or $t = T$} \State Train $f^t$ and $g^t$ with $\mcL^\text{\tiny{nca}}$
-        and $\mcL^\text{\tiny{distill}}$ on $(X, y)$ and Ghost samples. \Else \State Train $f^t$ and $g^t$
+        and $\mcL^\text{\tiny{distill}}$ on $(\vx, y)$ and Ghost samples. \Else \State Train $f^t$ and $g^t$
         with $\mcL^\text{\tiny{nca-ghost}}$, $\mcL^\text{\tiny{svm-reg}}$ and $\mcL^\text{\tiny{distill}}$
-        on $(X, y)$ and Ghost samples. \EndIf
+        on $(\vx, y)$ and Ghost samples. \EndIf
 
-        \State Evaluate on all classes: $C^{1:t} \cup C^{t+1:T}$.
+        \State Evaluate on all classes: $\mcC^{1:t} \cup \mcC^{t+1:T}$.
 
         \If{$t \ne 1$ and $t < T - 1$} \State Train $g^t$ with $\mcL^\text{\tiny{MMD}}$ using attributes of
-        seen classes $\mathbf{E}_{c} \,, \forall c \in C^{1:t}$ \State Generate Ghost samples for next
-        task using attributes of unseen classes $\mathbf{E}_{c} \,, \forall c \in C^{t+2:T}$ \EndIf
+        seen classes $\mathbf{E}_{c} \,, \forall c \in \mcC^{1:t}$ \State Generate Ghost samples for next
+        task using attributes of unseen classes $\mathbf{E}_{c} \,, \forall c \in \mcC^{t+2:T}$ \EndIf
     \end{algorithmic}
     \caption{Task procedure of the Ghost model}
     \label{algo:ghost_task_training}
@@ -887,14 +893,14 @@ features for a class with the given attributes. In our experiments on AwA2 and A
 attributes vectors are the average of the attributes for the training samples in the class. For each
 task $t$, the feature extractor $f^t$ and the generator $g^t$ are trained to minimize the Maximum
 Mean Discrepancy (MMD) \citep{gretton2007twosampleMMD,gretton2012twosampletestMMD} between the
-actual features of seen classes $\vh_c = f^t(\vx_c) \, , \forall c \in C^{1:t}$ and their
+actual features of seen classes $\vh_c = f^t(\vx_c) \, , \forall c \in \mcC^{1:t}$ and their
 distribution on the generator $\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in
-    C^{1:t}$.
+    \mcC^{1:t}$.
 
 We train the generator and the main model (feature extractor and classifier) alternately, as shown
 in \autoref{fig:ghost_training_procedure}. We always train the generator at the end of the task,
 after the feature extractor has adapted to the new distribution (\autoref{fig:ghost_training_gen}).
-We then use the generator to produce ghost samples for the next task (unless we have reached the
+Then, we use the generator to produce ghost samples for the next task (unless we have reached the
 last task, with no unseen classes) which are fed to the feature extractor
 (\autoref{fig:ghost_training_cls}).
 
@@ -904,15 +910,16 @@ for the past classes. For better numerical behavior, we scale each dimension of 
 features to the interval [0, 1] before feeding them to the generator (and then re-scale the output
 of the generator back to the original intervals before feeding its samples to the classifier). The
 generator is trained to minimize the Maximum Mean Discrepancy (MMD) between the features of seen
-concepts $\vh_c = f^t(\vx_c) \, , \forall c \in C^{1:t}$ and the representation it generates
-$\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in C^{1:t}$:
+concepts $\vh_c = f^t(\vx_c) \, , \forall c \in \mcC^{1:t}$ and the representation it generates
+$\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in \mcC^{1:t}$:
 %
 \begin{equation}
-    \mcL^\text{\tiny{MMD}}_{\Theta_g} = \left\Vert \frac{1}{N} \sum_{i=1}^N \phi\big(\vh^{(i)}_c\big) - \frac{1}{N} \sum_{j=1}^N \phi\big(\tilde{\vh}^{(j)}_c\big) \right\Vert^2\,, \quad c \in C^{1:t}\,,
+    \mcL^\text{\tiny{MMD}}_{\Theta_g} = \left\Vert \frac{1}{N} \sum_{i=1}^N \phi\big(\vh^{(i)}_c\big) - \frac{1}{N} \sum_{j=1}^N \phi\big(\tilde{\vh}^{(j)}_c\big) \right\Vert^2\,, \quad c \in \mcC^{1:t}\,,
     \label{eq:mmd_loss}
 \end{equation}
 %
-with $\phi(\cdot)$ being a Gaussian kernel. The trained generator uses the attributes of the classes
+\noindent with $\phi(\cdot)$ being a Gaussian kernel, and the superscript $\cdot^i$ denotes the
+$i^{th}$ sample. The trained generator uses the attributes of the classes
 — which is the only information we have about them — to estimate sample features that we call
 \textit{ghost features}. To better estimate the statistics, we use all the real features of a single
 seen class per batch. We denote the amount of real features by $N$. The generator produces as much

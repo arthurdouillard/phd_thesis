@@ -101,7 +101,7 @@ predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this
       \caption{\textbf{A Convolutional Neural Networks} extracts more complex patterns through its
             succession of convolutions. In \textcolor{orange}{orange} a convolution, in \textcolor{red}{red}
             a pooling, and in \textcolor{green}{green} the classifier. Given an image, the \ac{CNN} can assign to
-            each possible class a probability, all summing to 1. Here this cute little cat is clearly a cat.
+            each possible class a probability, all summing to 1.
             Detected patterns taken from \cite{olah2017feature}.}
       \label{fig:related_cnn}
 \end{figure}
@@ -262,8 +262,6 @@ setting, and more challenging \citep{lesort2019regulshortcomings}.
 \subsection{Metrics for Continual Learning}
 \label{sec:related_metrics}
 
-\epigraph{If you cannot measure it, you cannot improve it.}{\textit{Lord Kelvin}}
-
 Multiple metrics exist in Continual Learning: the most common are the \textbf{final accuracy} and
 \textbf{average incremental accuracy}. The former measures the performance of the model on all tasks
 at the last step. The latter measures the average of performance on all seen tasks after each new
@@ -298,19 +296,25 @@ recently showed that the larger a model was the lower was the forgetting.
 \section{Methods to reduce forgetting}
 \label{sec:related_methods}
 
+Multiple approaches exist to reduce forgetting in Continual Learning. The major ones are
+review of old data (\autoref{sec:related_rehearsal}), regularizations constraining the model's
+behavior (\autoref{sec:related_regul}), and structural adaptations \autoref{sec:related_structural}.
+In the \autoref{chapter:regularization} and \autoref{chapter:segmentation} both the first and second
+approaches are considered. In the \autoref{chapter:dynamic}, the first and third approach are evaluated.
+
 \subsection{Rehearsal}
 \label{sec:related_rehearsal}
 
-Multiple approaches exist to reduce catastrophic forgetting. The most efficient method is
-\textbf{rehearsal learning} where old samples will be seen alongside the new samples. The amount of
-old samples stored is extremely limited otherwise it would defect the purpose of continual learning.
-\autoref{fig:related_protocol} illustrates how rehearsal learning happens in Continual Learning.
-During the first step, a model is trained on all available samples. Then, it stores a limited amount
-of those in a \textit{memory}. During the second step, the model has access to new samples but also
-all samples stored in the memory. In Class-Incremental, an equal amount of samples per class is
-stored in memory. Nevertheless, there are two major approaches to determine this amount:
-\cite{rebuffi2017icarl} proposed to fully use a memory of size $\mcM$ among all $\mcC$, while
-\cite{hou2019ucir} instead kept fixed the amount of samples stored per class to $\nicefrac{\mcM}{|\mcC|}$.
+The most efficient method to reduce forgetting is \textbf{rehearsal learning} where old samples will
+be seen alongside the new samples. The amount of old samples stored is extremely limited otherwise
+it would defect the purpose of continual learning. \autoref{fig:related_protocol} illustrates how
+rehearsal learning happens in Continual Learning. During the first step, a model is trained on all
+available samples. Then, it stores a limited amount of those in a \textit{memory}. During the second
+step, the model has access to new samples but also all samples stored in the memory. In
+Class-Incremental, an equal amount of samples per class is stored in memory. Nevertheless, there are
+two major approaches to determine this amount: \cite{rebuffi2017icarl} proposed to fully use a
+memory of size $\mcM$ among all $\mcC$, while \cite{hou2019ucir} instead kept fixed the amount of
+samples stored per class to $\nicefrac{\mcM}{|\mcC|}$.
 
 \paragraph{Herding} is the action of choosing which samples per class to store in the rehearsal
 memory. The most naive herding method is to sample randomly images. Despite its simplicity, it's
