@@ -391,8 +391,9 @@ steps of 10 classes or 50 steps of 1 class. Note that a training of 50 steps is 
 different tasks: the initial training followed by the incremental steps. Models are evaluated after
 each step on \textit{all the classes seen until then}. To facilitate comparison, the accuracies at
 the end of each step are averaged into a unique score called \textit{average incremental
-    accuracy}~\citep{rebuffi2017icarl}. If not specified otherwise, the average incremental accuracy is
-the score reported in all our results. The protocol is also illustrated in \autoref{fig:podnet_protocol}.
+    accuracy}~\citep{rebuffi2017icarl} (\autoref{eq:related_avg_acc} in \autoref{sec:related_metrics}).
+If not specified otherwise, the average incremental accuracy is the score reported in all our
+results. The protocol is also illustrated in \autoref{fig:podnet_protocol}.
 
 For CIFAR100 and ImageNet100, we ran all experiments thrice, varying the order of the classes. We
 report the averages and standard deviations in tables and graphs. For ImageNet1000, whose models
@@ -836,7 +837,7 @@ similarities (‘8’ is similar to ‘0’ and ‘5’), partially from continu
 severe forgetting of old classes in favor of new ones. The proposed model organizes better the
 feature space, which is particularly visible between the second and third steps, where the early
 allocation of ghost zones for the future classes (displayed as empty black circles) is prominent.
-That better arrangement of the feature space increases the final accuracy from 44 to 66\%, a 22 p.p.
+That better arrangement of the feature space increases the final accuracy from 44 to 66\%, a 22 \pp
 improvement. The small latent space of 2 dimensions explains the low performance for both models; a
 model that learns on all classes in one step (\textit{i.e.} not in a continual setting) reaches only
 69\% of final accuracy. That said, our model shows a clear improvement both qualitatively in
@@ -851,7 +852,7 @@ found in the supplementary material.
         ghost features/proxies in the second task, denoted by dotted circles in the bottom row,
         enforces vacant space for those unseen classes. When filled in the third task (last column),
         there is less interference/overlap with previous classes. Such a strategy improves the final
-        accuracy by 22 p.p.}
+        accuracy by 22 \pp.}
     \label{fig:ghost_toy_weights_3steps}
 \end{figure}
 
@@ -932,7 +933,7 @@ We considered applying a distillation loss to the generator, trying to minimize 
 the produced features of the previous and current generator. We measured such drift according to
 several metrics: cosine similarity, Kullback-Leiber divergence, L2 distance, and maximum mean
 discrepancy. The first metric, cosine similarity, gave best results. However, as the generator was
-well protected, we gained at most 0.50 Continual Accuracy p.p. on AwA2.
+well protected, we gained at most 0.50 Continual Accuracy \pp on AwA2.
 
 
 \input{tables/ghost/continual_half}
@@ -940,7 +941,8 @@ well protected, we gained at most 0.50 Continual Accuracy p.p. on AwA2.
 
 \paragraph{Continual Learning with Future Classes}
 For continual learning, it is usual to take into account the model's performance as it evolves. We
-adapt the traditional average incremental accuracy \citep{rebuffi2017icarl} to take into account
+adapt the traditional average incremental accuracy \citep{rebuffi2017icarl}
+(\autoref{eq:related_avg_acc} in \autoref{sec:related_metrics}) to take into account
 \textit{all} classes, including the future ones, and call that metric \textit{continual accuracy}:
 the average of accuracy over all seen classes after each task. The results appear in
 \autoref{tab:ghost_continual_half}, which shows, for the datasets and protocols explained in the top
@@ -948,18 +950,19 @@ of this section, the performance for our two base models \citep{hou2019ucir,doui
 and the improvements on those base models as we implement our proposed model, with and without the
 SVM latent-space regularization refinement. The ability to guess on future class brings large
 improvements on both datasets, for both base models. The SVM-based regularization refinement also
-improves the results, by up to 0.65 p.p.
+improves the results, by up to 0.65 \pp.
 
 \input{tables/ghost/plot}
 
-\paragraph{Final Accuracy} Once we reach the final task, the proposed model ability to guess
-future classes provides no advantage due to all classes being now seen. Still, as shown in
+\paragraph{Final Accuracy} Once we reach the final task, the proposed model ability to guess future
+classes provides no advantage due to all classes being now seen. Still, as shown in
 \autoref{tab:ghost_final_half} — where the metric is simply the accuracy at the final task of each
-run — the proposed method outperforms the baselines, due to a better organization of the feature
-space. Although the numerical advantages in this table are smaller than in the previous one, these
-results are consequential, showing that the ability of the proposed model of incorporating knowledge
-about the classes is useful beyond the zero-shot scenario. Again, the SVM-regularization refinement
-helps by up to 1.80 p.p.
+run (\autoref{eq:related_final_acc} in \autoref{sec:related_metrics}) — the proposed method
+outperforms the baselines, due to a better organization of the feature space. Although the numerical
+advantages in this table are smaller than in the previous one, these results are consequential,
+showing that the ability of the proposed model of incorporating knowledge about the classes is
+useful beyond the zero-shot scenario. Again, the SVM-regularization refinement helps by up to 1.80
+\pp.
 
 \paragraph{Model Evolution} To showcase how the models evolve, plots contrasting the proposed
 methods with each base model (PODNet and UCIR) task by task appear in

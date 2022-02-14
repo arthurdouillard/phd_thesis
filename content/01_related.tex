@@ -36,7 +36,7 @@ model, a \ac{MLP} with a single hidden layer for classification can be defined l
       \label{eq:intro_mlp}
 \end{equation}
 %
-with $\vW_h \in \mathbb{R}^{H \times D}$, $\vb_h \in \mathbb{R}^{H}$,
+\noindent with $\vW_h \in \mathbb{R}^{H \times D}$, $\vb_h \in \mathbb{R}^{H}$,
 $\vW_o \in \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters and of the
 network. $\vx \in \mathbb{R}^D$ the input data as a vector, and $\tilde{\vy} \in \mathbb{R}^C$ the
 predicted probabilities per classes. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
@@ -50,7 +50,7 @@ cross-entropy:
       \label{eq:intro_ce}
 \end{equation}
 %
-with $\vy$ a one-hot vector of the labels. Finally, to optimize the parameters of the neural
+\noindent with $\vy$ a one-hot vector of the labels. Finally, to optimize the parameters of the neural
 network, we often use the mini-batch \ac{SGD} algorithm or a variation thereof:
 
 \begin{algorithm}
@@ -106,14 +106,14 @@ predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this
       \label{fig:related_cnn}
 \end{figure}
 
-The 2010's decade saw major improvements to \acs{CNN}, both in their architecture structure and in
-their training procedure. \cite{srivastava2015highwaynet} and \cite{he2016resnet} proposed residual
-connections between blocks likewise: $\vy = \vx + \sigma(\operatorname{Conv}(\vx))$. It allows
-training deeper networks by enabling the gradient flows more easily up the earliest layers. This
-type of connections is now quasi-ubiquitous in all \ac{DL} based architectures. Other architecture
-changes include using convolutions of different kernel sizes in parallel as in Inception
-\citep{szegedy2015inception}, enabling a multi-scale view of the features. These architectures are
-depicted in \autoref{fig:related_resnet_inception}.
+\paragraph{Architectures:}The 2010's decade saw major improvements to \acs{CNN}, both in their
+architecture structure and in their training procedure. \cite{srivastava2015highwaynet} and
+\cite{he2016resnet} proposed residual connections between blocks likewise: $\vy = \vx +
+\sigma(\operatorname{Conv}(\vx))$. It allows training deeper networks by enabling the gradient flows
+more easily up the earliest layers. This type of connections is now quasi-ubiquitous in all \ac{DL}
+based architectures. Other architecture changes include using convolutions of different kernel sizes
+in parallel as in Inception \citep{szegedy2015inception}, enabling a multi-scale view of the
+features. These architectures are depicted in \autoref{fig:related_resnet_inception}.
 
 \begin{figure}[tb]
       \begin{center}
@@ -128,13 +128,13 @@ depicted in \autoref{fig:related_resnet_inception}.
       \label{fig:related_resnet_inception}
 \end{figure}
 
-The high performance of modern \acs{CNN} is also provided to their training procedure
-\citep{wightman2019resnetstrikesback}: optimizers with adaptive learning rate such as Adam
-\citep{kingma2014adam}, improved learning rate scheduling, strong data augmentations
+\paragraph{Regularizations:}The high performance of modern \acs{CNN} is also provided to their
+training procedure \citep{wightman2019resnetstrikesback}: optimizers with adaptive learning rate
+such as Adam \citep{kingma2014adam}, improved learning rate scheduling, strong data augmentations
 \citep{muller2021trivialaugment,hingyi2018mixup,zhong2017erasing}, and regularizations such as
 Dropout \citep{gal2016dropout} and stochastic depth \citep{gao2016stochasticdepth}.
 
-While convolution-based neural networks dominated \acf{CV} in the 2010's decade, in the recent years
+\paragraph{Transformers:}While convolution-based neural networks dominated \acf{CV} in the 2010's decade, in the recent years
 the transformer architecture gained interest: originally designed for machine translation in
 \ac{NLP} \citep{vaswani2017transformer} with an encoder/decoder structure, it has been applied to
 vision \citep{dosovitskiy2020vit} using a modified encoder-only structure as BERT
@@ -172,7 +172,7 @@ Given a single head, the Self-Attention is:
       \label{sec:related_sa}
 \end{equation}
 %
-$\vx$ are the $N$ patch tokens and the class token, of shape $(N, D)$, $D$ being the embedding
+\noindent $\vx$ are the $N$ patch tokens and the class token, of shape $(N, D)$, $D$ being the embedding
 dimension. The patch tokens are linearly transformed thrice in a \textbf{Q}uery, \textbf{K}ey, and
 \textbf{V}alue. An attention matrix of shape $(N, N)$ is computed from the query and the key. Its
 $i^{\text{th}}$ row contains the similarity between the $i^{\text{th}}$ with all other tokens.
