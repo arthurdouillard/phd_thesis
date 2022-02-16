@@ -18,26 +18,26 @@
 % continual learning what are the problems
 % outline, maybe fusionned with CL
 
-\epigraph{I believe that at the end of the century the use of words and general educated opinion
+\epigraph{I believe that at the end of the century, the use of words and general educated opinion
       will have altered so much that one will be able to speak of machines thinking without expecting to
       be contradicted}{\textit{Alan Turing}}
 
-In this thesis introduction, using layman terms, I'll describe what is Artificial Intelligence, and
-more particularly one of its instance: Deep Learning. Then, I'll lay out the challenges of this
-thesis and what I've developed to solve them.
+In this thesis introduction, using layman terms, I describe Artificial Intelligence, and,
+in particular, one of its instances: Deep Learning. Then, I lay out the challenges of this
+thesis and what I have developed to solve them.
 
 %\section{Artificial Intelligence}
 
 The idea of thinking machines began in the previous century, from Karel Çapek's invention of the
 "\textit{robot}" to the 1956's Dartmouth workshop passing by Turing \& von Neumann's reflections.
 Despite suffering from multiple "AI winters" filled with disappointments and criticisms, Turing's
-prediction on the rising importance of \ac{AI} proved to be right as the first decade and second
+prediction on the rising importance of \ac{AI} proved to be right as the first and second
 decade of the XXI century saw the advent of respectively \acf{ML} and \acf{DL}, two major subfields
 of \ac{AI}.
 
 Providing a definition of \ac{AI} is difficult, but its foremost domains, \ac{ML} and \ac{DL}, can be
 defined as statistical methods aiming to discover patterns in data. These methods are already
-ubiquitous: speech recognition allow us to control devices remotely, recommender
+ubiquitous: speech recognition enables us to control devices remotely, recommender
 systems propose us movies according to our taste, automatic translation, face recognition,
 autonomous driving, \etc.
 
@@ -47,86 +47,86 @@ also be raised. \todo{IDK}
 \section{Deep Learning}
 
 While many domains exist in \acf{AI}, this thesis is focused on using \acf{DL} applied to \acf{CV}.
-In this section, I'll describe briefly what are the learning methods, what do the data looks like.
-Finally, I'll detail what does this thesis try to solve and why.
+In this section, I'll describe briefly the learning methods and the data structure.
+Finally, I'll detail the challenges tackled in this thesis and why they matter.
 
 \paragraph{Deep Learning} belongs to the statistical learning methods. As other statistical methods,
 such as \acf{ML}, these methods usually work on an input/output level. Given an input, the model is
-expected to produce an output. This output, called a \textit{prediction}, will be compared to what
+expected to produce an output called \textit{prediction}. It will be compared to what
 the model should actually predict, the \textit{ground-truth}. Like in human learning, the model is
-informed when it's wrong in order to avoid making the same mistake twice. \acf{DL} models are based
-on artificial neural networks, which as the name implies originally bears some similarity with
+informed when it is wrong to avoid making the same mistake twice. \acf{DL} models are based
+on artificial neural networks, which as the name implies, bear some similarity with
 humans' neurons.
 
 \paragraph{Computer Vision} is an application topic in \acf{AI}. Its goal is to analyze images using
-computer-assisted method. The most common tasks in \acf{CV} includes image classification where a
+a computer-assisted method. The most common tasks in \acf{CV} includes image classification where a
 label must be predicted per image, semantic segmentation where each pixel must be attributed a
-label, or even \ac{VQA} where questions about an image must be answered. Many families of methods can
+label or even \ac{VQA} where questions about an image must be answered. Many families of methods can
 be used to tackle \ac{CV} problems, but as of 2012 and onwards, \acf{DL} is the best
 performing method for this type of data.
 
-\section{Thesis' goal}
+\section{This Thesis}
 
-Now that the type of methods and data (Deep Learning, and images) have been defined, I'll
+Now that the type of methods and data (Deep Learning and images) have been defined, I'll
 contextualize my thesis w.r.t. my sponsor, how it influenced my research, and what challenges I've
 aimed to tackle.
 
 \paragraph{Heuritech} This thesis was sponsored by the Parisian startup
-Heuritech\footnote{\url{https://heuritech.com}} as a \textit{CIFRE PhD}. The company analyses social
-networks such as Instagram and Weibo, recognizes what are the weared clothes in pictures, estimates
+Heuritech\footnote{\url{https://heuritech.com}} as a \textit{CIFRE PhD}. The company analyzes social
+networks such as Instagram and Weibo, recognizes the clothes in pictures, estimates
 volumes of fine-grained types of garments, and finally forecasts future trends. The company's
 \acf{CV} models must recognize an ever-growing number of entities from features (\eg knitted, blue
 color, short cut) to brand models (\eg Nike Air Max, Adidas Stan Smith, Puma Suede). This
 requirement leads to two problems: \textbf{(1)} the time spent to re-train a model is growing
 linearly, and \textbf{(2)} learning a new entity can incur a performance loss on previously learned
-entities. The scientific literature names the domain of learning new concepts regularly
+entities. The scientific literature names the domain of learning new concepts incrementally
 ``\textbf{Continual Learning}'', and the loss of performance ``\textbf{Catastrophic Forgetting}''.
 
 \paragraph{Continual Learning} is a field that emerged in the 1990s but saw renewed interest only
 very recently around the second half of the 2010s. The goal is to deal with non-static datasets that
 evolve through time. This evolution can take many forms, including adding new entities to predict in
 a classification task (\eg learning sneaker brands, then high-heel brands) or adding samples from
-new sources (\eg commercial photoshoot then images from social medias). Unfortunately, current
-State-of-the-Art models struggle to learn continually without forgetting. This loss is so important,
+new sources (\eg commercial photoshoot then images from social media). Unfortunately, current
+State-of-the-Art models struggle to learn continually without forgetting. This loss is so critical
 that the literature nicknamed it a ``catastrophic forgetting''. Multiple methods have been designed
 to reduce it with the two major ones being rehearsal and constraints. Rehearsal involves reviewing
 previously learned knowledge, as a human student would \textit{rehearse} the last semester's course.
 However, this rehearsal is often limited in order to reduce computational cost and because past data
-may not always be available for a variety of reasons. Constraints enforce that the model keeps a
-similar \textit{behavior} as it learns new concepts.
+may not always be available for a variety of reasons, including privacy. On the other hand,
+constraints enforce the model to keep a similar \textit{behavior} as it learns new concepts.
 
 \paragraph{Thesis's Outline:} This thesis is focused on bringing Continual Learning capacity to
 Computer Vision models. In the next chapter (\autoref{chapter:related}), I detail the learning
 procedure, state the exact benchmarks considered in Continual Learning, and review the
-State-of-the-Art in this domain. After this chapter, I cover the various papers published during
-this thesis over three chapters as follows:
+State-of-the-Art methods in this domain. Then, I cover the work I've done during this thesis over
+three chapters as follows:
 
 \begin{itemize}
       \item \autoref{chapter:regularization}: \nameref{chapter:regularization}\\
             I first review the existing methods based on regularization for continual learning. While
             regularizing a model's probabilities is very efficient to reduce forgetting in large-scale
             datasets, there are few works considering constraints on intermediate features. I cover in this
-            chapter two contributions aiming to regularize directly the latent space of \acs{ConvNet}. The
+            chapter two contributions aiming to regularize the latent space of \acs{ConvNet} directly. The
             first one, \acf{PODNet} aims to reduce the drift of spatial statistics between the old and new
-            model, which in effect reduces drastically forgetting even on large amount of tasks. I show in a
+            model, which in effect reduces drastically forgetting even on an important amount of tasks. I show in a
             second part a complementary method where we avoid pre-emptively forgetting by allocating
             locations in the latent space for yet unseen future class.
       \item \autoref{chapter:segmentation}: \nameref{chapter:segmentation}\\
             Then, I describe a recent application of \acf{CIL} to semantic segmentation. I show that
-            the very nature of \acf{CSS} offer new specific challenges, namely forgetting on large
+            the very nature of \acf{CSS} offers new specific challenges, namely forgetting on large
             images and a background shift. We tackle the first problem by extending our distillation
             loss introduced in the previous chapter to multi-scales. The second problem is solved by
-            an efficient pseudo-labeling strategy. Finally, we consider the common rehearsal learning,
+            our efficient pseudo-labeling strategy. Finally, we consider the common rehearsal learning
             but applied this time to \ac{CSS}. I show that it cannot be used naively because of memory
-            complexity and design a light-weight rehearsal that is even more efficient.
+            complexity and design a memory-efficient rehearsal that is even more efficient.
       \item \autoref{chapter:dynamic}: \nameref{chapter:dynamic}\\
             Finally, I consider a completely different approach to continual learning: dynamic networks
             where the parameters are extended during training to adapt to new tasks. Previous works on
             this domain are hard to train and often suffer from parameter count explosion. For the
             first time in continual computer vision, we propose to use the Transformer architecture:
-            the model dimension mostly fixed and shared across tasks, except for an
-            expansion of learned task tokens. With an encoder/decoder strategy where the decoder
-            forward is specialized by a task token, we show state-of-the-art robustness to forgetting
+            the model parameters are shared across tasks except for an
+            expansion of learned task tokens. With an encoder/decoder strategy where a task token
+            specializes the decoder's forward, we show state-of-the-art robustness to forgetting
             while our memory and computational complexities barely grow.
 \end{itemize}
 

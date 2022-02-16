@@ -86,5 +86,25 @@
         }
     ],
     "latex-workshop.latex.recipe.default": "first",
-    "latex-workshop.message.error.show": true
+    "latex-workshop.message.error.show": true,
+    "grammarly.overrides": [
+        {
+            "files": [
+                "**/content/*.tex"
+            ],
+            "config": {
+                "audience": "expert",
+                "dialect": "american",
+                "domain": "academic",
+                "emotions": [
+                    "neutral",
+                    "analytical"
+                ],
+                "goals": [
+                    "inform",
+                    "describe"
+                ]
+            }
+        }
+    ]
 }
