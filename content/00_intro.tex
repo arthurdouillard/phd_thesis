@@ -20,7 +20,7 @@
 
 \epigraph{I believe that at the end of the century, the use of words and general educated opinion
       will have altered so much that one will be able to speak of machines thinking without expecting to
-      be contradicted}{\textit{Alan Turing}}
+      be contradicted.}{\textit{Alan Turing}}
 
 In this thesis introduction, using layman terms, I describe Artificial Intelligence, and,
 in particular, one of its instances: Deep Learning. Then, I lay out the challenges of this
@@ -28,48 +28,51 @@ thesis and what I have developed to solve them.
 
 %\section{Artificial Intelligence}
 
-The idea of thinking machines began in the previous century, from Karel Çapek's invention of the
+\textbf{The idea of thinking machines} began in the previous century, from Karel Çapek's invention of the
 "\textit{robot}" to the 1956's Dartmouth workshop passing by Turing \& von Neumann's reflections.
 Despite suffering from multiple "AI winters" filled with disappointments and criticisms, Turing's
-prediction on the rising importance of \ac{AI} proved to be right as the first and second
-decade of the XXI century saw the advent of respectively \acf{ML} and \acf{DL}, two major subfields
+prediction on the rising importance of \ac{AI} proved to be right as the first and the second
+decades of the XXI century saw the advent of respectively \acf{ML} and \acf{DL}, two major subfields
 of \ac{AI}.
 
-Providing a definition of \ac{AI} is difficult, but its foremost domains, \ac{ML} and \ac{DL}, can be
+Providing \textbf{a definition of \ac{AI}} is difficult, but its foremost domains, \ac{ML} and \ac{DL}, can be
 defined as statistical methods aiming to discover patterns in data. These methods are already
-ubiquitous: speech recognition enables us to control devices remotely, recommender
-systems propose us movies according to our taste, automatic translation, face recognition,
-autonomous driving, \etc.
+ubiquitous: speech recognition enabling us to control devices remotely, recommender
+systems proposing movies according to our taste, automatic translation, face recognition,
+autonomous driving, \etc. Less known but still useful applications comprise accelerated physics
+simulation, protein folding prediction, molecule toxicity estimation, data center cooling system, and
+control of the magnetic coils of a nuclear fusion reactor.
 
-Because \ac{AI} is increasingly more important in our daily lives, some ethical considerations must
-also be raised. \todo{IDK}
+\ac{AI} is increasingly more important in our daily lives with some applications raising \textbf{ethical
+      concerns}: face recognition biased towards some populations, loan grants, medical diagnosis, justice
+advice, chatbots with toxic behavior, \etc. Therefore, we must pay a particular interest on the
+potential impact of this new technology. Towards this goal, a diverse set of profiles, in all steps
+of a product, must be trained to recognize these issues.
 
 \section{Deep Learning}
 
 While many domains exist in \acf{AI}, this thesis is focused on using \acf{DL} applied to \acf{CV}.
-In this section, I'll describe briefly the learning methods and the data structure.
-Finally, I'll detail the challenges tackled in this thesis and why they matter.
+In this section, I will briefly describe the learning methods and the data structure.
+Finally, I will detail the challenges tackled in this thesis and why they matter.
 
 \paragraph{Deep Learning} belongs to the statistical learning methods. As other statistical methods,
-such as \acf{ML}, these methods usually work on an input/output level. Given an input, the model is
-expected to produce an output called \textit{prediction}. It will be compared to what
-the model should actually predict, the \textit{ground-truth}. Like in human learning, the model is
-informed when it is wrong to avoid making the same mistake twice. \acf{DL} models are based
-on artificial neural networks, which as the name implies, bear some similarity with
-humans' neurons.
+such as \acf{ML}, these methods usually work on an input/output level. Given an input, the model
+produces an output called \textit{prediction}. Then, it is compared to what the model should
+predict, \ie the \textit{ground-truth}. Like in human learning, the model is informed when it is
+wrong to avoid making the same mistake twice. \acf{DL} models are based on artificial neural
+networks, and as the name implies, which bear some similarity with humans' neurons.
 
 \paragraph{Computer Vision} is an application topic in \acf{AI}. Its goal is to analyze images using
 a computer-assisted method. The most common tasks in \acf{CV} includes image classification where a
-label must be predicted per image, semantic segmentation where each pixel must be attributed a
-label or even \ac{VQA} where questions about an image must be answered. Many families of methods can
-be used to tackle \ac{CV} problems, but as of 2012 and onwards, \acf{DL} is the best
-performing method for this type of data.
+label must be predicted per image, semantic segmentation where each pixel must be attributed a label
+or even \ac{VQA} where questions about an image must be answered. Several families of methods can be
+used to tackle \ac{CV} problems, but as of 2012 and onwards, \acf{DL} is the best performing method
+for this type of data.
 
 \section{This Thesis}
 
-Now that the type of methods and data (Deep Learning and images) have been defined, I'll
-contextualize my thesis w.r.t. my sponsor, how it influenced my research, and what challenges I've
-aimed to tackle.
+Now with the type of methods and data (Deep Learning and images) defined, I will contextualize my
+thesis w.r.t. my sponsor, how it influenced my research, and what challenges I have aimed to tackle.
 
 \paragraph{Heuritech} This thesis was sponsored by the Parisian startup
 Heuritech\footnote{\url{https://heuritech.com}} as a \textit{CIFRE PhD}. The company analyzes social
@@ -89,16 +92,17 @@ a classification task (\eg learning sneaker brands, then high-heel brands) or ad
 new sources (\eg commercial photoshoot then images from social media). Unfortunately, current
 State-of-the-Art models struggle to learn continually without forgetting. This loss is so critical
 that the literature nicknamed it a ``catastrophic forgetting''. Multiple methods have been designed
-to reduce it with the two major ones being rehearsal and constraints. Rehearsal involves reviewing
-previously learned knowledge, as a human student would \textit{rehearse} the last semester's course.
-However, this rehearsal is often limited in order to reduce computational cost and because past data
-may not always be available for a variety of reasons, including privacy. On the other hand,
-constraints enforce the model to keep a similar \textit{behavior} as it learns new concepts.
+to reduce this forgetting; the two major ones being rehearsal and constraints. Rehearsal involves
+reviewing previously learned knowledge, as a human student would \textit{rehearse} the last
+semester's course. However, this rehearsal is often limited in order to reduce computational cost
+and because past data may not always be available for a variety of reasons, including privacy. On
+the other hand, constraints enforce the model to keep a similar \textit{behavior} as it learns new
+concepts, but defining the right constraint is not trivial.
 
 \paragraph{Thesis's Outline:} This thesis is focused on bringing Continual Learning capacity to
 Computer Vision models. In the next chapter (\autoref{chapter:related}), I detail the learning
 procedure, state the exact benchmarks considered in Continual Learning, and review the
-State-of-the-Art methods in this domain. Then, I cover the work I've done during this thesis over
+State-of-the-Art methods in this domain. Then, I cover the work I have done during this thesis over
 three chapters as follows:
 
 \begin{itemize}
@@ -124,7 +128,7 @@ three chapters as follows:
             where the parameters are extended during training to adapt to new tasks. Previous works on
             this domain are hard to train and often suffer from parameter count explosion. For the
             first time in continual computer vision, we propose to use the Transformer architecture:
-            the model parameters are shared across tasks except for an
+            the model's parameters are shared across tasks except for an
             expansion of learned task tokens. With an encoder/decoder strategy where a task token
             specializes the decoder's forward, we show state-of-the-art robustness to forgetting
             while our memory and computational complexities barely grow.
@@ -140,10 +144,11 @@ three chapters as follows:
       \item \fullcite{douillard2021dytox}
 \end{itemize}
 
-I've also published other papers that can be found in the \autoref{chapter:appendix}:
+I have also published other papers that can be found in the \autoref{chapter:appendix}:
 
 \begin{itemize}
       \item \fullcite{douillardlesort2021continuum}
-      \item \todo{Add ICML submission on foundational models}
+      \item \todo{Add ICML submission on foundation models with MILA}
+      \item \todo{Add CTKT with Antoine}
 \end{itemize}
 

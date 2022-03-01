@@ -51,7 +51,7 @@ often used \cite{hayes2019exstream,aljundi2019taskfree}.
 
 Multiple regularization methods (\autoref{sec:related_regul}) needs to do some computation between
 tasks. For example, weight-based regularization (\autoref{sec:related_regul_weight}) must compute
-the task-specific importance weights. Because in Online Learnig, there are no clear task separation,
+the task-specific importance weights. Because in Online Learning, there are no clear task separation,
 a heuristic must determine when doing this computation. \cite{aljundi2019taskfree}, working a stream
 of images from soap operas, proposed to analyze the loss surface to find drift in the distribution:
 at some point the model is experienced enough, and the loss starts to plateau. When a drift happens,
@@ -68,7 +68,7 @@ quickly as possible --sample wise-- the original performance on past tasks
 \citep{he2019metacontinual}. As the name implies, meta-learning methods, that aims to \textit{learn
       how to learn}, such as the MAML model \citep{finn2017maml} are used to that end. Then, \ac{MCL} has
 been extended to a more general framework where the model also has to adapt quickly to new \acf{OoD}
-tasks.
+tasks \todo{cite caccia's osaka}.
 
 Note that \acf{MCL} is not to be confused with \acf{CML} where in that case meta-learning is only
 used during pretraining to provide better model initialization.
@@ -159,12 +159,12 @@ ordering.
 datasets considered for PODNet: CIFAR100, ImageNet100, and ImageNet1000.
 
 {\begin{description} \setlength{\parskip}{0pt}
-    \item[CIFAR100] contains 32$\times$32-pixel images in 100 classes, with 50k images for training
-          and 10k for testing.
-    \item[ImageNet100] contains 224$\times$224-pixel images in 100 classes, with $\sim$128k images
-          for training and $\sim$5k for testing.
-    \item[ImageNet1000] contains 224$\times$224-pixel images in 1000 classes, with $\sim$1.28m
-          images for training and $\sim$50k for testing. \end{description}}
+      \item[CIFAR100] contains 32$\times$32-pixel images in 100 classes, with 50k images for training
+            and 10k for testing.
+      \item[ImageNet100] contains 224$\times$224-pixel images in 100 classes, with $\sim$128k images
+            for training and $\sim$5k for testing.
+      \item[ImageNet1000] contains 224$\times$224-pixel images in 1000 classes, with $\sim$1.28m
+            images for training and $\sim$50k for testing. \end{description}}
 
 \paragraph{Spatial-based distillation} I displayed the differences of performance between
 spatial-based distillation in \autoref{sec:podnet_ablation_pooling}
