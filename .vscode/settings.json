@@ -106,5 +106,9 @@
                 ]
             }
         }
-    ]
+    ],
+    "workbench.colorCustomizations": {
+        "editor.findMatchBackground": "#00cc44a8", //Current SEARCH MATCH
+        "editor.findMatchHighlightBackground": "#ff7b00a1" //Other SEARCH MATCHES
+    }
 }

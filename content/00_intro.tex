@@ -24,7 +24,7 @@
 
 In this thesis introduction, using layman terms, I describe Artificial Intelligence, and,
 in particular, one of its instances: Deep Learning. Then, I lay out the challenges of this
-thesis and what I have developed to solve them.
+thesis and my contributions.
 
 %\section{Artificial Intelligence}
 
@@ -33,15 +33,15 @@ thesis and what I have developed to solve them.
 Despite suffering from multiple "AI winters" filled with disappointments and criticisms, Turing's
 prediction on the rising importance of \ac{AI} proved to be right as the first and the second
 decades of the XXI century saw the advent of respectively \acf{ML} and \acf{DL}, two major subfields
-of \ac{AI}.
+of \ac{AI}, related to statistical learning theories.
 
 Providing \textbf{a definition of \ac{AI}} is difficult, but its foremost domains, \ac{ML} and \ac{DL}, can be
 defined as statistical methods aiming to discover patterns in data. These methods are already
-ubiquitous: speech recognition enabling us to control devices remotely, recommender
-systems proposing movies according to our taste, automatic translation, face recognition,
+ubiquitous: speech recognition enabling us to control devices remotely \citep{amodei2016deepspeech2}, recommender
+systems proposing movies according to our taste \citep{toscher2009netflixprize}, automatic translation, face recognition,
 autonomous driving, \etc. Less known but still useful applications comprise accelerated physics
 simulation, protein folding prediction, molecule toxicity estimation, data center cooling system, and
-control of the magnetic coils of a nuclear fusion reactor.
+control of the magnetic coils of a nuclear fusion reactor, \etc.
 
 \ac{AI} is increasingly more important in our daily lives with some applications raising \textbf{ethical
       concerns}: face recognition biased towards some populations, loan grants, medical diagnosis, justice
@@ -69,7 +69,7 @@ or even \ac{VQA} where questions about an image must be answered. Several famili
 used to tackle \ac{CV} problems, but as of 2012 and onwards, \acf{DL} is the best performing method
 for this type of data.
 
-\section{This Thesis}
+\section{PhD Thesis Context}
 
 Now with the type of methods and data (Deep Learning and images) defined, I will contextualize my
 thesis w.r.t. my sponsor, how it influenced my research, and what challenges I have aimed to tackle.
@@ -86,7 +86,7 @@ entities. The scientific literature names the domain of learning new concepts in
 ``\textbf{Continual Learning}'', and the loss of performance ``\textbf{Catastrophic Forgetting}''.
 
 \paragraph{Continual Learning} is a field that emerged in the 1990s but saw renewed interest only
-very recently around the second half of the 2010s. The goal is to deal with non-static datasets that
+very recently around the second half of the 2010s. The goal is to deal with datasets that
 evolve through time. This evolution can take many forms, including adding new entities to predict in
 a classification task (\eg learning sneaker brands, then high-heel brands) or adding samples from
 new sources (\eg commercial photoshoot then images from social media). Unfortunately, current
@@ -99,7 +99,9 @@ and because past data may not always be available for a variety of reasons, incl
 the other hand, constraints enforce the model to keep a similar \textit{behavior} as it learns new
 concepts, but defining the right constraint is not trivial.
 
-\paragraph{Thesis's Outline:} This thesis is focused on bringing Continual Learning capacity to
+\section{Contributions}
+
+This PhD thesis is focused on bringing Continual Learning capacity to
 Computer Vision models. In the next chapter (\autoref{chapter:related}), I detail the learning
 procedure, state the exact benchmarks considered in Continual Learning, and review the
 State-of-the-Art methods in this domain. Then, I cover the work I have done during this thesis over
