@@ -111,7 +111,7 @@ predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this
 
 \paragraph{Architectures:}The 2010's decade saw major improvements to \acp{CNN}, both in their
 architecture structure and in their training procedure. \cite{srivastava2015highwaynet} and
-\cite{he2016resnet} proposed residual connections between blocks likewise: $\vy = \vx +
+\cite{he2016resnet} propose residual connections between blocks likewise: $\vy = \vx +
       \sigma(\operatorname{Conv}(\vx))$. It allows training deeper networks by enabling the gradient to
 flow more easily up the earliest layers. This type of connection is now quasi-ubiquitous in all
 \ac{DL} based architectures. Other architecture changes include using convolutions of different
@@ -137,7 +137,7 @@ enable the high performance of modern \acp{CNN}: optimizers with adaptive learni
 \citep{muller2021trivialaugment,hingyi2018mixup,zhong2017erasing}, and regularizations such as
 Dropout \citep{gal2016dropout} and stochastic depth \citep{gao2016stochasticdepth}.
 
-\paragraph{Transformers:}While convolution-based neural networks dominated \acf{CV} in the 2010's
+\paragraph{Transformers:} While convolution-based neural networks dominated \acf{CV} in the 2010's
 decade, in the last few years, the transformer architecture gained interest: it was originally
 designed for machine translation in \ac{NLP} \citep{vaswani2017transformer} with an encoder/decoder
 structure and a \textit{self-attention} block between the words embeddings of a sentence. Each word is
@@ -145,7 +145,7 @@ embedded into a high-dimensional vector named a ``\textit{token}''. The self-att
 transformer has a quadratic complexity \wrt the number of tokens: in \ac{NLP}, it is manageable
 given a small sentence. However, when applying a transformer on images and considering each pixel
 as a token, the complexity is too important. \cite{dosovitskiy2020vit}, based on the encoder
-structure of BERT \citep{devlin2018bert}, proposed instead to consider a patch of pixels as a token,
+structure of BERT \citep{devlin2018bert}, propose instead to consider a patch of pixels as a token,
 reducing greatly the number of tokens.
 
 \begin{figure}[tb]
@@ -237,7 +237,7 @@ from scratch at each step on all previous training data. This model, usually cal
 considered as a reasonable upper bound. On the other hand, the \textcolor{blue}{blue} line is a
 model finetuned solely on new classes without access to previous classes. The model's accuracy is
 considerably lower than its Joint counterpart, because it forgets old classes by over-predicting new
-classes. While we have mainly tackled \acf{CIL} benchmarks, we describe other continual benchmarks in
+classes. While we have mainly tackle \acf{CIL} benchmarks, we describe other continual benchmarks in
 detail in the appendix (\autoref{sec:related_variation}).
 
 \paragraph{Single-Head \vs Multi-Heads} are the two main evaluation settings in Continual Learning
@@ -245,7 +245,7 @@ detail in the appendix (\autoref{sec:related_variation}).
 all seen classes, that could have been learned from any of the seen steps. The latter setting knows
 at test-time the step/task identifier of the samples. Thus, it only has to classify among the limited
 number of classes brought by a step. This setting is closely related to multi-tasks learning. During
-this thesis, we focused on the Single-Head setting because it is more realistic as it is not always
+this thesis, we focus on the Single-Head setting because it is more realistic as it is not always
 possible to know from which step a sample comes from in a real-life setting, and more challenging
 \citep{lesort2019regulshortcomings}.
 
@@ -315,7 +315,7 @@ rehearsal learning happens in Continual Learning. During the first step, a model
 available samples. Then, it stores a limited amount of those in a \textit{memory}. During the second
 step, the model has access to new samples but also all samples stored in the memory. In
 Class-Incremental, an equal amount of samples per class is stored in memory. There are
-two major approaches to determine this amount: \cite{rebuffi2017icarl} proposed to fully use a
+two major approaches to determine this amount: \cite{rebuffi2017icarl} propose to fully use a
 memory of size $\mcM$ among all $\mcC$, while \cite{hou2019ucir} instead kept fixed the number of
 samples stored per class to $\nicefrac{\mcM}{|\mcC|}$.
 
@@ -332,7 +332,7 @@ models mix all memory samples with new samples without any under- or over-sampli
 step, on a balanced set of old and new classes samples. \cite{chaudhry2019tinyepisodicmemories}
 oversample tiny memory with as low as one sample per class, and show, in the context of Online
 Learning where models learn in only one epoch, that continual models still do not overfit. In the
-same context, \cite{aljundi2019maximallyinterfered} proposed to over-sample the memory examples with
+same context, \cite{aljundi2019maximallyinterfered} propose to over-sample the memory examples with
 the highest losses. In an imbalanced situation for Continual Learning, over- and under-sampling can be
 applied depending on the number of samples per class \citep{kim2020imbalancedcontinual}.
 
@@ -399,14 +399,14 @@ constrain only a portion of the neurons:
       \label{eq:related_weight_constraint}
 \end{equation}
 %
-where $\mcL_\mcT(\theta)$ is the loss of the current task (\eg the cross-entropy), $\theta_i$ and
+where $\mcL_\mcT(\theta)$ is the loss at the current task (\eg the cross-entropy), $\theta_i$ and
 $\theta_i^*$ respectively the $i^\text{th}$ neuron of the current and previous model, and $\Omega_i$
-a neuron-wise importance factor. The intuition is that important neuron for $\mcT-1$ should not
+a neuron-wise importance factor. The intuition is that important neuron for the previous task $\mcT-1$ should not
 change, while the others can be adapted to fit the new task $\mcT$.
 
 \cite{kirkpatrick2017ewc}, followed by
 \cite{zenke2017synaptic_intelligence} and \cite{chaudhry2018riemannien_walk}
-proposed to use the diagonal Fisher information matrix as importance factors.
+propose to use the diagonal Fisher information matrix as importance factors.
 \cite{aljundi2018MemoryAwareSynapses} instead used the sensitivity of the model when
 small perturbations are added to the neurons to measure their importance.
 
@@ -427,7 +427,7 @@ outperformed by rehearsal-based methods.
       \label{fig:related_gem}
 \end{figure}
 
-\cite{lopezpaz2017gem} proposed the GEM model that combines a constraint on the gradients and
+\cite{lopezpaz2017gem} propose the GEM model that combines a constraint on the gradients and
 rehearsal learning. The algorithm requires that the loss on a given stored sample must not increase
 despite the model learning new classes. The authors, given a locality assumption, rewrite this
 formulation as enforcing that the gradient of a new sample ($g$) to be in the same \textit{direction} as
@@ -441,7 +441,7 @@ the gradient of a stored old sample ($g_i$):
 projected to the closest in L2 norm gradient that satisfies the angle constraint by minimizing a
 quadratic program. The constraint is illustrated in \autoref{fig:related_gem}. The drawback of this
 method is the computational cost that can grow prohibitively when the memory is too large.
-\cite{chaudhry2019AGEM} proposed Averaged-GEM to speed up GEM: the authors do not constraint the
+\cite{chaudhry2019AGEM} propose Averaged-GEM to speed up GEM: the authors do not constraint the
 gradient of individual memory samples but only the average of all memory samples.
 \cite{aljundi2019gradientselection} also improved GEM's speed by selecting only a subset of the
 memory samples that maximize the feasible region.
@@ -460,7 +460,7 @@ Finally, the majority of Continual models that are benchmarked on large datasets
 \citep{deng2009imagenet}, Pascal VOC \citep{everingham2015pascalvoc}) use a combination of rehearsal
 learning (\autoref{sec:related_rehearsal}) and constraints on the model's outputs.
 
-LwF \cite{li2018lwf} and iCaRL applied the \ac{KD} \cite{hinton2015knowledge_distillation} on the
+LwF \cite{li2018lwf} and iCaRL apply the \ac{KD} \cite{hinton2015knowledge_distillation} on the
 model's probabilities. It usually consists in minimizing the \ac{KL} between the probabilities
 of the old and new models:
 %
@@ -483,8 +483,8 @@ cosine similarity between the embeddings produced by the \ac{GAP}.
 \cite{dhar2019learning_without_memorizing_gradcam} minimizes the L1 distance between the attention
 maps produced by GradCam \citep{selvaraju2017gradcam}. Drawing inspiration from the model
 compression literature \cite{zagoruyko2016distillation_attention}, \cite{douillard2020podnet}
-proposed to instead constraint the statistics of all intermediate features of the \ac{ConvNet}.
-\cite{douillard2020plop} expanded this constraint to incorporate multiscale information.
+propose to instead constraint the statistics of all intermediate features of the \ac{ConvNet}.
+\cite{douillard2020plop} expand this constraint to incorporate multiscale information.
 
 \subsection{Structural Strategies}
 \label{sec:related_structural}
@@ -498,31 +498,31 @@ proposed to instead constraint the statistics of all intermediate features of th
       \label{fig:related_subnetwork}
 \end{figure}
 
-Multiple works have also proposed to adopt dynamic strategies where the configuration of the neural
+Multiple works have also propose to adopt dynamic strategies where the configuration of the neural
 network is different for each task to learn.
 
 \paragraph{Subnetworks} The Lottery Ticket Hypothesis \citep{frankle2019lottery_ticket} states that
 subnetworks, made of a fraction of the neurons and connections of a larger network, can reach
-excellent performance. Several Continual Learning models have exploited that property by using a
+excellent performance. Several Continual Learning models exploit that property by using a
 subnetwork per task. Those subnetworks can be uncovered via genetic algorithms
 \citep{fernando2017path_net}, via induced L1 sparsity \citep{golkar2019neural_pruning}, or even
 learned masked \cite{serra2018hat,hung2019cpg}. Usually, these methods require a task identifier at
 test-time in order to select the right subnetwork (see \textit{multi-heads} in
-\autoref{sec:related_continual}). Later, \cite{wortsman2020supermasks} proposed to infer the task
+\autoref{sec:related_continual}). Later, \cite{wortsman2020supermasks} propose to infer the task
 identifier by selecting the subnetwork with the lowest entropy. This subnetwork-based approach is
 illustrated in \autoref{fig:related_subnetwork}.
 
 \paragraph{Expandable Networks} A neural network can also be expanded through its continual
 training to accommodate the growing amount of tasks to solve. First, \cite{rusu2016progressive}
-proposed to have one network per task, where the $i^{\text{th}}$ network would depend both on the
+propose to have one network per task, where the $i^{\text{th}}$ network would depend both on the
 input and all previous networks' intermediate features. Unfortunately, the memory consumption is
-quickly prohibitive with many tasks. Following works have proposed to only add blocks of parameters,
+quickly prohibitive with many tasks. Following works propose to only add blocks of parameters,
 and only when deemed necessary
 \citep{hung2019cpg,veniat2021mntdp,ostapenko2021localmodulecomposition}.
 
 \paragraph{Task Conditioning} Rather than adding many new parameters, it is also possible to only add
 a few parameters that will adapt the existing network \citep{rebuffi2017visualadapters}:
-\cite{wen2020batchensemble} and \cite{sun2019metatransfer} proposed to share most of the weights
+\cite{wen2020batchensemble} and \cite{sun2019metatransfer} propose to share most of the weights
 across tasks, but have task-specific weights that directly modify the shared weights.
 
 \paragraph{Mixture-of-Experts} Mixture of experts \citep{masoudnia2014mixture} have also been
@@ -533,7 +533,7 @@ classifier. To avoid parameters explosion, they aggressively prune each \ac{Conv
 
 \paragraph{Classifier Correction} Forgetting happens in both the feature extractor and the
 classifier. Previously described rehearsal and regularization methods try to reduce it in both
-places. On the other hand, multiple works focused solely on the classifier. They remarked that in
+places. On the other hand, multiple works focus solely on the classifier. They remark that in
 \acf{CIL}, the classifier is miscalibrated \citep{guo2017miscalibration} where the model
 over-predicts new classes to the detriment of old classes. \cite{belouadah2019il2m} compensate the
 bias towards new classes by rectifying predictions of past classes using their recorded accuracies
@@ -545,18 +545,17 @@ classifier by the cosine similarity, resulting in unit norm classifier weights.
 
 \section{Positioning}
 
-Continual Learning is a wide topic, encompassing very different benchmarks and methods. In this
-thesis, across three chapters and five published papers, we tackled multiple types of continual drift using
-different approaches summarized below:
+Continual Learning encompasses very different benchmarks and methods. In this thesis, we tackle
+multiple types of continual drift using different approaches summarized below:
 
 \paragraph{Feature-based Regularizations} First in \autoref{chapter:regularization}, we consider
-purely \acf{CIL} scenarios with a prior drift where new classes are continually added. This is a
+\acf{CIL} scenarios with a prior drift where new classes are continually added. This is a
 challenging benchmark, even more when tackling a large amount of classes with datasets like CIFAR100
-(100 classes) and ImageNet (1000 classes). The previous State-of-the-Art models all used a
+(100 classes) and ImageNet (1000 classes). The previous State-of-the-Art models all use a
 combination of rehearsal (\autoref{sec:related_rehearsal}) and regularizations of the predicted
-probabilities (\autoref{sec:related_regul_output}). In this chapter, we show that this type
-constraint struggle to balance efficiently the rigidity needed to not forget with the plasticity
-required to still learn new classes. Therefore, we propose to regularize, not the final outputs, but
+probabilities (\autoref{sec:related_regul_output}). In this chapter, we claim that this type of
+constraints struggle to efficiently balance the rigidity needed to not forget with the plasticity
+required to learn new classes. Therefore, we propose to regularize, not the final outputs, but
 rather the intermediate feature space. In the first section (\autoref{sec:podnet}), we describe how
 we regularize statistics on the features at multiple levels of the \ac{ConvNet} with our method
 called POD. The choice of which statistics to employ has an important impact on forgetting, which I
@@ -571,7 +570,7 @@ minimal.
 \acf{CSS}. In this benchmark, images have a label per pixel, and only the current classes are
 labelized. Thus, both the prior and concept drifts happen where new classes are added but also the
 signification of a pixel can change through time. Three different, but complementary, methods are
-used for this type of data: first we used an uncertainty-based pseudo-labeling to handle what we
+used for this type of data: first we use an uncertainty-based pseudo-labeling to handle what we
 called a background shift. Then, we extend the feature regularization
 (\autoref{sec:related_regul_output}) introduced in the previous chapter, POD, to constrain
 differently local and global areas of the spatial feature maps. Finally, we consider rehearsal
@@ -581,7 +580,7 @@ efficient.
 
 \paragraph{Dynamic Transformers} In this third and last chapter (\autoref{chapter:dynamic}), we only
 aim to solve the prior drift but using a method radically different from previous chapters: dynamic
-networks (\autoref{sec:related_structural}). Previous dynamic networks usually expanded their
+networks (\autoref{sec:related_structural}). Previous dynamic networks usually expand their
 capacity by a large margin during the continual training to handle the growing amount of tasks to
 learn. To avoid a parameter count explosion, the models are usually pruned aggressively. The main
 drawback of these methods is that the pruning can still result in models too large and often need

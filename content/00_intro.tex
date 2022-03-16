@@ -28,51 +28,38 @@ thesis and my contributions.
 
 %\section{Artificial Intelligence}
 
-\textbf{The idea of thinking machines} began in the previous century, from Karel Çapek's invention of the
-"\textit{robot}" to the 1956's Dartmouth workshop passing by Turing \& von Neumann's reflections.
-Despite suffering from multiple "AI winters" filled with disappointments and criticisms, Turing's
-prediction on the rising importance of \ac{AI} proved to be right as the first and the second
-decades of the XXI century saw the advent of respectively \acf{ML} and \acf{DL}, two major subfields
-of \ac{AI}, related to statistical learning theories.
+\textbf{The idea of thinking machines} began in the previous century, from Karel Çapek's invention
+of the "\textit{robot}" to the 1956's Dartmouth workshop passing by Turing \& von Neumann's
+reflections. Despite suffering from multiple "AI winters" filled with disappointments and
+criticisms, Turing's prediction on the rising importance of \ac{AI} proved to be right as the first
+and the second decades of the XXI century saw the advent of respectively \acf{ML}
+\citep{bishop2006prml} and \acf{DL} \citep{goodfellow2016deeplearningbook}, two major subfields of
+\ac{AI}, related to statistical learning theories.
 
-Providing \textbf{a definition of \ac{AI}} is difficult, but its foremost domains, \ac{ML} and \ac{DL}, can be
-defined as statistical methods aiming to discover patterns in data. These methods are already
-ubiquitous: speech recognition enabling us to control devices remotely \citep{amodei2016deepspeech2}, recommender
-systems proposing movies according to our taste \citep{toscher2009netflixprize}, automatic translation, face recognition,
-autonomous driving, \etc. Less known but still useful applications comprise accelerated physics
-simulation, protein folding prediction, molecule toxicity estimation, data center cooling system, and
-control of the magnetic coils of a nuclear fusion reactor, \etc.
+Providing \textbf{a definition of \ac{AI}} is difficult, but its foremost domains, \ac{ML} and
+\ac{DL}, can be defined as statistical algorithms that can improve automatically through experience
+and the use of data. These methods are already ubiquitous: speech recognition enabling us to control
+devices remotely \citep{amodei2016deepspeech2}, recommender systems proposing movies according to
+our taste \citep{toscher2009netflixprize}, automatic translation \citep{vaswani2017transformer},
+face recognition \citep{schroff2015facenet}, autonomous driving \citep{sun2020waymodataset}, \etc.
+Less known but still useful applications comprise accelerated physics simulation
+\citep{breen2020threebody}, protein folding prediction \citep{jumper2021alphafold}, molecule
+toxicity estimation \citep{nih2019toxchallenge}, data center cooling
+system \citep{evans2016datacentercooling}, control of the magnetic coils of a nuclear fusion reactor
+\citep{degrave2022nuclearreactor}, \etc.
 
 \ac{AI} is increasingly more important in our daily lives with some applications raising \textbf{ethical
       concerns}: face recognition biased towards some populations, loan grants, medical diagnosis, justice
-advice, chatbots with toxic behavior, \etc. Therefore, we must pay a particular interest on the
-potential impact of this new technology. Towards this goal, a diverse set of profiles, in all steps
-of a product, must be trained to recognize these issues.
+advice, biased chatbots \citep{sheng2019lmbias}, \etc. Therefore, we must pay a particular interest in the
+potential impact of this new technology. Towards this goal, people from diverse backgrounds
+must participate in the creation of such technology, and standardization bodies should
+advise what types of systems can be used in which scenarios \citep{gebru2019aiethichandbook}.
 
-\section{Deep Learning}
-
-While many domains exist in \acf{AI}, this thesis is focused on using \acf{DL} applied to \acf{CV}.
-In this section, I will briefly describe the learning methods and the data structure.
-Finally, I will detail the challenges tackled in this thesis and why they matter.
-
-\paragraph{Deep Learning} belongs to the statistical learning methods. As other statistical methods,
-such as \acf{ML}, these methods usually work on an input/output level. Given an input, the model
-produces an output called \textit{prediction}. Then, it is compared to what the model should
-predict, \ie the \textit{ground-truth}. Like in human learning, the model is informed when it is
-wrong to avoid making the same mistake twice. \acf{DL} models are based on artificial neural
-networks, and as the name implies, which bear some similarity with humans' neurons.
-
-\paragraph{Computer Vision} is an application topic in \acf{AI}. Its goal is to analyze images using
-a computer-assisted method. The most common tasks in \acf{CV} includes image classification where a
-label must be predicted per image, semantic segmentation where each pixel must be attributed a label
-or even \ac{VQA} where questions about an image must be answered. Several families of methods can be
-used to tackle \ac{CV} problems, but as of 2012 and onwards, \acf{DL} is the best performing method
-for this type of data.
 
 \section{PhD Thesis Context}
 
-Now with the type of methods and data (Deep Learning and images) defined, I will contextualize my
-thesis w.r.t. my sponsor, how it influenced my research, and what challenges I have aimed to tackle.
+Now with the type of methods and data (Deep Learning and images) defined, I contextualize my
+thesis with relation to my sponsor, how it influenced our research, and what challenges we have aimed to tackle.
 
 \paragraph{Heuritech} This thesis was sponsored by the Parisian startup
 Heuritech\footnote{\url{https://heuritech.com}} as a \textit{CIFRE PhD}. The company analyzes social
@@ -82,29 +69,30 @@ volumes of fine-grained types of garments, and finally forecasts future trends. 
 color, short cut) to brand models (\eg Nike Air Max, Adidas Stan Smith, Puma Suede). This
 requirement leads to two problems: \textbf{(1)} the time spent to re-train a model is growing
 linearly, and \textbf{(2)} learning a new entity can incur a performance loss on previously learned
-entities. The scientific literature names the domain of learning new concepts incrementally
-``\textbf{Continual Learning}'', and the loss of performance ``\textbf{Catastrophic Forgetting}''.
+entities.% The scientific literature names the domain of learning new concepts incrementally
+%``\textbf{Continual Learning}'', and the loss of performance ``\textbf{Catastrophic Forgetting}''.
 
 \paragraph{Continual Learning} is a field that emerged in the 1990s but saw renewed interest only
-very recently around the second half of the 2010s. The goal is to deal with datasets that
-evolve through time. This evolution can take many forms, including adding new entities to predict in
-a classification task (\eg learning sneaker brands, then high-heel brands) or adding samples from
-new sources (\eg commercial photoshoot then images from social media). Unfortunately, current
-State-of-the-Art models struggle to learn continually without forgetting. This loss is so critical
-that the literature nicknamed it a ``catastrophic forgetting''. Multiple methods have been designed
-to reduce this forgetting; the two major ones being rehearsal and constraints. Rehearsal involves
-reviewing previously learned knowledge, as a human student would \textit{rehearse} the last
-semester's course. However, this rehearsal is often limited in order to reduce computational cost
-and because past data may not always be available for a variety of reasons, including privacy. On
-the other hand, constraints enforce the model to keep a similar \textit{behavior} as it learns new
-concepts, but defining the right constraint is not trivial.
+very recently around the second half of the 2010s. The goal is to deal with datasets that evolve
+through time. This evolution can take many forms, including adding new entities to predict in a
+classification task (\eg learning sneaker brands, then high-heel brands) or adding samples from new
+sources (\eg commercial photoshoot then images from social media). Unfortunately, current
+State-of-the-Art models struggle to learn continually new data without losing performance on
+previously seen data. This loss is so critical that the literature nicknamed it a ``catastrophic
+forgetting'' \citep{robins1995catastrophicforgetting}. Multiple methods can reduce
+this forgetting, including rehearsal and constraints. Rehearsal involves reviewing
+previously learned knowledge, as a human student would \textit{rehearse} the last semester's course.
+However, this rehearsal is often limited in order to reduce computational cost and because past data
+may not always be available for a variety of reasons, including privacy. On the other hand,
+constraints enforce the model to keep a similar \textit{behavior} as it learns new concepts, but
+defining the optimal constraint is not trivial.
 
 \section{Contributions}
 
 This PhD thesis is focused on bringing Continual Learning capacity to
-Computer Vision models. In the next chapter (\autoref{chapter:related}), I detail the learning
+Computer Vision models. In the next chapter (\autoref{chapter:related}), We detail the learning
 procedure, state the exact benchmarks considered in Continual Learning, and review the
-State-of-the-Art methods in this domain. Then, I cover the work I have done during this thesis over
+State-of-the-Art methods in this domain. Then, we cover the work we have done during this thesis over
 three chapters as follows:
 
 \begin{itemize}
