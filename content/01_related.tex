@@ -191,7 +191,7 @@ Usually, when training a \ac{CNN}, we assume the dataset is immutable and \texti
 images nor new classes will be learned. The knowledge acquired on one dataset \textit{A} can be
 \textit{transferred} to another dataset \textit{B} with different classes using \textbf{transfer learning}
 \citep{razavian2014transferlearning}. Then, the new model may be efficient on
-the classes of dataset \textit{B} but cannot classify anymore the classes of dataset \textit{A}.
+the classes of dataset \textit{B} but cannot predict anymore the classes of dataset \textit{A}.
 
 \textbf{Continual Learning} aims to learn a continually changing dataset without forgetting the
 previous knowledge. The distribution of the dataset continually changes: \eg at each time-step, new
@@ -199,22 +199,24 @@ classes or new samples from potentially new domains are added to the training da
 \citep{lomonaco2017core50}. We usually assume the test dataset evolves similarly. Multiple
 distribution drifts exist in Continual Learning
 \citep{morenotorresa2012datasetshift,lesort2021driftanalysis}, and they have been called under
-various names in the literature. Given $x$ an input sample and $y$ its label, the major drifts are:
+various names in the literature. Given an input sample $x$ and its label $y$, the major drifts are:
 
 \begin{itemize}
-      \item \textbf{Covariate drift}: when $p(x)$ changes, also known as domain incremental.
+      \item \textbf{Covariate drift}: when $p(x)$ changes, it happens with the introduction of new
+            domains \citep{volpi2021continualdomainadapt}
       \item \textbf{Prior drift}: when $p(y)$ changes; \ac{CIL} happens with this kind of drift.
       \item \textbf{Conceptual drift}: when $p(y | x)$ changes. Seldom covered in the literature, it
             can be found in \acf{CSS}.
 \end{itemize}
 
-Learning a ever-growing dataset is possible by training from scratch a new model on the
-union of past and new data. However, for multiple reasons like privacy concerns of medical data or
-limited storage capacity in embedded device, there is a restriction on the amount of previous data
-that can be kept. In the extreme case, where a model only has access to new data but not old data, a
-model trained from scratch cannot predict previous iterations' distribution. Worse, even if the old
-model is kept and finetuned on the new data, it will suffer from \textbf{Catastrophic Forgetting}
-\citep{robins1995catastrophicforgetting}: new data are learned at the expanse of old data.
+Learning a ever-growing dataset is possible by training from scratch a new model on the union of
+past and new data. However, for multiple reasons like privacy concerns of medical data or limited
+storage capacity in embedded device \citep{vasquez2017incrementalneuralforest}, there is a
+restriction on the amount of previous data that can be kept. In the extreme case, where a model only
+has access to new data but not old data, a model trained from scratch cannot predict previous
+iterations' distribution. Worse, even if the old model is kept and finetuned on the new data, it
+will suffer from \textbf{Catastrophic Forgetting} \citep{robins1995catastrophicforgetting}: new data
+are learned at the expanse of old data.
 
 \begin{figure}[tb]
       \begin{center}
