@@ -27,10 +27,20 @@ notations introduced in this chapter and thorough the thesis are listed in the
 
 \section{Neural Network Learning}
 
-\ac{DL} models are a succession of linear transformations and non-linear functions and are supposed
-to be able to approximate any function \citep{gelenbe1999universalapprox} given the correct
-configuration. For example, the most simple \ac{DL} model, a \ac{MLP} with a single hidden layer for
-classification is:
+Neural Network are based on the statistical learning theory \citep{vapnik1999statstheory}. In the
+\textit{supervised setting}, the goal of a neural network is to learn the best mapping function $f :
+\mathcal{X} \rightarrow \mathcal{Y}$ between an input space $\mathcal{X}$ and an output space
+$\mathcal{Y}$.  We consider a \textit{loss} function $\mathcal{L}: \mathcal{Y} \times \mathcal{Y} \rightarrow
+\mathbb{R}^+$ that measures the disagreement between a ground-truth label $y$ and the network's
+prediction $\hat{\vy} = f(\vx)$. In the context of image classification, the $\vx$ is the image
+pixels, $y$ is the \textit{class} label of the object present in the image, and $\hat{\vy}$ is a
+vector of probabilities, with one probability per class the model has to predict. The highest class
+with highest predicted probability/confidence is chosen as the prediction. Training a neural network
+means that given a \textit{training dataset} $\{(\vx_1, y_1), \etc, (\vx_N, y_N)}$.
+
+In practice, the function $f$ learned by a neural network is composed of a succession of linear
+transformations and non-linear \textit{activation} functions. For example, a simple neural network,
+called \ac{MLP} could be defined as:
 %
 \begin{equation}
       \hat{\vy} = f_\theta(\vx) = \operatorname{softmax}(\vW_o \sigma(\vW_h \vx + \vb_h) + \vb_o))\,,
@@ -38,12 +48,14 @@ classification is:
 \end{equation}
 %
 \noindent with $\vW_h \in \mathbb{R}^{H \times D}$, $\vb_h \in \mathbb{R}^{H}$, $\vW_o \in
-      \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters and of the network. $\vx
-      \in \mathbb{R}^D$ the input data as a vector, and $\tilde{\vy} \in \mathbb{R}^C$ the predicted
-probabilities per classes. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
-($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\operatorname{softmax}(\tilde{\vy}) =
-      \nicefrac{e^{\tilde{\vy}}}{\sum_{i} e^{\tilde{\vy}_i}}$ is the final non-linear activation. This
-small neural network is trained to minimize a loss function. In classification, the most common loss is
+      \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters $\theta$ of the
+      network. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
+      ($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\operatorname{softmax}(\tilde{\vy}) =
+      \nicefrac{e^{\tilde{\vy}}}{\sum_{i} e^{\tilde{\vy}_i}}$ is the final non-linear activation.
+
+To find the best
+      This small neural network is trained to minimize a loss function. In classification, the most
+      common loss is
 the cross-entropy:
 %
 \begin{equation}
