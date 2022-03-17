@@ -48,29 +48,29 @@ toxicity estimation \citep{nih2019toxchallenge}, data center cooling
 system \citep{evans2016datacentercooling}, control of the magnetic coils of a nuclear fusion reactor
 \citep{degrave2022nuclearreactor}, \etc.
 
-\ac{AI} is increasingly more important in our daily lives with some applications raising \textbf{ethical
-      concerns}: face recognition biased towards some populations, loan grants, medical diagnosis, justice
-advice, biased chatbots \citep{sheng2019lmbias}, \etc. Therefore, we must pay a particular interest in the
-potential impact of this new technology. Towards this goal, people from diverse backgrounds
-must participate in the creation of such technology, and standardization bodies should
-advise what types of systems can be used in which scenarios \citep{gebru2019aiethichandbook}.
+\ac{AI} is increasingly more important in our daily lives with some applications raising
+\textbf{ethical concerns}: face recognition biased towards some populations
+\citep{grother2019facerecoethic}, loan grants \citep{anglekar2021loangrantml}, medical diagnosis
+\citep{lazzazabal2020medicalbias}, justice advice \citep{russel2020justicefairness}, biased chatbots
+\citep{sheng2019lmbias}, \etc. Therefore, we must pay a particular interest in the potential impact
+of this new technology. Towards this goal, people from diverse backgrounds must participate in the
+creation of such technology, and standardization bodies should advise what types of systems can be
+used in which scenarios \citep{gebru2019aiethichandbook}.
 
-
-\section{PhD Thesis Context}
+\section{Ph.D Thesis Context}
 
 Now with the type of methods and data (Deep Learning and images) defined, I contextualize my
 thesis with relation to my sponsor, how it influenced our research, and what challenges we have aimed to tackle.
 
 \paragraph{Heuritech} This thesis was sponsored by the Parisian startup
-Heuritech\footnote{\url{https://heuritech.com}} as a \textit{CIFRE PhD}. The company analyzes social
+Heuritech\footnote{\url{https://heuritech.com}} as a \textit{CIFRE Ph.D}. The company analyzes social
 networks such as Instagram and Weibo, recognizes the clothes in pictures, estimates
 volumes of fine-grained types of garments, and finally forecasts future trends. The company's
 \acf{CV} models must recognize an ever-growing number of entities from features (\eg knitted, blue
 color, short cut) to brand models (\eg Nike Air Max, Adidas Stan Smith, Puma Suede). This
 requirement leads to two problems: \textbf{(1)} the time spent to re-train a model is growing
 linearly, and \textbf{(2)} learning a new entity can incur a performance loss on previously learned
-entities.% The scientific literature names the domain of learning new concepts incrementally
-%``\textbf{Continual Learning}'', and the loss of performance ``\textbf{Catastrophic Forgetting}''.
+entities.
 
 \paragraph{Continual Learning} is a field that emerged in the 1990s but saw renewed interest only
 very recently around the second half of the 2010s. The goal is to deal with datasets that evolve
@@ -89,56 +89,48 @@ defining the optimal constraint is not trivial.
 
 \section{Contributions}
 
-This PhD thesis is focused on bringing Continual Learning capacity to
-Computer Vision models. In the next chapter (\autoref{chapter:related}), We detail the learning
-procedure, state the exact benchmarks considered in Continual Learning, and review the
-State-of-the-Art methods in this domain. Then, we cover the work we have done during this thesis over
-three chapters as follows:
+This Ph.D thesis is structured around solving catastrophic forgetting in continual settings. We
+considered various specific situations and approaches declined in three main chapters:
 
 \begin{itemize}
+      \item \autoref{chapter:related}: \nameref{chapter:related}\\
+            We first briefly cover the neural network architectures used for computer vision. Then,
+            we define exactly the existing continual learning benchmarks, and finally we give an
+            overview of the major approaches to solve catastrophic forgetting.
+
       \item \autoref{chapter:regularization}: \nameref{chapter:regularization}\\
-            I first review the existing methods based on regularization for continual learning. While
-            regularizing a model's probabilities is very efficient to reduce forgetting in large-scale
-            datasets, there are few works considering constraints on intermediate features. I cover in this
-            chapter two contributions aiming to regularize the latent space of \acs{ConvNet} directly. The
-            first one, \acf{PODNet} aims to reduce the drift of spatial statistics between the old and new
-            model, which in effect reduces drastically forgetting even on an important amount of tasks. I show in a
-            second part a complementary method where we avoid pre-emptively forgetting by allocating
-            locations in the latent space for yet unseen future class.
+            We first tackle continual learning in the context of the image classification: we aim to
+            produce a model that can learn continuously new classes without forgetting the
+            previously seen classes. We study how to constrain efficiently a model in order to be
+            rigid enough (to not forget) but also to be plastic (to learn new classes). The work in
+            this chapter has led to two conference publications:
+            \begin{itemize}
+                  \item \fullcite{douillard2020podnet}
+                  \item \fullcite{douillard2020ghost}
+            \end{itemize}
+
       \item \autoref{chapter:segmentation}: \nameref{chapter:segmentation}\\
-            Then, I describe a recent application of \acf{CIL} to semantic segmentation. I show that
-            the very nature of \acf{CSS} offers new specific challenges, namely forgetting on large
-            images and a background shift. We tackle the first problem by extending our distillation
-            loss introduced in the previous chapter to multi-scales. The second problem is solved by
-            our efficient pseudo-labeling strategy. Finally, we consider the common rehearsal learning
-            but applied this time to \ac{CSS}. I show that it cannot be used naively because of memory
-            complexity and design a memory-efficient rehearsal that is even more efficient.
+            Then, we extend our focus to semantic segmentation where each pixel possesses a class.
+            We show that this context brings new challenges and propose multiple complementary
+            approaches to tackle them. The work in this chapter has led to one conference publication and one
+            submission to a journal:
+            \begin{itemize}
+                  \item \fullcite{douillard2020plop}
+                  \item \fullcite{douillard2021objectrehearsal}
+            \end{itemize}
+
       \item \autoref{chapter:dynamic}: \nameref{chapter:dynamic}\\
-            Finally, I consider a completely different approach to continual learning: dynamic networks
-            where the parameters are extended during training to adapt to new tasks. Previous works on
-            this domain are hard to train and often suffer from parameter count explosion. For the
-            first time in continual computer vision, we propose to use the Transformer architecture:
-            the model's parameters are shared across tasks except for an
-            expansion of learned task tokens. With an encoder/decoder strategy where a task token
-            specializes the decoder's forward, we show state-of-the-art robustness to forgetting
-            while our memory and computational complexities barely grow.
-\end{itemize}
+            Finally, we consider a recent family of neural networks called transformers to build a
+            dynamic model for continual image classification. Our goal is to expand the number of
+            neurons to efficiently learn new classes in image classification. The work in this
+            chapter has led to a conference publication:
+            \begin{itemize}
+                  \item \fullcite{douillard2021dytox}
+            \end{itemize}
 
-\paragraph{Related Publications:} This thesis is based on the materials published in the following papers:
+      \item \autoref{chapter:conclusion}: \nameref{chapter:conclusion}\\
+            Finally, in a last chapter, we summarize the propositions of this thesis and offer
+            new perspectives for the field of continual learning.
 
-\begin{itemize}
-      \item \fullcite{douillard2020podnet}
-      \item \fullcite{douillard2020ghost}
-      \item \fullcite{douillard2020plop}
-      \item \fullcite{douillard2021objectrehearsal}
-      \item \fullcite{douillard2021dytox}
-\end{itemize}
-
-I have also published other papers that can be found in the \autoref{chapter:appendix}:
-
-\begin{itemize}
-      \item \fullcite{douillardlesort2021continuum}
-      \item \todo{Add ICML submission on foundation models with MILA}
-      \item \todo{Add CTKT with Antoine}
 \end{itemize}
 
