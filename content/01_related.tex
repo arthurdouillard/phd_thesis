@@ -27,18 +27,29 @@ notations introduced in this chapter and thorough the thesis are listed in the
 
 \section{Neural Network Learning}
 
-Neural Network are based on the statistical learning theory \citep{vapnik1999statstheory}. In the
+Neural Networks are based on the statistical learning theory \citep{vapnik1999statstheory}. In the
 \textit{supervised setting}, the goal of a neural network is to learn the best mapping function $f :
-\mathcal{X} \rightarrow \mathcal{Y}$ between an input space $\mathcal{X}$ and an output space
-$\mathcal{Y}$.  We consider a \textit{loss} function $\mathcal{L}: \mathcal{Y} \times \mathcal{Y} \rightarrow
-\mathbb{R}^+$ that measures the disagreement between a ground-truth label $y$ and the network's
+      \mathcal{X} \rightarrow \mathcal{Y}$ between an input space $\mathcal{X}$ and an output space
+$\mathcal{Y}$.  We consider a \textit{loss} function $\mcL : \mathcal{Y} \times \mathcal{Y} \rightarrow
+      \mathbb{R}^+$ that measures the disagreement between a ground-truth label $y$ and the network's
 prediction $\hat{\vy} = f(\vx)$. In the context of image classification, the $\vx$ is the image
 pixels, $y$ is the \textit{class} label of the object present in the image, and $\hat{\vy}$ is a
 vector of probabilities, with one probability per class the model has to predict. The highest class
-with highest predicted probability/confidence is chosen as the prediction. Training a neural network
-means that given a \textit{training dataset} $\{(\vx_1, y_1), \etc, (\vx_N, y_N)}$.
+with the highest predicted probability/confidence is chosen as the prediction.
+Given a \textit{training dataset} $\mathbb{D} = \{(\vx_1, y_1), ..., (\vx_N, y_N)\}$, training a neural network
+consists in finding the set of parameters $\theta^*$ which minimizes the loss function:
+%
+\begin{equation}
+      \theta^* = \operatorname{argmin}_{\theta} \left \{ \mathbb{E}_{(\vx,y) \sim \mathbb{D}} \mcL(f_\theta(\vx, y))\right \}\,.
+      \label{eq:intro_optim}
+\end{equation}
+%
+However, the optimal set of parameters $\theta^*$ minimizing the loss on the training set, can fail
+to predict the correct label on the testing set. Therefore, to avoid this \textit{overfitting} phenomenom,
+regularization functions that limit the parameters space are used as additional constraints in addition
+to the classification loss $\mcL$.
 
-In practice, the function $f$ learned by a neural network is composed of a succession of linear
+In practice, the function $f_\theta$ learned by a neural network is composed of a succession of linear
 transformations and non-linear \textit{activation} functions. For example, a simple neural network,
 called \ac{MLP} could be defined as:
 %
@@ -49,14 +60,11 @@ called \ac{MLP} could be defined as:
 %
 \noindent with $\vW_h \in \mathbb{R}^{H \times D}$, $\vb_h \in \mathbb{R}^{H}$, $\vW_o \in
       \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters $\theta$ of the
-      network. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
-      ($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\operatorname{softmax}(\tilde{\vy}) =
+network. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
+($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\operatorname{softmax}(\tilde{\vy}) =
       \nicefrac{e^{\tilde{\vy}}}{\sum_{i} e^{\tilde{\vy}_i}}$ is the final non-linear activation.
 
-To find the best
-      This small neural network is trained to minimize a loss function. In classification, the most
-      common loss is
-the cross-entropy:
+Likewise, in practice for image classification, the loss is often the categorical cross-entropy:
 %
 \begin{equation}
       \mcL(\hat{\vy}, \vy) = -\sum_i y_i \log \hat{y}_i\,,
@@ -64,13 +72,13 @@ the cross-entropy:
 \end{equation}
 %
 \noindent with $\vy$ a one-hot vector of the labels. Finally, to optimize the parameters of the neural
-network, we often use the mini-batch \ac{SGD} algorithm or a variation thereof:
+network (such as \autoref{eq:intro_optim}), we often use the mini-batch \ac{SGD} algorithm or a variation thereof:
 
 \begin{algorithm}
       \begin{algorithmic}[1]
             \Statex \textbf{input:} a dataset $\mathbb{D}$ with pairs of $(\vx, \vy)$
-            \Statex \textbf{input:} a loss function $\mcL(\hat{\vy}, \vy)$
-            \Statex \textbf{input:} a model function $f_\theta$
+            \Statex \textbf{input:} a loss function $\mcL$
+            \Statex \textbf{input:} a model function $f_\theta$ with $\theta$ the learned parameters
             \Statex \textbf{input:} a learning rate $\eta$ and a batch size $b$
             \Statex
 
@@ -86,27 +94,34 @@ network, we often use the mini-batch \ac{SGD} algorithm or a variation thereof:
       \label{algo:intro_sgd}
 \end{algorithm}
 
-Almost all \ac{DL} models, in \ac{CV}, in \ac{NLP}, or even in Audio use a form of gradient descent to
-optimize differentiable functions.
+The learning rate $\eta$ controls the step size when updating the parameters in the direction of the
+gradient. The batch size $b$ defines the number of images seen during one update.
+\textit{backpropagation} algorithm computes the gradients and the update of the parameters.
+
+The neural network in \autoref{eq:intro_mlp} can be defined as \textit{shallow} with only one hidden layer.
+By extension, an important success of later neural networks came with training \textit{deep} neural
+network with multiple hidden layers. More generally in this thesis, we will refer to them as \acf{DL}
+models.
+The majority of \ac{DL} models, in \acf{CV}, in \acf{NLP}, or even in Audio are based on the same structure
+(linear transformations and non-linear activations) and are trained with a form of gradient descent.
 
 \section{Deep Architectures for Computer Vision}
 
-Handcrafted convolutions can extract crude patterns such as edges \citep{lowe1999sift}. Unfortunately,
-it is complex to design more elaborated convolution kernels. Therefore, researchers have proposed to
-learn the convolution kernels as parameters of the neural networks
-\citep{fukushima1980neocognitron,lecun1999lenet}. Those networks are then called \acf{CNN}. In 2012,
-thanks to a large dataset and more efficient code working on \acp{GPU}, \cite{krizhevsky2012alexnet}
-won the ILSVC competition \citep{russakovsky2015imagenet_ilsvrc} where they had to classify a large
-dataset ---ImageNet--- made of 1M2 training images and 1000 classes. From that point forward,
-multiple improvements were made to \ac{CNN} \citep{ioffe2015batchnorm,he2016resnet} and these
-methods have been applied not only to classification but also object detection
-\citep{ren20fasterrcnn}, semantic segmentation \citep{chen2018deeplab}, visual question answering
-\citep{benyounes2017mutan}, \etc. we describe now in more details the structure of modern
-\acp{CNN}, how to train them efficiently. Then, we highlight a contender to \acp{CNN}: the
-transformer architecture.
+A common type of architectures for computer vision is the \acf{ConvNet}. First defined by
+\cite{fukushima1980neocognitron} and then trained with backpropagation by \cite{lecun1999lenet}, it
+is a neural network architecture whose linear transformations are \textit{convolutions}. While
+handcrafted convolutions \citep{lowe1999sift} rely on well-defined features, \ac{ConvNet} can learn
+the convolution kernels to detect more complex patterns in order to minimize the classification
+loss. In 2012, thanks to a large dataset and more efficient code working on \acp{GPU},
+\cite{krizhevsky2012alexnet} won the ILSVC competition \citep{russakovsky2015imagenet_ilsvrc} where
+they had to classify a large dataset ---ImageNet--- made of 1M2 training images and 1000 classes.
+From that point forward, multiple improvements were made to \ac{ConvNet}
+\citep{ioffe2015batchnorm,he2016resnet} and these methods have been applied not only to
+classification but also object detection \citep{ren20fasterrcnn}, semantic segmentation
+\citep{chen2018deeplab}, visual question answering \citep{antol2015vqa}, \etc.
 
-Most \acp{CNN} follow a similar structure with blocks of convolutions and pooling. Usually, the
-feature extractor is ended by a \acf{GAP} and followed by a linear classifier
+Most \acp{ConvNet} follow a similar structure with blocks of convolutions and pooling. Usually, the
+final spatial features are flattened by \ac{GAP} and fed to a linear classifier
 predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this general paradigm.
 
 \begin{figure}[tb]
@@ -124,11 +139,12 @@ predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this
 \paragraph{Architectures:}The 2010's decade saw major improvements to \acp{CNN}, both in their
 architecture structure and in their training procedure. \cite{srivastava2015highwaynet} and
 \cite{he2016resnet} propose residual connections between blocks likewise: $\vy = \vx +
-      \sigma(\operatorname{Conv}(\vx))$. It allows training deeper networks by enabling the gradient to
-flow more easily up the earliest layers. This type of connection is now quasi-ubiquitous in all
-\ac{DL} based architectures. Other architecture changes include using convolutions of different
-kernel sizes in parallel as in Inception \citep{szegedy2015inception}, enabling a multi-scales view
-of the features. These architectures are depicted in \autoref{fig:related_resnet_inception}.
+\sigma(\operatorname{Conv}(\vx))$. By reducing the \textit{vanishing gradient} problem
+\citep{hochreiter2001vanishinggrad}, it allows training deeper networks without accuracy
+degradation. This type of connection is now quasi-ubiquitous in all \ac{DL} based architectures.
+Other architecture changes include using convolutions of different kernel sizes in parallel as in
+Inception \citep{szegedy2015inception}, enabling a multi-scales view of the features. These
+architectures are depicted in \autoref{fig:related_resnet_inception}.
 
 \begin{figure}[tb]
       \begin{center}
@@ -136,16 +152,18 @@ of the features. These architectures are depicted in \autoref{fig:related_resnet
       \end{center}
       \caption{\textbf{Different CNN architectures:} \textbf{(a)} illustrates a ResNet-like
             architecture where there are residual connections between blocks. Used by the vast
-            majority of modern architectures, these connections help the gradient flows unchanged
-            and allow training deeper networks. \textbf{(b)} showcases an Inception-like
+            majority of modern architectures, these connections reduce the vanishing gradient problem
+            and thus enabling the training of deeper networks. \textbf{(b)} showcases an Inception-like
             architecture where at the same level convolutions with different kernel sizes are used.
             Each detects patterns of different scales.}
       \label{fig:related_resnet_inception}
 \end{figure}
 
-\paragraph{Regularizations:} Improved training procedures \citep{wightman2019resnetstrikesback}
-enable the high performance of modern \acp{CNN}: optimizers with adaptive learning rate such as Adam
-\citep{kingma2014adam}, improved learning rate scheduling, strong data augmentations
+\paragraph{Regularizations:} While the architecture design has an impact on the model performance,
+the training procedure has been shown to be essential in order to reach state-of-the-art results
+\citep{wightman2019resnetstrikesback}. Modern procedures include improvment of \ac{SGD} with an
+adaptive learning rate per layer such as Adam \citep{kingma2014adam}, an improved learning rate
+scheduling, stronger data augmentations
 \citep{muller2021trivialaugment,hingyi2018mixup,zhong2017erasing}, and regularizations such as
 Dropout \citep{gal2016dropout} and stochastic depth \citep{gao2016stochasticdepth}.
 
@@ -158,23 +176,25 @@ transformer has a quadratic complexity \wrt the number of tokens: in \ac{NLP}, i
 given a small sentence. However, when applying a transformer on images and considering each pixel
 as a token, the complexity is too important. \cite{dosovitskiy2020vit}, based on the encoder
 structure of BERT \citep{devlin2018bert}, propose instead to consider a patch of pixels as a token,
-reducing greatly the number of tokens.
+reducing significantly the number of tokens.
 
 \begin{figure}[tb]
       \begin{center}
             \includegraphics[width=\linewidth]{images/related/vit.png}
       \end{center}
       \caption{\textbf{The Vision Transformer (ViT):} the image is cropped without overlap and
-            projected using a convolution whose stride equals the kernel size. The encoder is made of
-            multiple transformer blocks. Finally, only the special learned token ``class token'' is used
-            at the end, and fed to a linear classifier. Image from \cite{dosovitskiy2020vit}.}
+            projected using a convolution whose stride equals the kernel size. The encoder is made
+            of multiple transformer blocks. Finally, only the special learned token ``class token''
+            is used at the end, and fed to a classifier (here denoted as the ``MLP Head''). Image
+            from \cite{dosovitskiy2020vit}.}
       \label{fig:related_vit}
 \end{figure}
 
-This architecture is illustrated in \autoref{fig:related_vit}. A special learned token, called
-``\textit{class token}'', is added to the patch tokens. Then, successive transformer blocks process
-all the tokens. Each block is made of LayerNorms \citep{ba2016layernorm}, a self-attention block, a
-\ac{MLP}, and residual connections. Thus, the self-attention block is:
+This architecture is illustrated in \autoref{fig:related_vit}: we concatenare a special learned
+token, called ``\textit{class token}'', to the patch tokens. Moreover, we also sum these tokens with
+a learned position embedding to facilitate the learning of each token position. Then, successive
+transformer blocks process all the tokens. Each block is made of LayerNorms \citep{ba2016layernorm},
+a self-attention block, a \ac{MLP}, and residual connections. Thus, the self-attention block is:
 %
 \begin{equation}
       \begin{aligned}
@@ -188,13 +208,20 @@ all the tokens. Each block is made of LayerNorms \citep{ba2016layernorm}, a self
 \end{equation}
 %
 \noindent $\vx$ are the $N$ patch tokens and the class token, of shape $(N, D)$, $D$ being the
-embedding dimension. The patch tokens are linearly transformed thrice in a \textbf{Q}uery,
-\textbf{K}ey, and \textbf{V}alue. An attention matrix of shape $(N, N)$ is computed from the query
-and the key. Its $i^{\text{th}}$ row contains the similarity between the $i^{\text{th}}$ with all
-other tokens. Finally, the multiplication between the attention matrix and the value matrix averages
-all tokens according to their similarities. To extend the self-attention to its multi-heads
-variation (\ac{MHSA}), we use several Query/Key/Value transformations and do as many self-attentions
-in parallel.
+embedding dimension. The patch tokens are linearly transformed three times in parallel into a
+\textbf{Q}uery, \textbf{K}ey, and \textbf{V}alue. An attention matrix of shape $(N, N)$ is computed
+from the query and the key. Its $i^{\text{th}}$ row contains the similarity between the
+$i^{\text{th}}$ with all other tokens. Finally, the multiplication between the attention matrix and
+the value matrix averages all tokens according to their similarities. To extend the self-attention
+to its multi-heads variation (\ac{MHSA}), we use several Query/Key/Value transformations, each
+used in a self-attention on a fraction of the embedding dimension.
+
+ViT \citep{dosovitskiy2020vit} is the seminal paper on vision transformer. However, its training was
+difficult and needed a large --- and private --- dataset called JFT300M. Later works, including DeiT
+\citep{touvron2021deit} proposed an efficient optimization procedure enabling the training of
+transformers on smaller datasets such as ImageNet \citep{russakovsky2015imagenet_ilsvrc}. Finally,
+multiple works improved also the architecture itself, including CaiT \citep{touvron2021cait}, ConViT
+\citep{dascoli2021convit}, and Swin \citep{liu2021swin}.
 
 \section{Continual Learning}
 \label{sec:related_continual}
@@ -211,7 +238,8 @@ classes or new samples from potentially new domains are added to the training da
 \citep{lomonaco2017core50}. We usually assume the test dataset evolves similarly. Multiple
 distribution drifts exist in Continual Learning
 \citep{morenotorresa2012datasetshift,lesort2021driftanalysis}, and they have been called under
-various names in the literature. Given an input sample $x$ and its label $y$, the major drifts are:
+various names in the literature. Given an input sample $x$ and its ground-truth $y$ (a label in
+image classification, or a segmentation map in semantic segmentation), the major drifts are:
 
 \begin{itemize}
       \item \textbf{Covariate drift}: when $p(x)$ changes, it happens with the introduction of new
@@ -221,14 +249,14 @@ various names in the literature. Given an input sample $x$ and its label $y$, th
             can be found in \acf{CSS}.
 \end{itemize}
 
-Learning a ever-growing dataset is possible by training from scratch a new model on the union of
+Learning an ever-growing dataset is possible by training from scratch a new model on the union of
 past and new data. However, for multiple reasons like privacy concerns of medical data or limited
 storage capacity in embedded device \citep{vasquez2017incrementalneuralforest}, there is a
 restriction on the amount of previous data that can be kept. In the extreme case, where a model only
 has access to new data but not old data, a model trained from scratch cannot predict previous
 iterations' distribution. Worse, even if the old model is kept and finetuned on the new data, it
-will suffer from \textbf{Catastrophic Forgetting} \citep{robins1995catastrophicforgetting}: new data
-are learned at the expanse of old data.
+will suffer from a significant drop of the performance on old data that we call \textbf{Catastrophic
+Forgetting} \citep{robins1995catastrophicforgetting}.
 
 \begin{figure}[tb]
       \begin{center}
