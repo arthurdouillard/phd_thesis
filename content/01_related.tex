@@ -139,7 +139,7 @@ predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this
 \paragraph{Architectures:}The 2010's decade saw major improvements to \acp{CNN}, both in their
 architecture structure and in their training procedure. \cite{srivastava2015highwaynet} and
 \cite{he2016resnet} propose residual connections between blocks likewise: $\vy = \vx +
-\sigma(\operatorname{Conv}(\vx))$. By reducing the \textit{vanishing gradient} problem
+      \sigma(\operatorname{Conv}(\vx))$. By reducing the \textit{vanishing gradient} problem
 \citep{hochreiter2001vanishinggrad}, it allows training deeper networks without accuracy
 degradation. This type of connection is now quasi-ubiquitous in all \ac{DL} based architectures.
 Other architecture changes include using convolutions of different kernel sizes in parallel as in
@@ -256,7 +256,7 @@ restriction on the amount of previous data that can be kept. In the extreme case
 has access to new data but not old data, a model trained from scratch cannot predict previous
 iterations' distribution. Worse, even if the old model is kept and finetuned on the new data, it
 will suffer from a significant drop of the performance on old data that we call \textbf{Catastrophic
-Forgetting} \citep{robins1995catastrophicforgetting}.
+      Forgetting} \citep{robins1995catastrophicforgetting}.
 
 \begin{figure}[tb]
       \begin{center}
@@ -347,7 +347,7 @@ Multiple approaches exist to reduce forgetting in Continual Learning. The major 
 rehearsal of old data (\autoref{sec:related_rehearsal}), regularizations constraining the model's
 behavior (\autoref{sec:related_regul}), and structural adaptations (\autoref{sec:related_structural}).
 
-\subsection{Rehearsal}
+\subsection{Rehearsal Learning}
 \label{sec:related_rehearsal}
 
 The most efficient method to reduce forgetting is \textbf{rehearsal learning} where old samples will
@@ -359,7 +359,7 @@ step, the model has access to new samples but also all samples stored in the mem
 Class-Incremental, an equal amount of samples per class is stored in memory. There are
 two major approaches to determine this amount: \cite{rebuffi2017icarl} propose to fully use a
 memory of size $\mcM$ among all $\mcC$, while \cite{hou2019ucir} instead kept fixed the number of
-samples stored per class to $\nicefrac{\mcM}{|\mcC|}$.
+samples stored per class to $\nicefrac{\mcM}{|\mcC^{1:T}|}$.
 
 \paragraph{Herding} is the action of choosing which samples per class to store in the rehearsal
 memory. The most naive herding method is to randomly sample images. Despite its simplicity, it is
@@ -379,23 +379,22 @@ the highest losses. In an imbalanced situation for Continual Learning, over- and
 applied depending on the number of samples per class \citep{kim2020imbalancedcontinual}.
 
 \paragraph{Efficient Storing} is important for rehearsal learning: a bigger rehearsal memory leads
-invariably to less forgetting \citep{douillard2020podnet}. Thus, several works considered how more
-samples could be stored given the same memory size: \cite{hayes2020remind} compress intermediate
-features of memory samples with a lossless compression algorithm.
+invariably to less forgetting \citep{hou2019ucir}. Thus, multiple works consider how to store more
+rehearsal sampes given the same memory size: \cite{hayes2020remind} compress intermediate features
+of memory samples with a lossless compression algorithm.
 \cite{iscen2020incrementalfeatureadaptation} also store features but modify them through the
-training to handle the inherent internal covariate drift. \cite{douillard2021objectrehearsal}, in
-the context of segmentation, store only non-regular patches of zones of interest instead of storing
-the whole large images.
+training to handle the inherent internal covariate drift.
 
-\paragraph{Pseudo-rehearsal} does not need to store samples, but instead generates pseudo-samples for
+\paragraph{Pseudo-rehearsal} does not need to store samples but instead generates pseudo-samples for
 rehearsal \citep{lesort2019generative}. The generation can be done with auto-encoders from
 intermediate features \citep{kemker2018fearnet,ayub2021eec} or use \ac{GAN}
-\citep{shin2017deep_generative_replay}. Those methods unfortunately have several drawbacks: they
+\citep{shin2017deep_generative_replay}. Unfortunately, those methods have several drawbacks: they
 struggle to scale to large images, the generator size may be superior to a classic rehearsal memory
-size which would defeat the goal of using less storage, and finally the generator may itself suffer
-from catastrophic forgetting. \cite{liu2020mnemonics} propose instead a method halfway between
-rehearsal and pseudo-rehearsal: the authors sample randomly real images, and then during continual
-training, slightly modify them via bi-level optimization to minimize forgetting.
+size which would defeat the goal of using less storage, and finally, the generator may itself suffer
+from catastrophic forgetting \citep{zhai2019lifelonggan}. \cite{liu2020mnemonics} propose instead a
+method halfway between rehearsal and pseudo-rehearsal: the authors sample randomly real images, and
+then during continual training, slightly modify them via bi-level optimization
+\citep{wang2018datasetdistillation} to minimize forgetting.
 
 
 \begin{figure}[tb]
@@ -427,37 +426,41 @@ A common and efficient way to reduce forgetting, is to minimize the difference i
 the old and new models as illustrated in \autoref{fig:related_protocol_constraints}. These constraints can be
 expressed through various forms and are described below.
 
-\subsubsection{Weight-based}
+\subsubsection{Weight-based constraints}
 \label{sec:related_regul_weight}
 
 
-The most straightforward way to avoid completely forgetting, is that the old and new
-models stay identical. While the model would be \textit{rigid} (no forgetting), it is also not
-\textit{plastic} at all, and thus cannot learn any new tasks. Thus, a line of research proposed to
+The most straightforward way to avoid completely forgetting, is that the old and new models stay
+identical. While the model would be \textit{rigid} (no forgetting), it is also not \textit{plastic}
+(changing a lot) at all, and thus cannot learn any new tasks. Thus, a line of research proposed to
 constrain only a portion of the neurons:
 %
 \begin{equation}
-      \mcL(\theta) = \mcL_\mcT(\theta) + \lambda \sum_i \Omega_i (\theta_i - \theta_i^*)^2\,,
+      \mcL(\theta^t, \theta^{t-1}) = \mcL_t(\theta^t) + \lambda \sum_i \Omega_i^{t-1} (\theta^t_i - \theta_i^{t-1})^2\,,
       \label{eq:related_weight_constraint}
 \end{equation}
 %
-where $\mcL_\mcT(\theta)$ is the loss at the current task (\eg the cross-entropy), $\theta_i$ and
-$\theta_i^*$ respectively the $i^\text{th}$ neuron of the current and previous model, and $\Omega_i$
-a neuron-wise importance factor. The intuition is that important neuron for the previous task $\mcT-1$ should not
-change, while the others can be adapted to fit the new task $\mcT$.
+where $\mcL_t(\theta)$ is the loss at the current task $t$ (\eg the cross-entropy), $\theta_i^t$
+and $\theta_i^{t-1}$ respectively the $i^\text{th}$ neuron of the current and previous model, and
+$\Omega_i^{t-1}$ a neuron-wise importance factor. The intuition is that important neuron for the
+previous task $t-1$ should not change, while the others can be adapted to fit the new task $t$.
 
-\cite{kirkpatrick2017ewc}, followed by
-\cite{zenke2017synaptic_intelligence} and \cite{chaudhry2018riemannien_walk}
-propose to use the diagonal Fisher information matrix as importance factors.
-\cite{aljundi2018MemoryAwareSynapses} instead used the sensitivity of the model when
-small perturbations are added to the neurons to measure their importance.
+\cite{kirkpatrick2017ewc}, followed by \cite{zenke2017synaptic_intelligence} and
+\cite{chaudhry2018riemannien_walk} propose to use the diagonal Fisher information matrix as
+importance factors. The motivation behind was that the posterior $p(\theta^{t-1} | \mcD^{t-1})$ must
+contain the information about which parameters are important to the previous dataset $\mcD^{t-1}$.
+This posterior can be approximated by a Gaussian distribution whose diagonal precision is given by
+diagonal Fisher information matrix. A higher value means a more important neuron for the previous
+task, and thus the constraint should be increased proportionally. Note that
+\cite{aljundi2018MemoryAwareSynapses} instead use the sensitivity of the model when small
+perturbations are added to the neurons to measure their importance.
 
 However, it is worth remarking that weight-based constraints are usually limited to the multi-heads
-setting where a task identifier is available at test time. \cite{lesort2019regulshortcomings} showed
-that in the more realistic single-head setting, they barely reduce forgetting and were significantly
-outperformed by rehearsal-based methods.
+setting where a task identifier is available at test time. \cite{lesort2019regulshortcomings} show
+that in the more realistic single-head setting, they struggle to reduce forgetting and are significantly
+outperformed by the simple (but somewhat memory costly) rehearsal learning.
 
-\subsubsection{Gradient-Based}
+\subsubsection{Gradient-Based methods}
 \label{sec:related_regul_gradient}
 
 \begin{figure}[tb]
@@ -495,7 +498,7 @@ performance of old tasks. \cite{saha2021gpm}'s GPM does likewise but uses instea
 approximation of the SVD of the representation matrix.
 
 
-\subsubsection{Output-based}
+\subsubsection{Output-based regularizations}
 \label{sec:related_regul_output}
 
 Finally, the majority of Continual models that are benchmarked on large datasets (\eg ImageNet
