@@ -96,11 +96,16 @@ network (such as \autoref{eq:intro_optim}), we often use the mini-batch \ac{SGD}
 
 The learning rate $\eta$ controls the step size when updating the parameters in the direction of the
 gradient. The batch size $b$ defines the number of images seen during one update.
-\textit{backpropagation} algorithm computes the gradients and the update of the parameters.
+\textit{backpropagation} algorithm computes the gradients and the update of the parameters. In the case
+of image classification, the main topic explored in this thesis, we discern the \textit{feature extractor}
+from the \textit{classifier} in the neural network. The former transforms the input space so that the latter
+linearly discriminates classes. From now on, the feature extractor will be denoted by $f$, and the classifier
+by $g$ (more information in the \hyperref[chap:notations]{notations}).
 
 The neural network in \autoref{eq:intro_mlp} can be defined as \textit{shallow} with only one hidden layer.
 By extension, an important success of later neural networks came with training \textit{deep} neural
-network with multiple hidden layers. More generally in this thesis, we will refer to them as \acf{DL}
+network with multiple hidden layers. More generall
+y in this thesis, we will refer to them as \acf{DL}
 models.
 The majority of \ac{DL} models, in \acf{CV}, in \acf{NLP}, or even in Audio are based on the same structure
 (linear transformations and non-linear activations) and are trained with a form of gradient descent.
@@ -233,7 +238,8 @@ images nor new classes will be learned. The knowledge acquired on one dataset \t
 the classes of dataset \textit{B} but cannot predict anymore the classes of dataset \textit{A}.
 
 \textbf{Continual Learning} aims to learn a continually changing dataset without forgetting the
-previous knowledge. The distribution of the dataset continually changes: \eg at each time-step, new
+previous knowledge. The distribution of the dataset continually changes: \eg at each time-step $t
+\in \{1, ..., T \}$, new
 classes or new samples from potentially new domains are added to the training dataset
 \citep{lomonaco2017core50}. We usually assume the test dataset evolves similarly. Multiple
 distribution drifts exist in Continual Learning
@@ -451,13 +457,16 @@ importance factors. The motivation behind was that the posterior $p(\theta^{t-1}
 contain the information about which parameters are important to the previous dataset $\mcD^{t-1}$.
 This posterior can be approximated by a Gaussian distribution whose diagonal precision is given by
 diagonal Fisher information matrix. A higher value means a more important neuron for the previous
-task, and thus the constraint should be increased proportionally. Note that
-\cite{aljundi2018MemoryAwareSynapses} instead use the sensitivity of the model when small
-perturbations are added to the neurons to measure their importance.
+task, and thus the constraint should be increased proportionally. Thus, a lower value, for a less
+important neuron, means that it can change drastically, which would facilitate learning new data.
+This strikes a balance between rigidity (not changing and thus not forgetting), and plasticity
+(changing, and thus learning new concepts). Note that \cite{aljundi2018MemoryAwareSynapses} instead
+use the sensitivity of the model when small perturbations are added to the neurons to measure their
+importance.
 
 However, it is worth remarking that weight-based constraints are usually limited to the multi-heads
 setting where a task identifier is available at test time. \cite{lesort2019regulshortcomings} show
-that in the more realistic single-head setting, they struggle to reduce forgetting and are significantly
+that in the single-head setting, they struggle to reduce forgetting and are significantly
 outperformed by the simple (but somewhat memory costly) rehearsal learning.
 
 \subsubsection{Gradient-Based methods}
@@ -498,38 +507,37 @@ performance of old tasks. \cite{saha2021gpm}'s GPM does likewise but uses instea
 approximation of the SVD of the representation matrix.
 
 
-\subsubsection{Output-based regularizations}
+\subsubsection{Output-based constraints regularizations}
 \label{sec:related_regul_output}
 
 Finally, the majority of Continual models that are benchmarked on large datasets (\eg ImageNet
-\citep{deng2009imagenet}, Pascal VOC \citep{everingham2015pascalvoc}) use a combination of rehearsal
+\citep{deng2009imagenet}) use a combination of rehearsal
 learning (\autoref{sec:related_rehearsal}) and constraints on the model's outputs.
 
-LwF \cite{li2018lwf} and iCaRL apply the \ac{KD} \cite{hinton2015knowledge_distillation} on the
-model's probabilities. It usually consists in minimizing the \ac{KL} between the probabilities
-of the old and new models:
+LwF \citep{li2018lwf} and iCaRL \citep{rebuffi2017icarl} apply the \ac{KD}
+\citep{hinton2015knowledge_distillation} on the model's probabilities. It usually consists in
+minimizing the \ac{KL} between the probabilities of the old and new models:
 %
 \begin{equation}
       \mcL_\text{KD} = \operatorname{KL}(\operatorname{softmax}(\frac{\tilde{y}^{t-1}}{\tau}) \Vert \operatorname{softmax}(\frac{\tilde{y}^t}{\tau})\,,
 \end{equation}
 %
-where $\tilde{y}^{t-1}$ and $\tilde{y}^{t}$ are respectively the logits of the old and new model,
+where $\tilde{y}^{t-1} = g^{t-1} (f^{t-1}(\vx))$ and $\tilde{y}^{t} = = g^{t} (f^{t}(\vx))$ are respectively the logits of the old and new model,
 and $\tau$ a \textit{temperature} to soften the probabilities in order to give more importance to
-the \textit{dark knowledge} of \cite{hinton2015knowledge_distillation}. Note that in the context of
-Class-Incremental, the new model predicts more classes than the old model, therefore, the \ac{KL} is
-only applied on the logits common to both the old and the new models. The \ac{KD} is sometimes also
-defined as the binary cross-entropy between the sigmoid-activated logits.
+the model confidence in other classes than the top one. These probabilities, nicknamed \textit{dark
+knowledge} by \cite{hinton2015knowledge_distillation}, contain additional information about the
+model which are useful to distil. Note that in the context of Class-Incremental, the new model
+predicts more classes than the old model, therefore, the \ac{KL} is only applied on the logits
+common to both the old and the new models. The \ac{KD} is sometimes also defined as the binary
+cross-entropy between the sigmoid-activated logits.
 
 Constraining the probabilities is now so ubiquitous that most models include it in their base
 losses. On the other hand, a few models considered constraining intermediate outputs. MK2D
 \citep{peng2019m2kd} uses the \ac{KD} from both the final classifier and an auxiliary classifier
-similarly to the Inception network \citep{szegedy2015inception}. \cite{hou2019ucir} maximizes the
+similarly to the Inception network \citep{szegedy2015inception}. \cite{hou2019ucir} maximize the
 cosine similarity between the embeddings produced by the \ac{GAP}.
 \cite{dhar2019learning_without_memorizing_gradcam} minimizes the L1 distance between the attention
-maps produced by GradCam \citep{selvaraju2017gradcam}. Drawing inspiration from the model
-compression literature \cite{zagoruyko2016distillation_attention}, \cite{douillard2020podnet}
-propose to instead constraint the statistics of all intermediate features of the \ac{ConvNet}.
-\cite{douillard2020plop} expand this constraint to incorporate multiscale information.
+maps produced by GradCam \citep{selvaraju2017gradcam}.
 
 \subsection{Structural Strategies}
 \label{sec:related_structural}
@@ -544,7 +552,10 @@ propose to instead constraint the statistics of all intermediate features of the
 \end{figure}
 
 Multiple works have also propose to adopt dynamic strategies where the configuration of the neural
-network is different for each task to learn.
+network evolves after each task. Critically, not only the number of neurons change in the classifier $g^t$
+(to incoporate new classes to predict), but the feature extractor $f^t$'s neurons count or organization
+will also differ from its previous iteration $f^{t-1}$.
+
 
 \paragraph{Subnetworks} The Lottery Ticket Hypothesis \citep{frankle2019lottery_ticket} states that
 subnetworks, made of a fraction of the neurons and connections of a larger network, can reach
@@ -563,18 +574,23 @@ propose to have one network per task, where the $i^{\text{th}}$ network would de
 input and all previous networks' intermediate features. Unfortunately, the memory consumption is
 quickly prohibitive with many tasks. Following works propose to only add blocks of parameters,
 and only when deemed necessary
-\citep{hung2019cpg,veniat2021mntdp,ostapenko2021localmodulecomposition}.
 
-\paragraph{Task Conditioning} Rather than adding many new parameters, it is also possible to only add
-a few parameters that will adapt the existing network \citep{rebuffi2017visualadapters}:
-\cite{wen2020batchensemble} and \cite{sun2019metatransfer} propose to share most of the weights
-across tasks, but have task-specific weights that directly modify the shared weights.
+
+
+\paragraph{Task Conditioning} Rather than adding many new parameters, it is also possible to only
+add a few parameters that will adapt the existing network behavior for a task.
+\cite{rebuffi2017visualadapters} propose to add a different residual per task: given a task
+identifier, the associated residual is used, and the features are modulated to best fit the given
+task. Instead of adapting the features, \cite{wen2020batchensemble} and \cite{sun2019metatransfer}
+propose to share most of the weights across tasks, but have task-specific weights that directly
+modify the shared weights.
 
 \paragraph{Mixture-of-Experts} Mixture of experts \citep{masoudnia2014mixture} have also been
 proposed, where multiple experts combine their decision. \cite{aljundi2017experts} learn a gating
-system to use the right task-specific expert. \cite{yan2021der} and \cite{li2021preserve} proposed
-to have a \ac{ConvNet} per task and to concatenate their output embeddings to be fed to a single
-classifier. To avoid parameters explosion, they aggressively prune each \ac{ConvNet}.
+system to use the right task-specific expert.
+%\cite{yan2021der} and \cite{li2021preserve} proposed
+%to have a \ac{ConvNet} per task and to concatenate their output embeddings to be fed to a single
+%classifier. To avoid parameters explosion, they aggressively prune each \ac{ConvNet}.
 
 \paragraph{Classifier Correction} Forgetting happens in both the feature extractor and the
 classifier. Previously described rehearsal and regularization methods try to reduce it in both
