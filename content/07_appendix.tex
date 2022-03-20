@@ -113,6 +113,18 @@ both \ac{NLP} and \ac{RL}.
 \section{Details on PODNet}
 \label{sec:appendix_podnet}
 
+We also compared our model against baselines with a more flexible memory $M_{\text{total}} = 2000$
+\citep{rebuffi2017icarl,wu2019bias_correction}, and with various initial task size (by default it is
+50 on CIFAR100). In the former case (\autoref{tab:podnet_sub_free_memory}), models benefit from a
+larger memory per class in the early tasks. In the later case
+(\autoref{tab:podnet_sub_initialincrement}), models initialization is worse because of a smaller
+initial task size. In these settings very different from \autoref{sec:podnet_quantitative_results},
+\ac{PODNet} still outperformed significantly the compared models, proving the robustness of our
+model.
+
+\input{tables/podnet/freememory}
+\input{tables/podnet/initialincrement}
+
 \subsection{Implementation details}
 
 For all datasets, images are augmented with random crops and flips. For CIFAR100, we additionally

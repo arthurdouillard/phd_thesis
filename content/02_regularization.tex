@@ -26,8 +26,7 @@
     locations in the representation space by estimating their future positions by drawing
     inspiration from the \ac{ZSL} literature.
 
-    The work in this section has led to a publication to a conference paper (PODNet, ECCV 2020) and
-    a workshop paper (Ghost, CVPR Workshop 2021):
+    The work in this section has led to a publication to two papers:
 
     \begin{itemize}
         \item \fullcite{douillard2020podnet}
@@ -117,7 +116,8 @@ the cosine similarity.
     \end{center}
     \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
         new set of classes, and the model must retain knowledge about \textit{all} classes. The
-        model is allowed a \textit{limited} memory of samples of old classes.}
+        model is allowed a \textit{limited} memory of samples of old classes. In our experiments, the first task
+        contain more classes than the following tasks (50 \vs 10 on this figure).}
     \label{fig:podnet_protocol}
 \end{figure}
 
@@ -520,21 +520,14 @@ significantly over the state-of-the-arts, we wish here to demonstrate here the r
 model to various factors. In \autoref{tab:podnet_ablation_memorysize}, we compared how \ac{PODNet}
 behaves against the baseline when the memory size per class $M_{\text{per}}$ changes: \ac{PODNet}
 improvements increase as the memory size decrease, up to a gain of 26.20\pp\ with \ac{NME} (resp.
-13.42\pp\ for CNN) with $M_{\text{per}} = 5$. Notice that by default, the memory size is 20 in
-\autoref{sec:podnet_quantitative_results}.
+13.42\pp\ for CNN) with $M_{\text{per}} = 5$. Notice in our main experiments
+(\autoref{sec:podnet_quantitative_results}), only 20 images per class are kept in the memory. More
+experiments validating our model's robustness are provided in the appendix
+(\autoref{sec:appendix_podnet}).
 
-We also compared our model against baselines with a more flexible memory $M_{\text{total}} = 2000$
-\citep{rebuffi2017icarl,wu2019bias_correction}, and with various initial task size (by default it is
-50 on CIFAR100). In the former case (\autoref{tab:podnet_sub_free_memory}), models benefit from a
-larger memory per class in the early tasks. In the later case
-(\autoref{tab:podnet_sub_initialincrement}), models initialization is worse because of a smaller
-initial task size. In these settings very different from \autoref{sec:podnet_quantitative_results},
-\ac{PODNet} still outperformed significantly the compared models, proving the robustness of our
-model.
 
 \input{tables/podnet/ablation_memorysize}
-\input{tables/podnet/freememory}
-\input{tables/podnet/initialincrement}
+
 
 
 \FloatBarrier
@@ -714,6 +707,15 @@ data is not available, so we employ ghost features sampled from the generator. N
 features are produced once per task by the generator and are kept fixed for the task duration.
 \label{sec:ghost_classifier}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/ghost/svm_reg.pdf}
+    \caption{\textbf{Latent-space regularization} establishes margin-based one-unseen-class \vs
+        all-seen-classes linear separations. Those separations are employed to directly condition the
+        feature space, creating space for future unseen classes. In the following task, some unseen
+        classes will become seen, and may occupy the feature space with less interference.}
+    \label{fig:ghost_svm_reg}
+\end{figure}
 
 \label{sec:ghost_svm}
 \paragraph{Latent-space regularization}
@@ -765,7 +767,7 @@ loss, in addition to a distillation loss to counter-act catastrophic forgetting
 The model is illustrated in \autoref{fig:ghost_training_procedure} and \autoref{algo:ghost_task_training} is the
 algorithm of our model in pseudocode, showcasing a procedural view of the execution of one task.
 
-\begin{algorithm}
+\begin{algorithm}[H]
     \begin{algorithmic}[1]
         \Require
         \Statex task id $t$
@@ -787,16 +789,6 @@ algorithm of our model in pseudocode, showcasing a procedural view of the execut
     \label{algo:ghost_task_training}
 \end{algorithm}
 
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.7\linewidth]{images/ghost/svm_reg.pdf}
-    \caption{\textbf{Latent-space regularization} establishes margin-based one-unseen-class \vs
-        all-seen-classes linear separations. Those separations are employed to directly condition the
-        feature space, creating space for future unseen classes. In the following task, some unseen
-        classes will become seen, and may occupy the feature space with less interference.}
-    \label{fig:ghost_svm_reg}
-\end{figure}
 
 \subsection{Experiment Results}
 \label{sec:ghost_exp}

@@ -51,7 +51,7 @@ to the classification loss $\mcL$.
 
 In practice, the function $f_\theta$ learned by a neural network is composed of a succession of linear
 transformations and non-linear \textit{activation} functions. For example, a simple neural network,
-called \ac{MLP} could be defined as:
+called \ac{MLP}, could be defined as:
 %
 \begin{equation}
       \hat{\vy} = f_\theta(\vx) = \operatorname{softmax}(\vW_o \sigma(\vW_h \vx + \vb_h) + \vb_o))\,,
@@ -95,20 +95,20 @@ network (such as \autoref{eq:intro_optim}), we often use the mini-batch \ac{SGD}
 \end{algorithm}
 
 The learning rate $\eta$ controls the step size when updating the parameters in the direction of the
-gradient. The batch size $b$ defines the number of images seen during one update.
-\textit{backpropagation} algorithm computes the gradients and the update of the parameters. In the case
-of image classification, the main topic explored in this thesis, we discern the \textit{feature extractor}
-from the \textit{classifier} in the neural network. The former transforms the input space so that the latter
-linearly discriminates classes. From now on, the feature extractor will be denoted by $f$, and the classifier
-by $g$ (more information in the \hyperref[chap:notations]{notations}).
+gradient. The batch size $b$ defines the number of images seen during one update. The
+\textit{backpropagation} algorithm \citep{rumelhart1986backprop} computes the gradients and the
+update of the parameters. In the case of image classification and segmentation, the main topics
+explored in this thesis, we discern the \textit{feature extractor} from the \textit{classifier} in
+the neural network. The former transforms the input space so that the latter linearly discriminates
+classes. From now on, the feature extractor will be denoted by $f$, and the classifier by $g$ (see
+the \hyperref[chap:notations]{notations}). The model is then $g \circ f$.
 
-The neural network in \autoref{eq:intro_mlp} can be defined as \textit{shallow} with only one hidden layer.
-By extension, an important success of later neural networks came with training \textit{deep} neural
-network with multiple hidden layers. More generall
-y in this thesis, we will refer to them as \acf{DL}
-models.
-The majority of \ac{DL} models, in \acf{CV}, in \acf{NLP}, or even in Audio are based on the same structure
-(linear transformations and non-linear activations) and are trained with a form of gradient descent.
+The neural network in \autoref{eq:intro_mlp} can be defined as \textit{shallow} with only one hidden
+layer. By extension, an important success of later neural networks came with training \textit{deep}
+neural network with multiple hidden layers. More generally in this thesis, we will refer to them as
+\acf{DL} models. The majority of \ac{DL} models, in \acf{CV}, in \acf{NLP}, or even in Audio are
+based on the same structure (linear transformations and non-linear activations) and are trained with
+a form of gradient descent.
 
 \section{Deep Architectures for Computer Vision}
 
@@ -127,7 +127,7 @@ classification but also object detection \citep{ren20fasterrcnn}, semantic segme
 
 Most \acp{ConvNet} follow a similar structure with blocks of convolutions and pooling. Usually, the
 final spatial features are flattened by \ac{GAP} and fed to a linear classifier
-predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this general paradigm.
+predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this general architecture.
 
 \begin{figure}[tb]
       \begin{center}
@@ -239,7 +239,7 @@ the classes of dataset \textit{B} but cannot predict anymore the classes of data
 
 \textbf{Continual Learning} aims to learn a continually changing dataset without forgetting the
 previous knowledge. The distribution of the dataset continually changes: \eg at each time-step $t
-\in \{1, ..., T \}$, new
+      \in \{1, ..., T \}$, new
 classes or new samples from potentially new domains are added to the training dataset
 \citep{lomonaco2017core50}. We usually assume the test dataset evolves similarly. Multiple
 distribution drifts exist in Continual Learning
@@ -256,13 +256,16 @@ image classification, or a segmentation map in semantic segmentation), the major
 \end{itemize}
 
 Learning an ever-growing dataset is possible by training from scratch a new model on the union of
-past and new data. However, for multiple reasons like privacy concerns of medical data or limited
-storage capacity in embedded device \citep{vasquez2017incrementalneuralforest}, there is a
-restriction on the amount of previous data that can be kept. In the extreme case, where a model only
-has access to new data but not old data, a model trained from scratch cannot predict previous
-iterations' distribution. Worse, even if the old model is kept and finetuned on the new data, it
-will suffer from a significant drop of the performance on old data that we call \textbf{Catastrophic
-      Forgetting} \citep{robins1995catastrophicforgetting}.
+past and new data. However, for multiple reasons like privacy concerns or limited storage capacity
+(embedded device) \citep{vasquez2017incrementalneuralforest}, there is a restriction on the amount
+of previous data that can be kept. In the extreme case, where a model only has access to new data
+but not old data, a model trained from scratch cannot predict previous iterations' distribution.
+Worse, even if the old model is kept and finetuned on the new data, it will suffer from a
+significant drop of the performance on old data that we call \textbf{Catastrophic Forgetting}
+\citep{robins1995catastrophicforgetting}. In image classification, we define $A_{i,j}$, the accuracy
+on the $i^{th}$ task given the model after learning the $j^{th}$ task. The catastrophic forgetting,
+more often than not, results in the accuracy on previous tasks to be lower than at the time of their
+training: $A_i,t < A_i,i$ with $t > i$.
 
 \begin{figure}[tb]
       \begin{center}
@@ -275,18 +278,21 @@ will suffer from a significant drop of the performance on old data that we call 
 \end{figure}
 
 \paragraph{Class-Incremental Example} More concretely, a common benchmark in \acf{CIL} is learning
-the image classification CIFAR100 dataset \citep{krizhevskycifar100} in multiple steps, each made of
-several new classes. \eg a model could learn at first to classify among 10 classes, then add 10 more
-classes, \etc. Until it has learned all 100 classes. After each step, the model has to classify
-among all classes it has learned. The \autoref{fig:related_protocol} illustrates such continual
-protocol, and \autoref{fig:related_forgetting} depicts the performance of continual models in this
-situation: the \textcolor{orange}{orange} line displays the accuracy of a model which is re-trained
-from scratch at each step on all previous training data. This model, usually called Joint, is
-considered as a reasonable upper bound. On the other hand, the \textcolor{blue}{blue} line is a
-model finetuned solely on new classes without access to previous classes. The model's accuracy is
-considerably lower than its Joint counterpart, because it forgets old classes by over-predicting new
-classes. While we have mainly tackle \acf{CIL} benchmarks, we describe other continual benchmarks in
-detail in the appendix (\autoref{sec:related_variation}).
+the image classification CIFAR100 dataset \citep{krizhevskycifar100}, made of 100 classes, in
+multiple steps, each made of several new classes. During the first step $t=1$, the model $g^1 \circ
+      f^1$ learns the first 10 classes $\mcC^{t=1}$. During the second step $t=2$, the model $g^2 \circ
+      f^2$ is initialized from the learned parameters of the previous model $g^1 \circ f^1$ and learns the
+next 10 classes $\mcC^{t=2}$., and so on, until all 100 classes are learned at the last step $t=T$.
+After each step, we evaluate the model on all seen classes $\mcC^{1:t}$.  The
+\autoref{fig:related_protocol} illustrates such continual protocol, and
+\autoref{fig:related_forgetting} depicts the performance of continual models in this situation: the
+\textcolor{orange}{orange} line displays the accuracy of a model which is re-trained from scratch at
+each step on all previous training data. This model, usually called Joint, is considered as a
+reasonable upper bound. On the other hand, the \textcolor{blue}{blue} line is a model finetuned
+solely on new classes without access to previous classes. The model's accuracy is considerably lower
+than its Joint counterpart, because it forgets old classes by over-predicting new classes. While we
+have mainly tackle \acf{CIL} benchmarks, we describe other continual benchmarks in detail in the
+appendix (\autoref{sec:related_variation}).
 
 \paragraph{Single-Head \vs Multi-Heads} are the two main evaluation settings in Continual Learning
 \citep{chaudhry2018riemannien_walk}. In the former setting, a model has to classify samples among
@@ -294,8 +300,9 @@ all seen classes, that could have been learned from any of the seen steps. The l
 at test-time the step/task identifier of the samples. Thus, it only has to classify among the limited
 number of classes brought by a step. This setting is closely related to multi-tasks learning. During
 this thesis, we focus on the Single-Head setting because it is more realistic as it is not always
-possible to know from which step a sample comes from in a real-life setting, and more challenging
-\citep{lesort2019regulshortcomings}.
+possible to know from which step a sample comes from in a real-life setting. This setting is also
+more challenging because a unique classifier must discriminate among all tasks' classes intead of
+having a different classifier per task \citep{lesort2019regulshortcomings}.
 
 \begin{figure}[tb]
       \begin{center}
@@ -303,7 +310,8 @@ possible to know from which step a sample comes from in a real-life setting, and
       \end{center}
       \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
             new set of classes, and the model must retain knowledge about \textit{all} classes
-            despite having no more access to old classes.}
+            despite having no more access to old classes. Here, the model learns 10 new classes with
+            each new task.}
       \label{fig:related_forgetting}
 \end{figure}
 
@@ -334,12 +342,10 @@ Average incremental accuracy is somewhat more important than simply the final ac
 model should be good after every step because in a true continual setting, there is not a ``final
 task''.
 
-Other metrics exist \citep{diaz2018continualmetrics}, including the \textbf{backward and
-      forward transfer} \citep{lopezpaz2017gem} that measures the influence that learning a task has on
-the performance of respectively past and future tasks. Another notable metric is the
-\textbf{forgetting} \citep{chaudhry2018riemannien_walk} which records how much a model has lost
-performance-wise on a task compared to the first time it has learned it. The interest of this metric
-is to be agnostic of the absolute performance of the model used.
+Other metrics exist \citep{diaz2018continualmetrics}, including the \textbf{forgetting}
+\citep{chaudhry2018riemannien_walk} which records how much a model has lost performance-wise on a
+task compared to the first time it has learned it. The interest of this metric is to be agnostic of
+the absolute performance of the model used.
 
 Finally, metrics such as \textbf{speed} (\ie the number of images processed per second) or used
 \textbf{capacity} (\ie number of learned parameters) are important:
@@ -525,7 +531,7 @@ minimizing the \ac{KL} between the probabilities of the old and new models:
 where $\tilde{y}^{t-1} = g^{t-1} (f^{t-1}(\vx))$ and $\tilde{y}^{t} = = g^{t} (f^{t}(\vx))$ are respectively the logits of the old and new model,
 and $\tau$ a \textit{temperature} to soften the probabilities in order to give more importance to
 the model confidence in other classes than the top one. These probabilities, nicknamed \textit{dark
-knowledge} by \cite{hinton2015knowledge_distillation}, contain additional information about the
+      knowledge} by \cite{hinton2015knowledge_distillation}, contain additional information about the
 model which are useful to distil. Note that in the context of Class-Incremental, the new model
 predicts more classes than the old model, therefore, the \ac{KL} is only applied on the logits
 common to both the old and the new models. The \ac{KD} is sometimes also defined as the binary
@@ -544,10 +550,14 @@ maps produced by GradCam \citep{selvaraju2017gradcam}.
 
 \begin{figure}[tb]
       \begin{center}
-            \includegraphics[width=0.6\linewidth]{images/related/subnetworks.pdf}
+            {\includegraphics[width=0.5\linewidth]{images/related/subnetworks.pdf}}
       \end{center}
       \caption{\textbf{Task-specific subnetworks} that can be uncovered with a sparsity loss or
-            learned masking.}
+            learned masking. \textcolor{blue}{\textbf{Blue}} neurons are dedicated to
+            the task $t$, \textcolor{red}{\textbf{red}} neurons to the following task
+            $t+1$, and \textbf{black} neurons are shared among all tasks. At
+            test-time, a task identifier of the sample is required to select the
+            right subnetwork path.}
       \label{fig:related_subnetwork}
 \end{figure}
 
@@ -587,7 +597,8 @@ modify the shared weights.
 
 \paragraph{Mixture-of-Experts} Mixture of experts \citep{masoudnia2014mixture} have also been
 proposed, where multiple experts combine their decision. \cite{aljundi2017experts} learn a gating
-system to use the right task-specific expert.
+system to use the right task-specific expert. \cite{collier2020routingnetwork} stress the importance
+on sharing experts when tasks are similar.
 %\cite{yan2021der} and \cite{li2021preserve} proposed
 %to have a \ac{ConvNet} per task and to concatenate their output embeddings to be fed to a single
 %classifier. To avoid parameters explosion, they aggressively prune each \ac{ConvNet}.
@@ -606,46 +617,40 @@ classifier by the cosine similarity, resulting in unit norm classifier weights.
 
 \section{Positioning}
 
-Continual Learning encompasses very different benchmarks and methods. In this thesis, we tackle
+Continual Learning encompasses very different benchmarks and methods. In this Ph.D thesis, we tackle
 multiple types of continual drift using different approaches summarized below:
 
 \paragraph{Feature-based Regularizations} First in \autoref{chapter:regularization}, we consider
-\acf{CIL} scenarios with a prior drift where new classes are continually added. This is a
-challenging benchmark, even more when tackling a large amount of classes with datasets like CIFAR100
-(100 classes) and ImageNet (1000 classes). The previous State-of-the-Art models all use a
-combination of rehearsal (\autoref{sec:related_rehearsal}) and regularizations of the predicted
-probabilities (\autoref{sec:related_regul_output}). In this chapter, we claim that this type of
-constraints struggle to efficiently balance the rigidity needed to not forget with the plasticity
-required to learn new classes. Therefore, we propose to regularize, not the final outputs, but
-rather the intermediate feature space. In the first section (\autoref{sec:podnet}), we describe how
-we regularize statistics on the features at multiple levels of the \ac{ConvNet} with our method
-called POD. The choice of which statistics to employ has an important impact on forgetting, which I
-ablate extensively. While this first section aims to constrain the feature space to reduce
-forgetting, the second section (\autoref{sec:ghost}) tries to avoid forgetting before it even
-happen: Inspired by \ac{ZSL}, we estimate the feature representation of future classes using weak
-information about them (\eg attributes). Exclusion zones in the feature space are created for those
-yet unseen classes, so that when finally learned, the confusion between old and new classes is
-minimal.
+\acf{CIL} scenarios with a prior drift where new classes are continually added. In this setting, our
+approach consists in rehearsal learning (\autoref{sec:related_rehearsal}) and output-based
+regularizations (\autoref{sec:related_regul_output}). Previous works reduced forgetting by
+constraining either the final probabilities of the classifier or the ultimate embedding of the
+feature extractor. In a first section (\autoref{sec:podnet}), we propose instead a regularization
+applied on several intermediary levels of the features extractor. Moreover, few considerations have
+been made on how the regularization loss rigidify the model, leading to less forgetting on old
+classes but also impacting negatively the learning of new classes. Instead, we carefully define a
+regularization loss, through pooling, balance effectively the performance of old and new classes.
+In a second section (\autoref{sec:ghost}), we consider if the forgetting could be avoided preemptively.
+\cite{aljundi2019selfless} consider allocating extra capacity in the learned feature space for
+future classes using an unsupervised sparsity loss. Differently, we choose to draw from weak metadata
+of the future classes to estimate their representation and thus more efficiently allocate capacity,
+reducing forgetting before it even happens.
 
 \paragraph{Continual Semantic Segmentation} Second, in \autoref{chapter:segmentation}, we tackle
-\acf{CSS}. In this benchmark, images have a label per pixel, and only the current classes are
-labelized. Thus, both the prior and concept drifts happen where new classes are added but also the
-signification of a pixel can change through time. Three different, but complementary, methods are
-used for this type of data: first we use an uncertainty-based pseudo-labeling to handle what we
-called a background shift. Then, we extend the feature regularization
-(\autoref{sec:related_regul_output}) introduced in the previous chapter, POD, to constrain
-differently local and global areas of the spatial feature maps. Finally, we consider rehearsal
-learning (\autoref{sec:related_rehearsal}) propose a new rehearsal, designed for segmentation, by
-exploiting a copy-paste of masks resulting in State-of-the-Art performance while being very memory
-efficient.
+\acf{CSS}. In this benchmark, defined recently by \cite{cermelli2020modelingthebackground}, images
+have a label per pixel, and only the current classes are labelized. Thus, both the prior and concept
+drifts happen where new classes are added but also the signification of a pixel can change through
+time. In this setting, all previous works only considered regularizations based on the final probabilities
+((\autoref{sec:related_regul_output})). Instead, we expand from our previous chapter to consider the
+multi-scale intermediary features. Moreover, no work directly tackled the partial labelization of the images.
+We propose for this challenge an uncertainty-based pseudo-labeling, and a new rehearsal method (\autoref{sec:related_rehearsal}),
+optimized for segmentation.
 
 \paragraph{Dynamic Transformers} In this third and last chapter (\autoref{chapter:dynamic}), we only
 aim to solve the prior drift but using a method radically different from previous chapters: dynamic
-networks (\autoref{sec:related_structural}). Previous dynamic networks usually expand their
-capacity by a large margin during the continual training to handle the growing amount of tasks to
-learn. To avoid a parameter count explosion, the models are usually pruned aggressively. The main
-drawback of these methods is that the pruning can still result in models too large and often need
-careful finetuning of hyperparameters. We propose in this chapter, a novel dynamic expansion with
-almost no memory overhead contrary to concurrent works. Based on the transformer architecture, a
-special learned vector is used per task to specialize the features to each task. Consequently,
-forgetting is greatly reduced while our memory and time overheads stay manageable.
+networks (\autoref{sec:related_structural}). Previous dynamic networks usually expand their capacity
+by a large margin during the continual training to handle the growing amount of tasks to learn. To
+avoid a parameter count explosion, the models are usually pruned aggressively. The main drawback of
+these methods is that the pruning can still result in models too large and often need careful
+finetuning of hyperparameters. We propose in this chapter, a dynamic expansion based on the
+transformer architecture with almost no memory overhead contrary to concurrent works.
