@@ -79,13 +79,13 @@ classification task (\eg learning sneaker brands, then high-heel brands) or addi
 sources (\eg commercial photoshoot then images from social media). Unfortunately, current
 State-of-the-Art models struggle to learn continually new data without losing performance on
 previously seen data. This loss is so critical that the literature nicknamed it a ``catastrophic
-forgetting'' \citep{robins1995catastrophicforgetting}. Multiple methods can reduce
-this forgetting, including rehearsal and constraints. Rehearsal involves reviewing
-previously learned knowledge, as a human student would \textit{rehearse} the last semester's course.
-However, this rehearsal is often limited in order to reduce computational cost and because past data
-may not always be available for a variety of reasons, including privacy. On the other hand,
-constraints enforce the model to keep a similar \textit{behavior} as it learns new concepts, but
-defining the optimal constraint is not trivial.
+forgetting'' \citep{robins1995catastrophicforgetting,french1999catastrophicforgetting}. Multiple
+methods can reduce this forgetting, including rehearsal and constraints. Rehearsal involves
+reviewing previously learned knowledge, as a human student would \textit{rehearse} the last
+semester's course. However, this rehearsal is often limited in order to reduce computational cost
+and because past data may not always be available for a variety of reasons, including privacy. On
+the other hand, constraints enforce the model to keep a similar \textit{behavior} as it learns new
+concepts, but defining the optimal constraint is not trivial.
 
 \section{Contributions}
 
@@ -102,7 +102,7 @@ considered various specific situations and approaches declined in several chapte
             We first tackle continual learning in the context of the image classification: we aim to
             produce a model that can learn continuously new classes without forgetting the
             previously seen classes. We study how to constrain efficiently a model in order to be
-            rigid enough (to not forget) but also to be plastic (to learn new classes). The work in
+            rigid enough (to not forget) while also being plastic (to learn new classes). The work in
             this chapter has led to two conference publications:
             \begin{itemize}
                   \item \fullcite{douillard2020podnet}

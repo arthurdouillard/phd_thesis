@@ -5,17 +5,17 @@
     \begin{tabular}{@{}l@{\hspace{3cm}}c@{}}
         Total number of tasks                        & $T$                                                       \\
         Current task                                 & $t$                                                       \\
-        Current classes                              & $\mcC^t$                                                  \\
-        Previous classes                             & $\mcC^{1:t-1}$                                            \\
-        Future classes                               & $\mcC^{t+1:T}$                                            \\
+        Classes of the current task                  & $\mcC^t$                                                  \\
+        Classes of the previous tasks                & $\mcC^{1:t-1}$                                            \\
+        Classes of the future tasks                  & $\mcC^{t+1:T}$                                            \\
         Cardinality of a set of classes              & $\mcN^t=\operatorname{card}(\mcC^{t})$                    \\
         Image at task $t$                            & $\vx^t$                                                   \\
         Ground-truth label at task $t$               & $y^t$                                                     \\
         Ground-truth segmentation map at task $t$    & $\vy^t$                                                   \\
         Feature extractor at task $t$                & $f^t(\cdot)$                                              \\
         Classifier at task $t$                       & $g^t(\cdot)$                                              \\
-        Learnable parameters at task $t$             & $\Phi^t$                                                  \\
-        %Loss function                                & $\mcL$                                                    \\
+        Learnable parameters at task $t$             & $\theta^t$                                                \\
+        Loss function                                & $\mcL$                                                    \\
         Predicted label                              & $\hat{y}^t$                                               \\
         Predicted segmentation map                   & $\hat{\vy}^t$                                             \\
         Intermediary spatial features at level $l$   & $\vh^t_\ell = f^t_\ell(\cdot),\,\ell \in \{1, \dots, L\}$ \\

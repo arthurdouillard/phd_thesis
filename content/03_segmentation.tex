@@ -4,15 +4,15 @@
 \begin{chapabstract}
     In \acf{CIL}, new classes are learned with each new task. However, most of the literature in
     that domain focus on image classification, where a single label is possible per sample. In
-    \textbf{\acf{CSS}}, the setting is the same, but the implications are wildly different. In Semantic
+    \textbf{\acf{CSS}}, the setting is the same (continual addition of new classes), but the implications are wildly different. In Semantic
     Segmentation, an image has one label per pixel. Therefore, an image could contain pixels from
     old, current, and future classes.
     \\
-    In this chapter, we tackled the recent field of \acf{CSS}: I've first highlighted the main
+    In this chapter, we tackle the recent field of \acf{CSS}: We first highlight the main
     challenges of this domain: an important \textbf{catastrophic forgetting} linked to the higher complexity
     of segmentation images, and a \textbf{background shift} where images are partially labeled with
-    only the current classes' ground-truth being present. Then, I've proposed multiple complementary
-    methods across two papers to solve those challenges: I've designed an uncertainty-based
+    only the current classes' ground-truth being present. Then, we propose multiple complementary
+    methods across two papers to solve those challenges: We design an uncertainty-based
     hard pseudo-labeling loss, a multi-scale distillation loss inspired by our previous POD, and
     an efficient object rehearsal method.
 
@@ -695,8 +695,6 @@ after step, integrating performance over the whole continual learning process. W
 four metrics are important, and we should not disregard one for the other: a model suffering no
 forgetting but not able to learn anything new is useless.
 
-\input{tables/seg/cityscapes_class}
-
 \paragraph{Baselines:} We benchmark our model against the latest state-of-the-arts \ac{CSS}
 methods ILT \citep{michieli2019ilt}, MiB \citep{cermelli2020modelingthebackground}, GIFS
 \citep{cermelli2020fewshotcontinualsegm}, and SDR \citep{michieli2021sdr}. Note that while GIFS was
@@ -731,7 +729,6 @@ for Pascal-VOC and $2.0$ for Cityscapes. We use a batch size of 24 distributed o
 GPUs. Contrary to many continual models, we do not have access to any task id in inference, therefore
 our setting/strategy has to predict a class among the set of all seen classes
 
-\input{tables/seg/voc}
 
 
 \subsection{PLOP and PLOPLong experiments}
@@ -739,10 +736,13 @@ our setting/strategy has to predict a class among the set of all seen classes
 
 \subsubsection{Quantitative Evaluations}
 
+
+\input{tables/seg/voc}
+\input{tables/seg/cityscapes_class}
+
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{images/seg/voc_15-1.png}
-    \vspace*{-0.3cm}
+    \includegraphics[width=0.7\linewidth]{images/seg/voc_15-1.png}
     \caption{\ac{mIoU} evolution on Pascal-VOC 2012 15-1. While MiB's \ac{mIoU} quickly
         deteriorates, PLOP and PLOPLong's \ac{mIoU} remains high, due to improved resilience to
         catastrophic forgetting.}
@@ -834,6 +834,8 @@ overfits and predicts nothing but the new classes, hence a lower \ac{mIoU}.  Fin
 leads to superior performance (+20 \pp) \wrt all metrics, due to its integration of both long and
 short-range dependencies. This final row represents our full PLOP strategy.
 
+\input{tables/seg/ablation_classif_distillation}
+
 
 \paragraph{Classification comparisons:} \autoref{tab:seg_ablation_classif} compares different
 classification losses when combined with our Local POD distillation loss. Cross-Entropy (CE)
@@ -869,11 +871,10 @@ PLOP, not to mention MiB. This is due to the fact that PLOPLong, due to improved
 (at prediction and Local POD levels) and batch re-normalization that allows to better retain
 information of the old classes, which again is more conspicuous on longer \ac{CSS} scenarios.
 
-\input{tables/seg/ablation_classif_distillation}
-
 
 \begin{figure}
-    \includegraphics[width=\linewidth]{images/seg/order_voc_15-1.png}
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/seg/order_voc_15-1.png}
     \vspace*{-0.3cm}
     \caption{\textbf{Robustness to class ordering:} Boxplots of the \ac{mIoU} of initial classes (1-15), new (16-20), all, and average for
         20 random class orderings. PLOP is significantly better and more stable than MiB. PLOPLong
@@ -1004,7 +1005,7 @@ performance using our novel object rehearsal which was also the most memory-effi
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{images/seg/visualization_gt_shift2.pdf}
+    \includegraphics[width=0.7\linewidth]{images/seg/visualization_gt_shift2.pdf}
     \caption{\textbf{Visualization of the predictions with a background shift} of MiB, PLOP, PLOPLong, and PLOPLong with Object
         Rehearsal across time in VOC 15-1 on a test set image. At steps 1-4 only class
         \texttt{person} has been seen. At step 5, the class \texttt{train} is introduced, causing
