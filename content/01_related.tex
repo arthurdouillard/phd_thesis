@@ -565,14 +565,14 @@ maps produced by GradCam \citep{selvaraju2017gradcam}.
       \label{fig:related_subnetwork}
 \end{figure}
 
-Multiple works have also propose to adopt dynamic strategies where the configuration of the neural
-network evolves after each task. Critically, not only the number of neurons change in the classifier $g^t$
-(to incoporate new classes to predict), but the feature extractor $f^t$'s neurons count or organization
+Multiple works also propose to adopt dynamic strategies where the configuration of the neural
+network evolves after each task. Critically, not only the number of neurons changes in the classifier $g^t$
+(to incorporate new classes to predict), but the feature extractor $f^t$'s neurons count or organization
 will also differ from its previous iteration $f^{t-1}$.
 
 
 \paragraph{Subnetworks} The Lottery Ticket Hypothesis \citep{frankle2019lottery_ticket} states that
-subnetworks, made of a fraction of the neurons and connections of a larger network, can reach
+subnetworks made of a fraction of the neurons and connections of a larger network, can reach
 excellent performance. Several Continual Learning models exploit that property by using a
 subnetwork per task. Those subnetworks can be uncovered via genetic algorithms
 \citep{fernando2017path_net}, via induced L1 sparsity \citep{golkar2019neural_pruning}, or even
@@ -585,7 +585,7 @@ illustrated in \autoref{fig:related_subnetwork}.
 \paragraph{Expandable Networks} A neural network can also be expanded through its continual
 training to accommodate the growing amount of tasks to solve. First, \cite{rusu2016progressive}
 propose to have one network per task, where the $i^{\text{th}}$ network would depend both on the
-input and all previous networks' intermediate features. Unfortunately, the memory consumption is
+input and all previous networks' intermediate features. Unfortunately, memory consumption is
 quickly prohibitive with many tasks. Following works propose to only add blocks of parameters,
 and only when deemed necessary
 
@@ -617,7 +617,7 @@ and confidences. \cite{wu2019bias_correction} learn a linear model on validation
 the logits of the new classes. \cite{zhao2020weightalignement} normalizes the norm of the classifier
 weights associated with new classes so that their average norm becomes the same as that for old
 classes. \cite{hou2019ucir}, aims for a similar result by replacing the dot product in the
-classifier by the cosine similarity, resulting in unit norm classifier weights.
+classifier with the cosine similarity, resulting in unit norm classifier weights.
 
 \section{Positioning}
 
@@ -631,30 +631,30 @@ regularizations (\autoref{sec:related_regul_output}). Previous works reduced for
 constraining either the final probabilities of the classifier or the ultimate embedding of the
 feature extractor. In a first section (\autoref{sec:podnet}), we propose instead a regularization
 applied on several intermediary levels of the features extractor. Moreover, few considerations have
-been made on how the regularization loss rigidify the model, leading to less forgetting on old
+been made on how the regularization loss makes the model more rigid, leading to less forgetting on old
 classes but also impacting negatively the learning of new classes. Instead, we carefully define a
 regularization loss, through pooling, balance effectively the performance of old and new classes.
 In a second section (\autoref{sec:ghost}), we consider if the forgetting could be avoided preemptively.
-\cite{aljundi2019selfless} consider allocating extra capacity in the learned feature space for
+\cite{aljundi2019selfless} consider allocating extra capacity implicitly in the learned feature space for
 future classes using an unsupervised sparsity loss. Differently, we choose to draw from weak metadata
-of the future classes to estimate their representation and thus more efficiently allocate capacity,
+of the future classes to estimate their representation and thus explicitly allocate capacity,
 reducing forgetting before it even happens.
 
 \paragraph{Continual Semantic Segmentation} Second, in \autoref{chapter:segmentation}, we tackle
 \acf{CSS}. In this benchmark, defined recently by \cite{cermelli2020modelingthebackground}, images
 have a label per pixel, and only the current classes are labelized. Thus, both the prior and concept
 drifts happen where new classes are added but also the signification of a pixel can change through
-time. In this setting, all previous works only considered regularizations based on the final probabilities
-((\autoref{sec:related_regul_output})). Instead, we expand from our previous chapter to consider the
-multi-scale intermediary features. Moreover, no work directly tackled the partial labelization of the images.
-We propose for this challenge an uncertainty-based pseudo-labeling, and a new rehearsal method (\autoref{sec:related_rehearsal}),
-optimized for segmentation.
+time. In this setting, all previous works only considered regularizations based on the final
+probabilities ((\autoref{sec:related_regul_output})). Instead, we expand from our previous chapter
+to consider the multi-scale intermediary features. Moreover, no work directly tackled the partial
+labelization of the images. We propose for this challenge an uncertainty-based pseudo-labeling, and
+a new rehearsal method (\autoref{sec:related_rehearsal}), optimized for segmentation.
 
 \paragraph{Dynamic Transformers} In this third and last chapter (\autoref{chapter:dynamic}), we only
 aim to solve the prior drift but using a method radically different from previous chapters: dynamic
 networks (\autoref{sec:related_structural}). Previous dynamic networks usually expand their capacity
 by a large margin during the continual training to handle the growing amount of tasks to learn. To
-avoid a parameter count explosion, the models are usually pruned aggressively. The main drawback of
-these methods is that the pruning can still result in models too large and often need careful
-finetuning of hyperparameters. We propose in this chapter, a dynamic expansion based on the
+avoid a parameter count unbounded growth, the models are usually pruned aggressively. The main
+drawback of these methods is that the pruning can still result in models too large and often need
+careful finetuning of hyperparameters. We propose in this chapter, a dynamic expansion based on the
 transformer architecture with almost no memory overhead contrary to concurrent works.
