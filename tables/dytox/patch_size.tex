@@ -1,0 +1,17 @@
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{}c|c|cc@{}}
+        \hline
+                            & Joint (1 steps)            & \multicolumn{2}{c}{50 steps}                                             \\
+        \textbf{Patch size} & \textbf{Last} ($\uparrow$) & \textbf{Last} ($\uparrow$)   & \textbf{Forgetting} ($\downarrow$)\Bstrut \\
+        \hline
+        4                   & 76.12                      & 52.34                        & 33.15\Tstrut                              \\
+        8                   & 67.65                      & 43.93                        & 35.44                                     \\
+        16                  & 50.15                      & 31.49                        & 33.20                                     \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{Patch size effect on continual} for the joint (1 step, no continual) and 50
+        steps settings on CIFAR100. We choose a patch size of 4 for our main experiments: yet, it
+        has only few impact on forgetting.}
+    \label{tab:dytox_patch_size}
+\end{table}

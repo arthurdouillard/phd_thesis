@@ -251,7 +251,7 @@ image classification, or a segmentation map in semantic segmentation), the major
 
 \begin{itemize}
       \item \textbf{Covariate drift}: when $p(x)$ changes, it happens with the introduction of new
-            domains \citep{volpi2021continualdomainadapt}
+            domains \citep{volpi2021continualdomainadapt}.
       \item \textbf{Prior drift}: when $p(y)$ changes; \ac{CIL} happens with this kind of drift.
       \item \textbf{Conceptual drift}: when $p(y | x)$ changes. Seldom covered in the literature, it
             can be found in \acf{CSS}.
@@ -267,7 +267,7 @@ significant drop of the performance on old data that we call \textbf{Catastrophi
 \citep{robins1995catastrophicforgetting}. In image classification, we define $A_{i,j}$, the accuracy
 on the $i^{th}$ task after learning the $t^{th}$ task. The catastrophic forgetting,
 more often than not, results in the accuracy on previous tasks being lower than at the time of their
-training: $A_i,t < A_i,i$ with $t > i$.
+training: $A_{i,t} < A_{i,i}$ with $t > i$.
 
 \begin{figure}[tb]
       \begin{center}
@@ -293,18 +293,9 @@ each step on all previous training data $\mcC^{1:t}$. This model, usually called
 considered as a reasonable upper bound. On the other hand, the \textcolor{blue}{blue} line is a
 model finetuned solely on new classes $\mcC^{t}$ without access to previous classes $\mcC^{1:t-1}$.
 The model's accuracy is considerably lower than its Joint counterpart, because it forgets old
-classes by over-predicting new classes. While in this thesis we mainly tackle \acf{CIL} benchmarks, we
-describe other continual benchmarks in detail in the appendix (\autoref{sec:related_variation}).
-
-\paragraph{Single-Head \vs Multi-Heads} are the two main evaluation settings in Continual Learning
-\citep{chaudhry2018riemannien_walk}. In the former setting, a model has to classify samples among
-all seen classes, that could have been learned from any of the seen steps. The latter setting knows
-at test-time the step/task identifier of the samples. Thus, it only has to classify among the limited
-number of classes brought by a step. This setting is closely related to multi-tasks learning. During
-this thesis, we focus on the Single-Head setting because it is more realistic as it is not always
-possible to know from which step a sample comes from in a real-life setting. This setting is also
-more challenging because a unique classifier must discriminate among all tasks' classes instead of
-having a different classifier per task \citep{lesort2019regulshortcomings}.
+classes by over-predicting new classes \citep{davidson2020masteryincremental}. While in this thesis
+we mainly tackle \acf{CIL} benchmarks, we describe other continual benchmarks in detail in the
+appendix (\autoref{sec:related_variation}).
 
 \begin{figure}[tb]
       \begin{center}
@@ -317,16 +308,27 @@ having a different classifier per task \citep{lesort2019regulshortcomings}.
       \label{fig:related_forgetting}
 \end{figure}
 
+\paragraph{Single-Head \vs Multi-Heads} are the two main evaluation settings in Continual Learning
+\citep{chaudhry2018riemannien_walk}. In the former setting, a model has to classify samples among
+all seen classes $\mcC^{1:t}$, that could have been learned from any of the seen steps. The latter
+setting knows at test-time the step/task identifier $i$ of the samples. Thus, it only has to
+classify among the limited number of classes brought by a step ($\mcC^i$). Multi-Heads evaluation is
+closely related to multi-tasks learning. During this thesis, we focus on the Single-Head evaluation
+because it is more realistic as it is rarely possible to know from which step a sample comes
+from in a real-life setting. This setting is also more challenging because a unique classifier must
+discriminate among all tasks' classes instead of having a different classifier per task
+\citep{lesort2019regulshortcomings}.
+
 
 %\subsection{Metrics for Continual Learning}
 \label{sec:related_metrics}
 
-\paragraph{Metrics} Multiple metrics exist in Continual Learning: the most common are the \textbf{final accuracy} and
-\textbf{average incremental accuracy}. The former measures the performance of the model on all tasks
-at the last step, the latter measures the average of performance on all seen tasks after each new
-task learned \citep{rebuffi2017icarl}. Practically, given $A_{i,t}$ the accuracy of the $i^{th}$
-task after
-learning the $t^{th}$ task, the final accuracy is (assuming balanced tasks):
+\paragraph{Metrics} Multiple metrics exist in Continual Learning: the most common are the
+\textbf{final accuracy} and \textbf{average incremental accuracy}. The former measures the
+performance of the model on all tasks at the last step, the latter measures the average of
+performance on all seen tasks after each new task learned \citep{rebuffi2017icarl}. Practically,
+given $A_{i,t}$ the accuracy of the $i^{th}$ task after learning the $t^{th}$ task, the final
+accuracy is (assuming balanced tasks):
 %
 \begin{equation}
       \text{Acc}_F = \frac{1}{T} \sum_{i=1}^T A_{i,T}\,,
@@ -375,6 +377,17 @@ two major approaches to determine this amount: \cite{rebuffi2017icarl} propose t
 memory of size $\mcM$ among all $\mcC$, while \cite{hou2019ucir} instead kept fixed the number of
 samples stored per class to $\nicefrac{\mcM}{|\mcC^{1:T}|}$.
 
+\begin{figure}[tb]
+      \begin{center}
+            \includegraphics[width=1.0\linewidth]{images/related/rehearsal}
+      \end{center}
+      \caption{\textbf{Training with a rehearsal memory}. After each task a fraction of the
+            data is stored in a memory to be used in the next task. Rehearsal learning is the most
+            efficient method to reduce forgetting, but unfortunately the memory capacity is often
+            extremely limited.}
+      \label{fig:related_protocol_rehearsal}
+\end{figure}
+
 \paragraph{Herding} is the action of choosing which samples per class to store in the rehearsal
 memory. The most naive herding method is to randomly sample images. Despite its simplicity, it is
 quite competitive with more complex method \citep{castro2018end_to_end_inc_learn}, echoing similar
@@ -410,17 +423,6 @@ method halfway between rehearsal and pseudo-rehearsal: the authors sample random
 then during continual training, slightly modify them via bi-level optimization
 \citep{wang2018datasetdistillation} to minimize forgetting.
 
-
-\begin{figure}[tb]
-      \begin{center}
-            \includegraphics[width=1.0\linewidth]{images/related/rehearsal}
-      \end{center}
-      \caption{\textbf{Training with a rehearsal memory}. After each task a fraction of the
-            data is stored in a memory to be used in the next task. Rehearsal learning is the most
-            efficient method to reduce forgetting, but unfortunately the memory capacity is often
-            extremely limited.}
-      \label{fig:related_protocol_rehearsal}
-\end{figure}
 
 \subsection{Regularization-based Approaches}
 \label{sec:related_regul}
@@ -628,33 +630,37 @@ multiple types of continual drift using different approaches summarized below:
 \acf{CIL} scenarios with a prior drift where new classes are continually added. In this setting, our
 approach consists in rehearsal learning (\autoref{sec:related_rehearsal}) and output-based
 regularizations (\autoref{sec:related_regul_output}). Previous works reduced forgetting by
-constraining either the final probabilities of the classifier or the ultimate embedding of the
-feature extractor. In a first section (\autoref{sec:podnet}), we propose instead a regularization
-applied on several intermediary levels of the features extractor. Moreover, few considerations have
-been made on how the regularization loss makes the model more rigid, leading to less forgetting on old
-classes but also impacting negatively the learning of new classes. Instead, we carefully define a
-regularization loss, through pooling, balance effectively the performance of old and new classes.
-In a second section (\autoref{sec:ghost}), we consider if the forgetting could be avoided preemptively.
-\cite{aljundi2019selfless} consider allocating extra capacity implicitly in the learned feature space for
-future classes using an unsupervised sparsity loss. Differently, we choose to draw from weak metadata
-of the future classes to estimate their representation and thus explicitly allocate capacity,
-reducing forgetting before it even happens.
+constraining either the final probabilities of the classifier \citep{li2018lwf} or the ultimate
+embedding of the feature extractor \citep{hou2019ucir,dhar2019learning_without_memorizing_gradcam}.
+In a first section (\autoref{sec:podnet}), we propose instead a regularization applied on several
+intermediary levels of the features extractor. Moreover, few considerations have been made on how
+the regularization loss makes the model more rigid, leading to less forgetting on old classes but
+also impacting negatively the learning of new classes. Instead, we carefully define a regularization
+loss, through pooling, balance effectively the performance of old and new classes. In a second
+section (\autoref{sec:ghost}), we consider if the forgetting could be avoided preemptively.
+\cite{aljundi2019selfless} consider allocating extra capacity implicitly in the learned feature
+space for future classes using an unsupervised sparsity loss. Differently, we choose to draw from
+weak metadata of the future unseen classes \citep{hanrebuffi2020autodiscovering} to estimate their
+representation and thus explicitly allocate capacity, reducing forgetting before it even happens.
 
 \paragraph{Continual Semantic Segmentation} Second, in \autoref{chapter:segmentation}, we tackle
 \acf{CSS}. In this benchmark, defined recently by \cite{cermelli2020modelingthebackground}, images
 have a label per pixel, and only the current classes are labelized. Thus, both the prior and concept
 drifts happen where new classes are added but also the signification of a pixel can change through
-time. In this setting, all previous works only considered regularizations based on the final
-probabilities ((\autoref{sec:related_regul_output})). Instead, we expand from our previous chapter
-to consider the multi-scale intermediary features. Moreover, no work directly tackled the partial
-labelization of the images. We propose for this challenge an uncertainty-based pseudo-labeling, and
-a new rehearsal method (\autoref{sec:related_rehearsal}), optimized for segmentation.
+time. In this setting, all previous works only considered regularizations
+(\autoref{sec:related_regul_output}) based on the final probabilities
+\citep{michieli2019ilt,cermelli2020modelingthebackground}. Instead, we expand from our previous
+chapter to consider the multi-scale intermediary features. Moreover, no work directly tackled the
+partial labelization of the images \citep{cermelli2020modelingthebackground}. We propose for this
+challenge an uncertainty-based pseudo-labeling \citep{saporta2020esl}, and a new rehearsal method
+(\autoref{sec:related_rehearsal}), optimized for segmentation.
 
 \paragraph{Dynamic Transformers} In this third and last chapter (\autoref{chapter:dynamic}), we only
 aim to solve the prior drift but using a method radically different from previous chapters: dynamic
 networks (\autoref{sec:related_structural}). Previous dynamic networks usually expand their capacity
-by a large margin during the continual training to handle the growing amount of tasks to learn. To
-avoid a parameter count unbounded growth, the models are usually pruned aggressively. The main
-drawback of these methods is that the pruning can still result in models too large and often need
-careful finetuning of hyperparameters. We propose in this chapter, a dynamic expansion based on the
-transformer architecture with almost no memory overhead contrary to concurrent works.
+by a large margin during the continual training to handle the growing amount of tasks to learn
+\citep{yan2021der}. To avoid a parameter count unbounded growth, the models are usually pruned
+aggressively. The main drawback of these methods is that the pruning can still result in models too
+large and often need careful finetuning of hyperparameters. We propose in this chapter, a dynamic
+expansion based on the transformer architecture with almost no memory overhead contrary to
+concurrent works.

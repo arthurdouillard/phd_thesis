@@ -1,0 +1,15 @@
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{}l|c|cc}
+        \hline
+                          & 1 step                                          & \multicolumn{2}{c}{50 steps}                                                                             \\
+        \textbf{Training} & \textbf{Last} ($\uparrow$)                      & \textbf{Last} ($\uparrow$)                      & \textbf{Forgetting} ($\downarrow$)\Tstrut\Bstrut       \\
+        \hline
+        DyTox             & 76.12                                           & 52.34                                           & 33.15 \Tstrut                                          \\
+        DyTox+            & 77.51\scriptsize{\textcolor{OliveGreen}{+1.39}} & 57.09\scriptsize{\textcolor{OliveGreen}{+4.75}} & 31.50\scriptsize{\textcolor{OliveGreen}{-1.65}}\Bstrut \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{``Last'' accuracy and forgetting} \cite{chaudhry2018riemannien_walk} on
+        CIFAR100 for the joint (1 step, no continual) and 50 steps settings.\vspace{-1em}}
+    \label{tab:dytox_training_plus}
+\end{table}

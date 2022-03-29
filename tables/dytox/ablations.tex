@@ -1,0 +1,23 @@
+\begin{table}
+    \centering
+    \begin{tabular}{ll|ccccc|cc}
+         &                                                                                               & \rot{\footnotesize{Knowledge Distillation}} & \rot{\footnotesize{Finetuning}} & \rot{\footnotesize{Token Expansion}} & \rot{\footnotesize{Divergence Classifier}} & \rot{\footnotesize{Indendepent Classifiers}} & \textbf{Avg} & \textbf{Last} \\
+        \hline
+        \parbox[t]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{\textbf{DyTox}}}}
+         & \parbox[t]{3mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{\textbf{\scriptsize{Transformer}}}}}
+         &                                                                                               &                                             &                                 &                                      &                                            & 60.69                                        & 38.87\Tstrut                 \\
+         &                                                                                               & \cmark                                      &                                 &                                      &                                            &                                              & 61.62        & 39.35         \\
+         &                                                                                               & \cmark                                      & \cmark                          &                                      &                                            &                                              & 63.42        & 42.21         \\[3pt]
+        %\vspace{0.01cm}
+        \cline{2-9}
+         & \parbox[t]{3mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{\textbf{\scriptsize{Dynamic}}}}}
+         & \cmark                                                                                        & \cmark                                      & \cmark                          &                                      &                                            & 67.30                                        & 47.57\Tstrut                 \\
+         &                                                                                               & \cmark                                      & \cmark                          & \cmark                               & \cmark                                     &                                              & 68.28        & 49.45         \\
+         &                                                                                               & \cmark                                      & \cmark                          & \cmark                               & \cmark                                     & \cmark                                       & 70.20        & 52.34\Bstrut  \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{Ablations} of the different key components of our DyTox architecture. We report
+    the average accuracy and the last accuracy on CIFAR100 for the setting with 50
+    steps.\vspace{-1em}}
+    \label{tab:dytox_ablation}
+\end{table}

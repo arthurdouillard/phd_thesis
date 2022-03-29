@@ -43,6 +43,10 @@
 \newcommand{\review}[1]{\textcolor{RoyalBlue}{#1}}
 \newcommand{\startreview}{\color{RoyalBlue}}
 \newcommand{\stopreview}{\color{black}}
+\newcommand\Tstrut{\rule{0pt}{2.6ex}}         % = `top' strut
+\newcommand\Bstrut{\rule[-0.9ex]{0pt}{0pt}}   % = `bottom' stru
+\newcommand{\mypm}{\,$\pm$\,}
+\newcommand{\mysmpm}[1]{\scriptsize{\mypm#1}}
 \definecolor{yellowdark}{HTML}{BC8C00}
 \definecolor{bluedark}{HTML}{2F528F}
 \definecolor{greendark}{HTML}{507E32}
@@ -66,9 +70,9 @@
 % By setting this to true, you skip the compiling of some chapters
 \setboolean{skipIntro}{false}
 \setboolean{skipRelated}{false}
-\setboolean{skipRegul}{false}
-\setboolean{skipSegm}{false}
-\setboolean{skipDyna}{true}
+\setboolean{skipRegul}{true}
+\setboolean{skipSegm}{true}
+\setboolean{skipDyna}{false}
 \setboolean{skipConclusion}{true}
 \setboolean{skipAppendix}{false}
 

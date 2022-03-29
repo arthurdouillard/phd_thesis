@@ -1,0 +1,31 @@
+\begin{table*}[t]
+    \centering
+    \resizebox{1.0\textwidth}{!}{%
+        \begin{tabular}{@{}l|ccc|ccc|ccc}
+            \hline
+                                                                     & \multicolumn{3}{c}{10 steps} & \multicolumn{3}{c}{20 steps}                  & \multicolumn{3}{c}{50 steps}                                                                                                                                                                                                                   \\
+            \textbf{Methods}                                         & \textbf{\#P}                 & \textbf{Avg}                                  & \textbf{Last}                & \textbf{\#P}        & \textbf{Avg}                                  & \textbf{Last}                    & \textbf{\#P}        & \textbf{Avg}                                  & \textbf{Last}                    \\
+            \hline
+            ResNet18 Joint                                           & 11.22                        & -                                             & 80.41                        & 11.22               & -                                             & 81.49                            & 11.22               & -                                             & 81.74                            \\
+            Transf. Joint                                            & 10.72                        & -                                             & 76.12                        & 10.72               & -                                             & 76.12                            & 10.72               & -                                             & 76.12                            \\
+            \hline
+            iCaRL \cite{rebuffi2017icarl}                            & 11.22                        & 65.27\scriptsize{\mypm1.02}                   & 50.74                        & 11.22               & 61.20\scriptsize{\mypm0.83}                   & 43.75                            & 11.22               & 56.08\scriptsize{\mypm0.83}                   & 36.62                            \\
+            UCIR \cite{hou2019ucir}                                  & 11.22                        & 58.66\scriptsize{\mypm0.71}                   & 43.39                        & 11.22               & 58.17\scriptsize{\mypm0.30}                   & 40.63                            & 11.22               & 56.86\scriptsize{\mypm0.83}                   & 37.09                            \\
+            BiC \cite{wu2019bias_correction}                         & 11.22                        & 68.80\scriptsize{\mypm1.20}                   & 53.54                        & 11.22               & 66.48\scriptsize{\mypm0.32}                   & 47.02                            & 11.22               & 62.09\scriptsize{\mypm0.85}                   & 41.04                            \\
+            WA \cite{zhao2020weightalignement}                       & 11.22                        & 69.46\scriptsize{\mypm0.29}                   & 53.78                        & 11.22               & 67.33\scriptsize{\mypm0.15}                   & 47.31                            & 11.22               & 64.32\scriptsize{\mypm0.28}                   & 42.14                            \\
+            PODNet \cite{douillard2020podnet}                        & 11.22                        & 58.03\scriptsize{\mypm1.27}                   & 41.05                        & 11.22               & 53.97\scriptsize{\mypm0.85}                   & 35.02                            & 11.22               & 51.19\scriptsize{\mypm1.02}                   & 32.99                            \\
+            RPSNet \cite{rajasegaran2019rpsnet}                      & 56.5\,\,                     & 68.60                                         & 57.05                        & -                   & -                                             & -                                & -                   & -                                             & -                                \\
+            DER \small{w/o P} \cite{yan2021der}                      & 112.27                       & 75.36\scriptsize{\mypm0.36}                   & \textbf{65.22}               & 224.55              & 74.09\scriptsize{\mypm0.33}                   & 62.48                            & 561.39              & 72.41\scriptsize{\mypm0.36}                   & 59.08                            \\ % no pruning
+            \textcolor{gray}{$\text{DER}^\dagger$} \cite{yan2021der} & \textcolor{gray}{-}          & \textcolor{gray}{74.64\scriptsize{\mypm0.28}} & \textcolor{gray}{64.35}      & \textcolor{gray}{-} & \textcolor{gray}{73.98\scriptsize{\mypm0.36}} & \textcolor{gray}{\textbf{62.55}} & \textcolor{gray}{-} & \textcolor{gray}{72.05\scriptsize{\mypm0.55}} & \textcolor{gray}{\textbf{59.76}} \\
+            \hline
+            DyTox                                                    & 10.73                        & 73.66\mysmpm{0.02}                            & 60.67\mysmpm{0.34}           & 10.74               & 72.27\mysmpm{0.18}                            & 56.32\mysmpm{{0.61}}             & 10.77               & 70.20\mysmpm{0.16}                            & 52.34\mysmpm{0.26}               \\
+            DyTox+                                                   & 10.73                        & \textbf{75.54}\mysmpm{0.10}                   & 62.06\mysmpm{0.25}           & 10.74               & \textbf{75.04}\mysmpm{0.11}                   & 60.03\mysmpm{0.45}               & 10.77               & \textbf{74.35}\mysmpm{0.05}                   & 57.09\mysmpm{0.13}               \\
+            \hline
+        \end{tabular}
+    }
+    \caption{\textbf{Results on CIFAR100} averaged over three different class orders. Baselines
+        results are come from \cite{yan2021der}. The $\dagger$ symbol means that \cite{yan2021der}
+        needed setting-sensitive hyperparameters. Moreover, its reported parameters count was an average
+        over all steps: the final parameters count (necessarily higher) was not available.}
+    \label{tab:dytox_cifar100-b0}
+\end{table*}

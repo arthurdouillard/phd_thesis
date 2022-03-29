@@ -1,0 +1,23 @@
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{}c|ccc@{}}
+        \hline
+        \textbf{TAB parameter sharing?} & \textbf{\#P} & \textbf{Avg} & \textbf{Last}\Tstrut\Bstrut \\
+        \hline
+        %Param-free TAB & 10,11 & 67.61 & 49.16\\
+        %TAB noMLP & 10,25 & 68.50 & 50.29 \\
+        %Single TAB forward & 10.77 & 67.78 & 48.73 \\
+        %Only Query & 10.77 & 67.79 & 49.53\\
+        %TAB Batch Ensemble \cite{wen2020batchensemble} & 10,81 & 68.42 & 49.54 \\
+        \xmark                          & 97.59        & 72.20        & 56.00                       \\
+        %5 SABs + 2 TABs & 12.48 & 70.35 & 52.69\\
+        %4 SABs + 2 TAB & 10.77 & 70.29 & 52.37 \\
+
+        \cmark                          & 10.77        & 70.20        & 52.34                       \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{Investigation of the parameter sharing of TAB}. We report the ``Avg'' accuracy
+        and the ``Last'' accuracy for the 50 steps setting on CIFAR100. The second row corresponds to
+        DyTox.}
+    \label{tab:dytox_alternatives}
+\end{table}

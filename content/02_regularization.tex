@@ -15,16 +15,16 @@
     especially in challenging setting such as \ac{CIL} with single-head where task identity is not
     known at test-time. However, they often consider only constraining the final probability
     predictions of the network, weakly constraining the model's behavior and in turns falls short to
-    forgetting when faced to large amount of tasks.
-    \\
+    forgetting when faced to large amount of tasks. \\
     In this chapter, we propose two methods exploiting explicitly the intermediate features to
     reduce forgetting. The first approach, nicknamed PODNet, aims to constrain similar statistics to
     avoid a representation drift at all levels of the network. We show that it scales particularly
     well on extreme scenarios where classes are learned one by one for a long succession of
-    iterations. The second approach, named Ghost, pre-emptively reserves capacity for future ---yet
-    to be seen--- classes avoiding forgetting before it even happens. We pinpoint those classes
-    locations in the representation space by estimating their future positions by drawing
-    inspiration from the \ac{ZSL} literature.
+    iterations, due to its balancing of rigidity (not forgetting old classes) - plasticity (learning
+    new classes) tradeoff. The second approach, named Ghost, pre-emptively reserves capacity for
+    future ---yet to be seen--- classes avoiding forgetting before it even happens. We pinpoint
+    those classes locations in the representation space by estimating their future positions by
+    drawing inspiration from the \ac{ZSL} literature using their metadata.
 
     The work in this section has led to a publication to two papers:
 
@@ -369,11 +369,11 @@ i.e., the model trained for task $t$, is simply their addition $\mathcal{L}_{\{f
 \subsection{Experiment Results}
 \label{sec:podnet_exp}
 
-We compare our technique (\ac{PODNet}) with three state-of-the-art models. Those models are
+We compare our technique (PODNet) with three state-of-the-art models. Those models are
 particularly comparable to ours since they all employ a sample memory with a fixed capacity. Both
 iCaRL~\citep{rebuffi2017icarl} and UCIR~\citep{hou2019ucir} use the same inference method
 --\ac{NME}, although UCIR also proposes a second inference method based on the classifier
-probabilities (called here UCIR-CNN). We evaluate \ac{PODNet} with both inference methods for a
+probabilities (called here UCIR-CNN). We evaluate PODNet with both inference methods for a
 small scale dataset, and the latter for larger scale datasets. BiC~\citep{wu2019bias_correction},
 while not focused on representation learning, is specially designed to be effective on large scale
 datasets, and thus provided an interesting baseline.
@@ -407,7 +407,7 @@ $M_\textrm{per}$ to 20 images per old class. For results with different memory s
 \paragraph{Implementation details} For fair comparison, all compared models employ the same
 \ac{ConvNet} backbone: ResNet-32 for CIFAR100, and ResNet-18 for ImageNet. We remove the ReLU
 activation at the last block of each ResNet end-of-stage to provide a signed input to POD
-(\autoref{sec:podnet_pod}). We implemented our method (called here \ac{PODNet}) in
+(\autoref{sec:podnet_pod}). We implemented our method (called here PODNet) in
 PyTorch~\citep{paszke2017pytorch}.
 %
 We compare both ours and UCIR's implementation of iCaRL. Results of UCIR come from the
@@ -444,8 +444,8 @@ different kinds of inference: \ac{NME} and CNN. With both methods, our model sur
 State-of-the-Art models on all steps. Moreover, our model relative improvement grows as the number
 the steps increases, surpassing existing models by 0.82, 2.81, 5.14, and 12.1 percent points (\pp)
 for respectively 5, 10, 25, and 50 steps. Larger numbers of steps imply  stronger forgetting; those
-results confirm that \ac{PODNet} manages to reduce drastically the said forgetting. While
-\ac{PODNet} with \ac{NME} has the largest gain, \ac{PODNet} with CNN also outperforms the previous
+results confirm that PODNet manages to reduce drastically the said forgetting. While
+PODNet with \ac{NME} has the largest gain, PODNet with CNN also outperforms the previous
 State-of-the-Art by up to 8.68\pp. See \autoref{fig:podnet_plots} for a plot of the incremental
 accuracies on this dataset. In the extreme setting of 50 increments of 1 class
 (\autoref{fig:podnet_cifar_inc1}), our model showcases large differences, with slow degradation
@@ -454,18 +454,17 @@ throughout the run, while the other models show a quick performance collapse (``
     forgetting}'') at the start of the run.
 
 \paragraph{ImageNet100} We run our comparisons on 5, 10, 25, and 50 steps with respectively 10, 5,
-2, and 1 classes per step. For both ImageNet100, and ImageNet1000 we report only \ac{PODNet} with
+2, and 1 classes per step. For both ImageNet100, and ImageNet1000 we report only PODNet with
 CNN, as the kNN-based \ac{NME} classifier did not generalize as well to larger-scale datasets. With
 the more complex images of ImageNet100, our model also outperforms the State-of-the-Art on all
 tested runs, by up to 6.51\pp.
 
 \paragraph{ImageNet1000} This dataset is the most challenging, with much greater image complexity
 than CIFAR100, and ten times the number of classes as ImageNet100. We evaluate the models in 5 and
-10 steps, and results confirm the consistent improvement of \ac{PODNet} against existing arts by up
+10 steps, and results confirm the consistent improvement of PODNet against existing arts by up
 to 2.85\pp.
 
 \input{tables/podnet/ablations.tex}
-\input{tables/podnet/ablation_pod_wflat.tex}
 
 \subsubsection{Further analysis \& ablation studies}
 \label{sec:podnet_ablation}
@@ -487,6 +486,9 @@ of few-shot learning. The latter only considers the closest mode of each class i
 assignment, while \ac{LSC} considers all modes of a class, thus, taking into account the intra-class
 variance. That allows \ac{LSC} to decrease class similarity when intra-class variance is high (which
 could signal a lack of confidence in the class).
+
+\input{tables/podnet/ablation_pod_wflat.tex}
+
 
 \label{sec:podnet_ablation_pooling}
 \paragraph{Spatial-based distillation} We apply our distillation loss \ac{POD} differently for the
@@ -515,10 +517,10 @@ classes (+5\pp). Furthermore, our experiments confirmed that \ac{LSC} reduced th
 model to distribution shift, as the performance it brings was localized on the old classes.
 
 \label{sec:podnet_robustness}
-\paragraph{Robustness of our model} While previous results showed that \ac{PODNet} improved
+\paragraph{Robustness of our model} While previous results showed that PODNet improved
 significantly over the state-of-the-arts, we wish here to demonstrate here the robustness of our
-model to various factors. In \autoref{tab:podnet_ablation_memorysize}, we compared how \ac{PODNet}
-behaves against the baseline when the memory size per class $M_{\text{per}}$ changes: \ac{PODNet}
+model to various factors. In \autoref{tab:podnet_ablation_memorysize}, we compared how PODNet
+behaves against the baseline when the memory size per class $M_{\text{per}}$ changes: PODNet
 improvements increase as the memory size decrease, up to a gain of 26.20\pp\ with \ac{NME} (resp.
 13.42\pp\ for CNN) with $M_{\text{per}} = 5$. Notice in our main experiments
 (\autoref{sec:podnet_quantitative_results}), only 20 images per class are kept in the memory. More
@@ -817,7 +819,7 @@ The 2D feature space allows us to directly visualize the evolution of the featur
 progress, without the need for dimensionality reduction techniques that complicate the analysis
 (\eg t-SNE \citep{maaten2008tsne}). \autoref{fig:ghost_toy_weights_3steps} may be interpreted
 upfront: as the three tasks progress left-to-right, we see the evolution of the feature space on the
-base model (\ac{PODNet}, on the top branch) and on the proposed model with ghost features (bottom
+base model (PODNet, on the top branch) and on the proposed model with ghost features (bottom
 branch). The base model presents a strong overlap between the initial classes, and the latter added  8
 ({\color{orange}orange}) and 9 ({\color{violet}dark purple}). That comes partially from shape
 similarities (‘8’ is similar to ‘0’ and ‘5’), partially from continual learning, and results in
@@ -864,8 +866,8 @@ data are limited by rehearsal memory.
 \paragraph{Base Models} We evaluate our contributions on top of two different representation-based
 models, both based on ResNet18 \citep{he2016resnet} feature extractor backbones (with feature vector
 size of 512) and cosine classifiers. They differ on the distillation loss $\mcL_\text{distil}$
-employed, the first model (PODNet) using Douillard et al.'s distillation \cite{douillard2020podnet}
-constraining the statistics of the intermediate features after each residual block, and the second
+employed, the first model (PODNet)
+constraining the statistics of the intermediate features after each residual block (\autoref{sec:podnet}), and the second
 (UCIR) using Hou et al.'s distillation \citep{hou2019ucir} enforcing a cosine constraint on the
 final flat latent space. The former performs better than the latter, but both are improved by the
 innovations proposed in this work. The cosine classifier has a single proxy/representative per class
@@ -1012,10 +1014,10 @@ features. In this context, we tackle catastrophic forgetting via two approaches.
 are orthogonal and can be combined.
 
 The first approach, PODNet, reduces the drift between the old and new models by constraining
-statistics of the intermediate features. We show that a naive constraint balance poorly the
+statistics of the intermediate features. We show that a naive constraint balances poorly the
 plasticity-rigidity trade-off. Thus, we propose carefully designed pooling to directly exploit the
 spatial nature of the images. By constraining long-range statistics of the horizontal and vertical
-axes, we reduce drastically forgetting, especially in challenging settings with a large quantity of
+axes, we reduce drastically forgetting, especially in challenging settings with a large number of
 tasks with few classes per task. Furthermore, we design a robust metric-based classifier that
 exploits the multi-modality of the classes.
 

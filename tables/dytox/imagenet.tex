@@ -1,0 +1,37 @@
+\begin{table*}[t]
+    \centering
+    %	\hspace{mm}
+    \begin{tabular}{l|ccccc|ccccc}
+        \toprule[0.3mm]
+                                                                 & \multicolumn{5}{c|}{ImageNet100 10 steps} & \multicolumn{5}{c}{ImageNet1000 10 steps}                                                                                                                                                                                                                                                           \\
+        \cmidrule{2-11}
+                                                                 & \multirow{2}{*}{\textbf{$\#$P}}           & \multicolumn{2}{c}{\textbf{top-1}}        & \multicolumn{2}{c|}{\textbf{top-5}} & \multirow{2}{*}{\textbf{$\#$P}} & \multicolumn{2}{c}{\textbf{top-1}} & \multicolumn{2}{c}{\textbf{top-5}}                                                                                                         \\
+        \cmidrule{3-6}
+        \cmidrule{8-11}
+        \textbf{Methods}                                         &                                           & \textbf{Avg}                              & \textbf{Last}                       & \textbf{Avg}                    & \textbf{Last}                      &                                    & \textbf{Avg}            & \textbf{Last}           & \textbf{Avg}            & \textbf{Last}           \\
+        \hline
+        ResNet18 joint                                           & $11.22$                                   & -                                         & -                                   & -                               & $95.10$                            & $11.68$                            & -                       & -                       & -                       & $89.27$                 \\
+        Transf. joint                                            & 11.00                                     & -                                         & 79.12                               & -                               & 93.48                              & 11.35                              & -                       & 73.58                   & -                       & 90.60                   \\
+        \midrule
+        LwF-MC \cite{li2018lwf,rebuffi2017icarl}                 & 11.2                                      & -                                         & -                                   & 80.79                           & 66.43                              & 11.2                               & -                       & -                       & 48.45                   & 25.06                   \\
+        \textit{E2E} \cite{castro2018end_to_end_inc_learn}       & 11.22                                     & -                                         & -                                   & 89.92                           & 80.29                              & 11.68                              & -                       & -                       & 72.09                   & 52.29                   \\
+        \textit{Simple-DER} \cite{li2021preserve}                & -                                         & -                                         & -                                   & -                               & -                                  & 28.00                              & 66.63                   & 59.24                   & 85.62                   & 80.76                   \\
+        iCaRL \cite{rebuffi2017icarl}                            & $11.22$                                   & -                                         & -                                   & $83.60$                         & $63.80$                            & $11.68$                            & $38.40$                 & $22.70$                 & $63.70$                 & $44.00$                 \\
+        BiC \cite{hou2019ucir}                                   & $11.22$                                   & -                                         & -                                   & $90.60$                         & $84.40$                            & $11.68$                            & -                       & -                       & $84.00$                 & $73.20$                 \\
+        WA \cite{zhao2020weightalignement}                       & $11.22$                                   & -                                         & -                                   & $91.00$                         & $84.10$                            & $11.68$                            & $65.67$                 & $55.60$                 & $86.60$                 & $81.10$                 \\
+        RPSNet \cite{rajasegaran2019rpsnet}                      &                                           & -                                         & -                                   & $87.90$                         & $74.00$                            & -                                  & -                       & -                       & -                       & -                       \\
+        DER w/o P \cite{yan2021der}                              & 112.27                                    & \textbf{77.18}                            & 66.70                               & \textbf{93.23}                  & 87.52                              & 116.89                             & 68.84                   & 60.16                   & 88.17                   & 82.86                   \\ % no pruning
+        \textcolor{gray}{$\text{DER}^\dagger$} \cite{yan2021der} & \textcolor{gray}{-}                       & \textcolor{gray}{76.12}                   & \textcolor{gray}{66.06}             & \textcolor{gray}{92.79}         & \textcolor{gray}{88.38}            & \textcolor{gray}{-}                & \textcolor{gray}{66.73} & \textcolor{gray}{58.62} & \textcolor{gray}{87.08} & \textcolor{gray}{81.89} \\
+        \hline
+        DyTox                                                    & 11.01                                     & \textbf{77.15}                            & \textbf{69.10}                      & 92.04                           & \textbf{87.98}                     & 11.36                              & \textbf{71.29}          & \textbf{63.34}          & \textbf{88.59}          & \textbf{84.49}          \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{Results on ImageNet-100  and ImageNet-1000 datasets}, learned with 10 steps of
+        respectively 10 and 100 new classes. E2E \cite{castro2018end_to_end_inc_learn} and Simple-DER
+        \cite{li2021preserve} results come from their respective papers, and used a different class
+        ordering. Other results come from \cite{yan2021der}. The $\dagger$ symbol means that
+        \cite{yan2021der} needed setting-sensitive hyperparameters. Moreover, its reported parameters
+        count was an average over all steps (\cite{yan2021der} reported 14.52M on ImageNet1000): the
+        final parameters count (necessarily higher) was not available.}
+    \label{tab:dytox_imagenet}
+\end{table*}

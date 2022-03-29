@@ -1,0 +1,18 @@
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{}l|cc@{}}
+        \hline
+        Hyperparameter      & CIFAR                   & ImageNet \Tstrut\Bstrut \\
+        \hline
+        \# SAB              & \multicolumn{2}{c}{5}                             \\
+        \# CAB              & \multicolumn{2}{c}{1}                             \\
+        \# Attentions Heads & \multicolumn{2}{c}{12}                            \\
+        Embed Dim           & \multicolumn{2}{c}{384}                           \\
+        Input Size          & 32                      & 224                     \\
+        Patch Size          & 4                       & 16                      \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{DyTox's architectures} for CIFAR and ImageNet. The only difference between the
+        two architectures is the patch size, as the image sizes vary between datasets.}
+    \label{tab:dytox_archi}
+\end{table}
