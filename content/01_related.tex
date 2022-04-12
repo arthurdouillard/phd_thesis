@@ -1,4 +1,4 @@
-\chapter{Related Works}
+\chapter{Related Work}
 \label{chapter:related}
 
 %\begin{chapabstract}
@@ -19,11 +19,11 @@
 
 
 In this chapter, we detail the related work needed to read this thesis. We first briefly
-explain the learning procedure in \acf{DL} and how the data are structured. Then, we describe how
+explain the learning procedure in \acf{DL} and how the data are structured. Then, we describe the main
 \ac{DL} applications and architectures in \acf{CV}. Finally, we introduce the main topic of this thesis
 ---Continual Learning--- and showcase the challenges, benchmarks, and methods of this domain. The
-notations introduced in this chapter and thorough the thesis are listed in the
-\hyperref[chap:notations]{Notations}.
+notations introduced in this chapter and through the thesis are listed in the
+\hyperref[chap:notations]{Notations} section.
 
 \section{Neural Network Learning}
 
@@ -37,17 +37,17 @@ pixels, $y$ is the \textit{class} label of the object present in the image, and 
 vector of probabilities, with one probability per class the model has to predict. The highest class
 with the highest predicted probability/confidence is chosen as the prediction.
 Given a \textit{training dataset} $\mathbb{D} = \{(\vx_1, y_1), ..., (\vx_N, y_N)\}$, training a neural network
-consists in finding the set of parameters $\theta^*$ which minimizes the loss function:
+consists in finding the set of parameters $\theta_*$ which minimizes the loss function:
 %
 \begin{equation}
-      \theta^* = \operatorname{argmin}_{\theta} \left \{ \mathbb{E}_{(\vx,y) \sim \mathbb{D}} \mcL(f_\theta(\vx, y))\right \}\,.
+      \theta_* = \operatorname{argmin}_{\theta} \left \{ \mathbb{E}_{(\vx,y)\in \mathbb{D}} \mcL(f_\theta(\vx), y)\right \}\,,
       \label{eq:intro_optim}
 \end{equation}
 %
-However, the optimal set of parameters $\theta^*$ minimizing the loss on the training set, can fail
-to predict the correct label on the testing set. Therefore, to avoid this \textit{overfitting} phenomenon,
-regularization functions that limit the parameters space are used as additional constraints in addition
-to the classification loss $\mcL$.
+However, the optimal set of parameters $\theta_*$ minimizing the loss on the training set, can fail
+to predict the correct label on the testing set. Therefore, to avoid this \textit{overfitting}
+phenomenon, regularization functions that limit the parameters space are used as additional
+constraints in addition to the classification loss $\mcL$.
 
 In practice, the function $f_\theta$ learned by a neural network is composed of a succession of linear
 transformations and non-linear \textit{activation} functions. For example, a simple neural network,
@@ -61,13 +61,13 @@ called \ac{MLP}, could be defined as:
 \noindent with $\vW_h \in \mathbb{R}^{H \times D}$, $\vb_h \in \mathbb{R}^{H}$, $\vW_o \in
       \mathbb{R}^{C \times H}$, $\vb_o \in \mathbb{R}^{C}$ being the parameters $\theta$ of the
 network. $\sigma$ is a hidden non-linear activation, often a \ac{ReLU}
-($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\operatorname{softmax}(\tilde{\vy}) =
+($\operatorname{ReLU(x)} = \text{max}(0, x)$), and $\hat{y} = \operatorname{softmax}(\tilde{\vy}) =
       \nicefrac{e^{\tilde{\vy}}}{\sum_{i} e^{\tilde{\vy}_i}}$ is the final non-linear activation.
 
 Likewise, in practice for image classification, the loss is often the categorical cross-entropy:
 %
 \begin{equation}
-      \mcL(\hat{\vy}, \vy) = -\sum_i y_i \log \hat{y}_i\,,
+      \mcL(\hat{\vy}, \vy) = -\sum_c y_c \log \hat{y}_c\,,
       \label{eq:intro_ce}
 \end{equation}
 %
@@ -76,14 +76,14 @@ network (such as \autoref{eq:intro_optim}), we often use the mini-batch \ac{SGD}
 
 \begin{algorithm}
       \begin{algorithmic}[1]
-            \Statex \textbf{input:} a dataset $\mathbb{D}$ with pairs of $(\vx, \vy)$
+            \Statex \textbf{input:} a dataset $\mathbb{D}$ with pairs of $(\vx_i, \vy_i)$
             \Statex \textbf{input:} a loss function $\mcL$
             \Statex \textbf{input:} a model function $f_\theta$ with $\theta$ the learned parameters
             \Statex \textbf{input:} a learning rate $\eta$ and a batch size $b$
             \Statex
 
             \While{stopping criterion not satisfied}
-            \State $\vx$, $\vy$ $\gets$ sample mini-batch of size $b$ from $\mathbb{D}$
+            \State $(\vx, \vy)$ $\gets$ sample mini-batch of size $b$ from $\mathbb{D}$
             \State Forward pass: $\hat{\vy}$ $\gets$ $f_\theta(\vx)$
             \State Compute loss: $\mcL$ $\gets$ $\mcL(\hat{\vy}, \vy)$
             \State Compute the gradients: $\delta$ $\gets$ $\nabla_\theta \mcL$
@@ -111,16 +111,17 @@ based on the same structure (linear transformations and non-linear activations) 
 a form of gradient descent.
 
 \section{Deep Architectures for Computer Vision}
+\label{sec:related_cv}
 
 A common type of architectures for computer vision is the \acf{ConvNet}. First defined by
-\cite{fukushima1980neocognitron} and then trained with backpropagation by \cite{lecun1999lenet}, it
+\citet{fukushima1980neocognitron} and then trained with backpropagation by \citet{lecun1999lenet}, it
 is a neural network architecture whose linear operators are \textit{convolutions}. While
 handcrafted convolutions \citep{lowe1999sift} rely on well-defined features, a \ac{ConvNet} learns
 the convolution kernels to detect more complex patterns in order to minimize the classification
 loss. In 2012, thanks to a large dataset and more efficient code working on \acp{GPU} allowing
-training larger networks, \cite{krizhevsky2012alexnet} won the ILSVC competition
+training larger networks, \citet{krizhevsky2012alexnet} won the ILSVC competition
 \citep{russakovsky2015imagenet_ilsvrc} where they had to classify a large dataset ---ImageNet---
-made of 1M2 training images and 1000 classes. From that point forward, multiple improvements were
+made of 1M28 training images and 1000 classes. From that point forward, multiple improvements were
 made to \acp{ConvNet} \citep{ioffe2015batchnorm,he2016resnet} and these methods have been applied not
 only to classification but also object detection \citep{ren20fasterrcnn}, semantic segmentation
 \citep{chen2018deeplab}, visual question answering \citep{antol2015vqa}, \etc.
@@ -138,14 +139,14 @@ predicting the classes probabilities. \autoref{fig:related_cnn} illustrates this
             convolutions, \textcolor{BurntOrange}{\textbf{orange}} blocks are poolings, and the
             unique \textcolor{ForestGreen}{\textbf{green}} block is the classifier. Given an image,
             the \ac{ConvNet} can assign to each possible class a probability, all summing to 1. The
-            complexity of the detected patterns grow with the depth of the network. Detected
-            patterns taken from \cite{olah2017feature}.}
+            detected shapes grow in complexity with the depth of the network, from crude edges and
+            textures, to objects. Detected patterns taken from \citet{olah2017feature}.}
       \label{fig:related_cnn}
 \end{figure}
 
 \paragraph{Architectures:}The 2010's decade saw major improvements to \acp{ConvNet}, both in their
-architecture structure and in their training procedure. \cite{srivastava2015highwaynet} and
-\cite{he2016resnet} propose residual connections between blocks likewise: $\vy = \vx +
+architecture and in their training procedure. \citet{srivastava2015highwaynet} and
+\citet{he2016resnet} propose residual connections between blocks likewise: $\vy = \vx +
       \sigma(\operatorname{Conv}(\vx))$. By reducing the \textit{vanishing gradient} problem
 \citep{hochreiter2001vanishinggrad}, it allows training deeper networks without accuracy
 degradation. This type of connection is now quasi-ubiquitous in all \ac{DL} based architectures.
@@ -181,7 +182,7 @@ structure and a \textit{self-attention} block between the words embeddings of a 
 embedded into a high-dimensional vector named a ``\textit{token}''. The self-attention operation of a
 transformer has a quadratic complexity \wrt the number of tokens: in \ac{NLP}, it is manageable
 given a small sentence. However, when applying a transformer on images and considering each pixel
-as a token, the complexity is too important. \cite{dosovitskiy2020vit}, based on the encoder
+as a token, the complexity is too important. \citet{dosovitskiy2020vit}, based on the encoder
 structure of BERT \citep{devlin2018bert}, propose instead to consider a patch of pixels as a token,
 reducing significantly the number of tokens.
 
@@ -190,16 +191,18 @@ reducing significantly the number of tokens.
             \includegraphics[width=\linewidth]{images/related/vit.png}
       \end{center}
       \caption{\textbf{The Vision Transformer (ViT):} the image is cropped without overlap and
-            projected using a convolution whose stride equals the kernel size. The encoder is made
-            of multiple transformer blocks. Finally, only the special learned token ``class token''
-            is used at the end, and fed to a classifier (here denoted as the ``MLP Head''). Image
-            from \cite{dosovitskiy2020vit}.}
+            projected using a convolution whose stride equals the kernel size. A learned ``class
+            token`` is concatenated to the resulting patches, which are then summed with a position
+            embedding. The encoder is made of multiple transformer blocks. Each block is made of two
+            (Layer) Norm layers, a MLP with a single hidden layer, and the Multi-Head Attention
+            block. Finally, only the special ``class token'' is used at the end, and fed to a
+            classifier (here denoted as the ``MLP Head''). Image from \citet{dosovitskiy2020vit}.}
       \label{fig:related_vit}
 \end{figure}
 
 This architecture is illustrated in \autoref{fig:related_vit}: we concatenate a special learned
 token, called ``\textit{class token}'', to the patch tokens. Moreover, we also sum these tokens with
-a learned position embedding to facilitate learning tokens position. Then, successive
+a position embedding to facilitate learning tokens position. Then, successive
 transformer blocks process all the tokens. Each block is made of LayerNorms \citep{ba2016layernorm},
 a self-attention block, a \ac{MLP}, and residual connections. Thus, the self-attention block is:
 %
@@ -216,12 +219,12 @@ a self-attention block, a \ac{MLP}, and residual connections. Thus, the self-att
 %
 \noindent $\vx$ are the $N$ patch tokens and the class token, of shape $(N, D)$, $D$ being the
 embedding dimension. The patch tokens are linearly transformed three times in parallel into a
-\textbf{Q}uery, \textbf{K}ey, and \textbf{V}alue. An attention matrix of shape $(N, N)$ is computed
-from the query and the key. Its $i^{\text{th}}$ row contains the similarity between the
-$i^{\text{th}}$ with all other tokens. Finally, the multiplication between the attention matrix and
-the value matrix averages all tokens according to their similarities. To extend the self-attention
-to its multi-heads variation (\ac{MHSA}), we use several Query/Key/Value transformations, each
-used in a self-attention on a fraction of the embedding dimension.
+\textbf{Q}uery, \textbf{K}ey, and \textbf{V}alue. An attention matrix $A$ of shape $(N, N)$ is
+computed from the query $Q$ and the key $K$. Its $i^{\text{th}}$ row contains the similarity between
+the $i^{\text{th}}$ token with all other tokens. Finally, the multiplication between the attention
+matrix and the value matrix $V$ averages all tokens according to their similarities. To extend the
+self-attention to its multi-heads variation (\ac{MHSA}), we use several Query/Key/Value
+transformations, each used in a self-attention on a fraction of the embedding dimension.
 
 ViT \citep{dosovitskiy2020vit} is the seminal paper on vision transformer. However, its training was
 difficult and needed a large --- and private --- dataset called JFT300M. Later works, including DeiT
@@ -258,16 +261,30 @@ image classification, or a segmentation map in semantic segmentation), the major
 \end{itemize}
 
 Learning an ever-growing dataset is possible by training from scratch a new model on the union of
-past and new data. However, for multiple reasons like privacy concerns or limited storage capacity
-(embedded device) \citep{vasquez2017incrementalneuralforest}, there is a restriction on the amount
-of previous data that can be kept. In the extreme case, where a model only has access to new data
-but not old data, a model trained from scratch cannot predict previous iterations' distribution.
-Worse, even if the old model is kept and finetuned on the new data, it will suffer from a
-significant drop of the performance on old data that we call \textbf{Catastrophic Forgetting}
-\citep{robins1995catastrophicforgetting}. In image classification, we define $A_{i,j}$, the accuracy
-on the $i^{th}$ task after learning the $t^{th}$ task. The catastrophic forgetting,
-more often than not, results in the accuracy on previous tasks being lower than at the time of their
-training: $A_{i,t} < A_{i,i}$ with $t > i$.
+past and new data. However, for multiple reasons like privacy concerns, limited time, or small
+storage capacity \citep{vasquez2017incrementalneuralforest}, there is a restriction on the amount of
+previous data that can be kept. In the extreme case, a model only has access to new data but not old
+data. Evidently, if the initialization of the parameters is random, the model cannot predict
+the past data distribution. However, the new model parameters can be initialized using the
+previous parameters ($\theta^{t} := \theta_*^{t-1}$). Remark, from \autoref{eq:intro_optim}, that
+the optimization procedure of the old ($t-1$) and new ($t$) model is different:
+%
+\begin{equation}
+      \begin{aligned}
+            \theta_*^{t-1} & = \operatorname{argmin}_{\theta} \left \{ \mathbb{E}_{(\vx,y)\in \mathbb{D}^{t-1}} \mcL(f_\theta(\vx), y)\right \}\,, \\
+            \theta_*^{t}   & = \operatorname{argmin}_{\theta} \left \{ \mathbb{E}_{(\vx,y)\in \mathbb{D}^{t}} \mcL(f_\theta(\vx), y)\right \}\,,
+      \end{aligned}
+      \label{eq:intro_forgetting_weights}
+\end{equation}
+%
+where the loss is minimized respectively with respect to the old ($\mathbb{D}^{t-1}$) and new
+dataset ($\mathbb{D}^{t}$). Evidently, the optimal parameters $\theta_*$ are different for the task
+$t$ and $t-1$. This difference results in what we call a \textit{forgetting}: $\theta_*^t$ is
+optimal for the new task $t$ but is suboptimal for the task $t-1$, therefore performance on the
+previous task is degraded. This performance drop is actually so important that the literature names
+it a \textbf{Catastrophic Forgetting} \citep{robins1995catastrophicforgetting}. It is particularly
+critical in the context of image classification where each new task brings new classes to be
+classified as described below.
 
 \begin{figure}[tb]
       \begin{center}
@@ -287,24 +304,24 @@ multiple steps, each made of several new classes. During the first step $t=1$, t
 next 10 classes $\mcC^{t=2}$., and so on, until all 100 classes are learned at the last step $t=T$.
 After each step, we evaluate the model on the testing data of all seen classes $\mcC^{1:t}$. The
 \autoref{fig:related_protocol} illustrates such continual protocol, and
-\autoref{fig:related_forgetting} depicts the performance of continual models in this situation: the
-\textcolor{orange}{orange} line displays the accuracy of a model which is re-trained from scratch at
-each step on all previous training data $\mcC^{1:t}$. This model, usually called Joint, is
-considered as a reasonable upper bound. On the other hand, the \textcolor{blue}{blue} line is a
-model finetuned solely on new classes $\mcC^{t}$ without access to previous classes $\mcC^{1:t-1}$.
-The model's accuracy is considerably lower than its Joint counterpart, because it forgets old
-classes by over-predicting new classes \citep{davidson2020masteryincremental}. While in this thesis
-we mainly tackle \acf{CIL} benchmarks, we describe other continual benchmarks in detail in the
-appendix (\autoref{sec:related_variation}).
+\autoref{fig:related_forgetting} depicts the continual performance of a both trained from scratch on
+all data for each task and a continual model finetuned only on new data. The continual model
+over-predicts new classes \citep{davidson2020masteryincremental} and has a low overall accuracy due
+to a forgetting of old classes. This clearly illustrates how important is the catastrophic
+forgetting. While in this thesis we mainly tackle \acf{CIL} benchmarks, we describe other continual
+benchmarks in detail in the appendix (\autoref{sec:related_variation}).
 
 \begin{figure}[tb]
       \begin{center}
-            \includegraphics[width=0.8\linewidth]{images/related/catastrophic_forgetting.pdf}
+            \includegraphics[width=0.8\linewidth]{images/related/catastrophic_forgetting.png}
       \end{center}
-      \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
-            new set of classes, and the model must retain knowledge about \textit{all} classes
-            despite having no more access to old classes. Here, the model learns 10 new classes with
-            each new task.}
+      \caption{\textbf{Illustration of the forgetting in Class-Incremental Learning}.
+            \textcolor{orange}{orange} line displays the accuracy of a model which is re-trained from
+            scratch at each step on all previous training data $\mcC^{1:t}$. This model, usually called
+            Joint, is considered as a reasonable upper bound. On the other hand, the
+            \textcolor{blue}{blue} line is a model finetuned solely on new classes $\mcC^{t}$ without
+            access to previous classes $\mcC^{1:t-1}$. The gap between both models illustrates the
+            catastrophic forgetting.}
       \label{fig:related_forgetting}
 \end{figure}
 
@@ -353,7 +370,7 @@ the absolute performance of the model used.
 
 Finally, metrics such as \textbf{speed} (\ie the number of images processed per second) or used
 \textbf{capacity} (\ie number of learned parameters) are important:
-\cite{ramasesh2022scalecontinual} recently showed that the larger a model was the lower was the
+\citet{ramasesh2022scalecontinual} recently showed that the larger a model was the lower was the
 forgetting.
 
 \section{Methods to reduce forgetting}
@@ -373,8 +390,8 @@ rehearsal learning happens in Continual Learning. During the first step, a model
 available samples. Then, it stores a limited amount of those in a \textit{memory}. During the second
 step, the model has access to new samples but also all samples stored in the memory. In
 Class-Incremental, an equal amount of samples per class is stored in memory. There are
-two major approaches to determine this amount: \cite{rebuffi2017icarl} propose to fully use a
-memory of size $\mcM$ among all $\mcC$, while \cite{hou2019ucir} instead kept fixed the number of
+two major approaches to determine this amount: \citet{rebuffi2017icarl} propose to fully use a
+memory of size $\mcM$ among all $\mcC$, while \citet{hou2019ucir} instead kept fixed the number of
 samples stored per class to $\nicefrac{\mcM}{|\mcC^{1:T}|}$.
 
 \begin{figure}[tb]
@@ -397,19 +414,19 @@ incremental barycenter \citep{rebuffi2017icarl}.
 
 \paragraph{Sampling} is an important but yet fewly investigated topic in Continual Learning. Most
 models mix all memory samples with new samples without any under- or over-sampling.
-\cite{castro2018end_to_end_inc_learn} propose to finetune for a few epochs, after training on a new
-step, on a balanced set of old and new classes samples. \cite{chaudhry2019tinyepisodicmemories}
+\citet{castro2018end_to_end_inc_learn} propose to finetune for a few epochs, after training on a new
+step, on a balanced set of old and new classes samples. \citet{chaudhry2019tinyepisodicmemories}
 oversample tiny memory with as low as one sample per class, and show, in the context of Online
 Learning where models learn in only one epoch, that continual models still do not overfit. In the
-same context, \cite{aljundi2019maximallyinterfered} propose to over-sample the memory examples with
+same context, \citet{aljundi2019maximallyinterfered} propose to over-sample the memory examples with
 the highest losses. In an imbalanced situation for Continual Learning, over- and under-sampling can be
 applied depending on the number of samples per class \citep{kim2020imbalancedcontinual}.
 
 \paragraph{Efficient Storing} is important for rehearsal learning: a bigger rehearsal memory leads
 invariably to less forgetting \citep{hou2019ucir}. Thus, multiple works consider how to store more
-rehearsal samples given the same memory size: \cite{hayes2020remind} compress intermediate features
+rehearsal samples given the same memory size: \citet{hayes2020remind} compress intermediate features
 of memory samples with a lossless compression algorithm.
-\cite{iscen2020incrementalfeatureadaptation} also store features but modify them through the
+\citet{iscen2020incrementalfeatureadaptation} also store features but modify them through the
 training to handle the inherent internal covariate drift.
 
 \paragraph{Pseudo-rehearsal} does not need to store samples but instead generates pseudo-samples for
@@ -418,7 +435,7 @@ intermediate features \citep{kemker2018fearnet,ayub2021eec} or use \ac{GAN}
 \citep{shin2017deep_generative_replay}. Unfortunately, those methods have several drawbacks: they
 struggle to scale to large images, the generator size may be superior to a classic rehearsal memory
 size which would defeat the goal of using less storage, and finally, the generator may itself suffer
-from catastrophic forgetting \citep{zhai2019lifelonggan}. \cite{liu2020mnemonics} propose instead a
+from catastrophic forgetting \citep{zhai2019lifelonggan}. \citet{liu2020mnemonics} propose instead a
 method halfway between rehearsal and pseudo-rehearsal: the authors sample randomly real images, and
 then during continual training, slightly modify them via bi-level optimization
 \citep{wang2018datasetdistillation} to minimize forgetting.
@@ -461,8 +478,8 @@ and $\theta_i^{t-1}$ respectively the $i^\text{th}$ neuron of the current and pr
 $\Omega_i^{t-1}$ a neuron-wise importance factor. The intuition is that important neuron for the
 previous task $t-1$ should not change, while the others can be adapted to fit the new task $t$.
 
-\cite{kirkpatrick2017ewc}, followed by \cite{zenke2017synaptic_intelligence} and
-\cite{chaudhry2018riemannien_walk} propose to use the diagonal Fisher information matrix as
+\citet{kirkpatrick2017ewc}, followed by \citet{zenke2017synaptic_intelligence} and
+\citet{chaudhry2018riemannien_walk} propose to use the diagonal Fisher information matrix as
 importance factors. The motivation behind was that the posterior $p(\theta^{t-1} | \mcD^{t-1})$ must
 contain the information about which parameters are important to the previous dataset $\mcD^{t-1}$.
 This posterior can be approximated by a Gaussian distribution whose diagonal precision is given by
@@ -470,12 +487,12 @@ diagonal Fisher information matrix. A higher value means a more important neuron
 task, and thus the constraint should be increased proportionally. Thus, a lower value, for a less
 important neuron, means that it can change drastically, which would facilitate learning new data.
 This strikes a balance between rigidity (not changing and thus not forgetting), and plasticity
-(changing, and thus learning new concepts). Note that \cite{aljundi2018MemoryAwareSynapses} instead
+(changing, and thus learning new concepts). Note that \citet{aljundi2018MemoryAwareSynapses} instead
 use the sensitivity of the model when small perturbations are added to the neurons to measure their
 importance.
 
 However, it is worth remarking that weight-based constraints are usually limited to the multi-heads
-setting where a task identifier is available at test time. \cite{lesort2019regulshortcomings} show
+setting where a task identifier is available at test time. \citet{lesort2019regulshortcomings} show
 that in the single-head setting, they struggle to reduce forgetting and are significantly
 outperformed by the simple (but somewhat memory costly) rehearsal learning.
 
@@ -493,7 +510,7 @@ outperformed by the simple (but somewhat memory costly) rehearsal learning.
       \label{fig:related_gem}
 \end{figure}
 
-\cite{lopezpaz2017gem} propose the GEM model that combines a constraint on the gradients and
+\citet{lopezpaz2017gem} propose the GEM model that combines a constraint on the gradients and
 rehearsal learning. The algorithm requires that the loss on a given stored sample must not increase
 despite the model learning new classes. The authors, given a locality assumption, rewrite this
 formulation as enforcing that the gradient of a new sample ($g$) to be in the same \textit{direction} as
@@ -507,15 +524,15 @@ the gradient of a stored old sample ($g_i$):
 projected to the closest in L2 norm gradient that satisfies the angle constraint by minimizing a
 quadratic program. The constraint is illustrated in \autoref{fig:related_gem}. The drawback of this
 method is the computational cost that can grow prohibitively when the memory is too large.
-\cite{chaudhry2019AGEM} propose Averaged-GEM to speed up GEM: the authors do not constraint the
+\citet{chaudhry2019AGEM} propose Averaged-GEM to speed up GEM: the authors do not constraint the
 gradient of individual memory samples but only the average of all memory samples.
-\cite{aljundi2019gradientselection} also improved GEM's speed by selecting only a subset of the
+\citet{aljundi2019gradientselection} also improved GEM's speed by selecting only a subset of the
 memory samples that maximize the feasible region.
 
-Differently, but still constraining the gradients: \cite{farajtabar2020ogd}'s OGD forces the gradients of
+Differently, but still constraining the gradients: \citet{farajtabar2020ogd}'s OGD forces the gradients of
 task $t$ to be orthogonal to gradients of task $t-1$. They use the Gram-Schmidt procedure to
 orthogonalize the new gradients, allowing updates for the new task that minimally interfere with the
-performance of old tasks. \cite{saha2021gpm}'s GPM does likewise but uses instead a k-rank
+performance of old tasks. \citet{saha2021gpm}'s GPM does likewise but uses instead a k-rank
 approximation of the SVD of the representation matrix.
 
 
@@ -537,7 +554,7 @@ minimizing the \ac{KL} between the probabilities of the old and new models:
 where $\tilde{y}^{t-1} = g^{t-1} (f^{t-1}(\vx))$ and $\tilde{y}^{t} = = g^{t} (f^{t}(\vx))$ are respectively the logits of the old and new model,
 and $\tau$ a \textit{temperature} to soften the probabilities in order to give more importance to
 the model confidence in other classes than the top one. These probabilities, nicknamed \textit{dark
-      knowledge} by \cite{hinton2015knowledge_distillation}, contain additional information about the
+      knowledge} by \citet{hinton2015knowledge_distillation}, contain additional information about the
 model which are useful to distil. Note that in the context of Class-Incremental, the new model
 predicts more classes than the old model, therefore, the \ac{KL} is only applied on the logits
 common to both the old and the new models. The \ac{KD} is sometimes also defined as the binary
@@ -546,9 +563,9 @@ cross-entropy between the sigmoid-activated logits.
 Constraining the probabilities is now so ubiquitous that most models include it in their base
 losses. On the other hand, a few models considered constraining intermediate outputs. MK2D
 \citep{peng2019m2kd} uses the \ac{KD} from both the final classifier and an auxiliary classifier
-similarly to the Inception network \citep{szegedy2015inception}. \cite{hou2019ucir} maximize the
+similarly to the Inception network \citep{szegedy2015inception}. \citet{hou2019ucir} maximize the
 cosine similarity between the embeddings produced by the \ac{GAP}.
-\cite{dhar2019learning_without_memorizing_gradcam} minimizes the L1 distance between the attention
+\citet{dhar2019learning_without_memorizing_gradcam} minimizes the L1 distance between the attention
 maps produced by GradCam \citep{selvaraju2017gradcam}.
 
 \subsection{Structural Strategies}
@@ -578,14 +595,14 @@ subnetworks made of a fraction of the neurons and connections of a larger networ
 excellent performance. Several Continual Learning models exploit that property by using a
 subnetwork per task. Those subnetworks can be uncovered via genetic algorithms
 \citep{fernando2017path_net}, via induced L1 sparsity \citep{golkar2019neural_pruning}, or even
-learned masked \cite{serra2018hat,hung2019cpg}. Usually, these methods require a task identifier at
+learned masked \citet{serra2018hat,hung2019cpg}. Usually, these methods require a task identifier at
 test-time in order to select the right subnetwork (see \textit{multi-heads} in
-\autoref{sec:related_continual}). Later, \cite{wortsman2020supermasks} propose to infer the task
+\autoref{sec:related_continual}). Later, \citet{wortsman2020supermasks} propose to infer the task
 identifier by selecting the subnetwork with the lowest entropy. This subnetwork-based approach is
 illustrated in \autoref{fig:related_subnetwork}.
 
 \paragraph{Expandable Networks} A neural network can also be expanded through its continual
-training to accommodate the growing amount of tasks to solve. First, \cite{rusu2016progressive}
+training to accommodate the growing amount of tasks to solve. First, \citet{rusu2016progressive}
 propose to have one network per task, where the $i^{\text{th}}$ network would depend both on the
 input and all previous networks' intermediate features. Unfortunately, memory consumption is
 quickly prohibitive with many tasks. Following works propose to only add blocks of parameters,
@@ -595,17 +612,17 @@ and only when deemed necessary
 
 \paragraph{Task Conditioning} Rather than adding many new parameters, it is also possible to only
 add a few parameters that will adapt the existing network behavior for a task.
-\cite{rebuffi2017visualadapters} propose to add a different residual per task: given a task
+\citet{rebuffi2017visualadapters} propose to add a different residual per task: given a task
 identifier, the associated residual is used, and the features are modulated to best fit the given
-task. Instead of adapting the features, \cite{wen2020batchensemble} and \cite{sun2019metatransfer}
+task. Instead of adapting the features, \citet{wen2020batchensemble} and \citet{sun2019metatransfer}
 propose to share most of the weights across tasks, but have task-specific weights that directly
 modify the shared weights.
 
 \paragraph{Mixture-of-Experts} Mixture of experts \citep{masoudnia2014mixture} have also been
-proposed, where multiple experts combine their decision. \cite{aljundi2017experts} learn a gating
-system to use the right task-specific expert. \cite{collier2020routingnetwork} stress the importance
+proposed, where multiple experts combine their decision. \citet{aljundi2017experts} learn a gating
+system to use the right task-specific expert. \citet{collier2020routingnetwork} stress the importance
 on sharing experts when tasks are similar.
-%\cite{yan2021der} and \cite{li2021preserve} proposed
+%\citet{yan2021der} and \citet{li2021preserve} proposed
 %to have a \ac{ConvNet} per task and to concatenate their output embeddings to be fed to a single
 %classifier. To avoid parameters explosion, they aggressively prune each \ac{ConvNet}.
 
@@ -613,18 +630,20 @@ on sharing experts when tasks are similar.
 classifier. Previously described rehearsal and regularization methods try to reduce it in both
 places. On the other hand, multiple works focus solely on the classifier. They remark that in
 \acf{CIL}, the classifier is miscalibrated \citep{guo2017miscalibration} where the model
-over-predicts new classes to the detriment of old classes. \cite{belouadah2019il2m} compensate the
+over-predicts new classes to the detriment of old classes. \citet{belouadah2019il2m} compensate the
 bias towards new classes by rectifying predictions of past classes using their recorded accuracies
-and confidences. \cite{wu2019bias_correction} learn a linear model on validation data to recalibrate
-the logits of the new classes. \cite{zhao2020weightalignement} normalizes the norm of the classifier
+and confidences. \citet{wu2019bias_correction} learn a linear model on validation data to recalibrate
+the logits of the new classes. \citet{zhao2020weightalignement} normalizes the norm of the classifier
 weights associated with new classes so that their average norm becomes the same as that for old
-classes. \cite{hou2019ucir}, aims for a similar result by replacing the dot product in the
+classes. \citet{hou2019ucir}, aims for a similar result by replacing the dot product in the
 classifier with the cosine similarity, resulting in unit norm classifier weights.
 
 \section{Positioning}
 
 Continual Learning encompasses very different benchmarks and methods. In this Ph.D thesis, we tackle
-multiple types of continual drift using different approaches summarized below:
+multiple types of continual drift using different approaches. All the proposed strategies consider
+the intermediary features of a neural network to reduce catastrophic forgetting. We summarize
+below the three main chapters:
 
 \paragraph{Feature-based Regularizations} First in \autoref{chapter:regularization}, we consider
 \acf{CIL} scenarios with a prior drift where new classes are continually added. In this setting, our
@@ -638,13 +657,13 @@ the regularization loss makes the model more rigid, leading to less forgetting o
 also impacting negatively the learning of new classes. Instead, we carefully define a regularization
 loss, through pooling, balance effectively the performance of old and new classes. In a second
 section (\autoref{sec:ghost}), we consider if the forgetting could be avoided preemptively.
-\cite{aljundi2019selfless} consider allocating extra capacity implicitly in the learned feature
+\citet{aljundi2019selfless} consider allocating extra capacity implicitly in the learned feature
 space for future classes using an unsupervised sparsity loss. Differently, we choose to draw from
 weak metadata of the future unseen classes \citep{hanrebuffi2020autodiscovering} to estimate their
 representation and thus explicitly allocate capacity, reducing forgetting before it even happens.
 
 \paragraph{Continual Semantic Segmentation} Second, in \autoref{chapter:segmentation}, we tackle
-\acf{CSS}. In this benchmark, defined recently by \cite{cermelli2020modelingthebackground}, images
+\acf{CSS}. In this benchmark, defined recently by \citet{cermelli2020modelingthebackground}, images
 have a label per pixel, and only the current classes are labelized. Thus, both the prior and concept
 drifts happen where new classes are added but also the signification of a pixel can change through
 time. In this setting, all previous works only considered regularizations
@@ -663,4 +682,4 @@ by a large margin during the continual training to handle the growing amount of 
 aggressively. The main drawback of these methods is that the pruning can still result in models too
 large and often need careful finetuning of hyperparameters. We propose in this chapter, a dynamic
 expansion based on the transformer architecture with almost no memory overhead contrary to
-concurrent works.
+concurrent works, that condition \citep{perez2018film} the intermediary features.

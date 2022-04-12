@@ -1,6 +1,45 @@
 \begin{table*}[t]
     \centering
     %	\hspace{mm}
+    \begin{adjustbox}{max width=\textwidth}
+        \begin{tabular}{l|ccccc}
+            \toprule[0.3mm]
+                                                                      & \multicolumn{5}{c}{ImageNet1000 10 steps}                                                                                                                               \\
+            %\cmidrule{2-11}
+                                                                      & \multirow{2}{*}{\textbf{$\#$P}}           & \multicolumn{2}{c}{\textbf{top-1}} & \multicolumn{2}{c}{\textbf{top-5}}                                                     \\
+            \cmidrule{3-6}
+            \textbf{Methods}                                          &                                           & \textbf{Avg}                       & \textbf{Last}                      & \textbf{Avg}            & \textbf{Last}           \\
+            \hline
+            ResNet18 joint                                            & $11.68$                                   & -                                  & -                                  & -                       & $89.27$                 \\
+            Transf. joint                                             & 11.35                                     & -                                  & 73.58                              & -                       & 90.60                   \\
+            \midrule
+            LwF-MC \citep{rebuffi2017icarl}                           & 11.68                                     & -                                  & -                                  & 48.45                   & 25.06                   \\
+            \textit{E2E} \citep{castro2018end_to_end_inc_learn}       & 11.68                                     & -                                  & -                                  & 72.09                   & 52.29                   \\
+            \textit{Simple-DER} \citep{li2021preserve}                & 28.00                                     & 66.63                              & 59.24                              & 85.62                   & 80.76                   \\
+            iCaRL \citep{rebuffi2017icarl}                            & $11.68$                                   & $38.40$                            & $22.70$                            & $63.70$                 & $44.00$                 \\
+            BiC \citep{hou2019ucir}                                   & $11.68$                                   & -                                  & -                                  & $84.00$                 & $73.20$                 \\
+            WA \citep{zhao2020weightalignement}                       & $11.68$                                   & $65.67$                            & $55.60$                            & $86.60$                 & $81.10$                 \\
+            DER w/o P \citep{yan2021der}                              & 116.89                                    & 68.84                              & 60.16                              & 88.17                   & 82.86                   \\ % no pruning
+            \textcolor{gray}{$\text{DER}^\dagger$} \citep{yan2021der} & \textcolor{gray}{-}                       & \textcolor{gray}{66.73}            & \textcolor{gray}{58.62}            & \textcolor{gray}{87.08} & \textcolor{gray}{81.89} \\
+            \hline
+            DyTox                                                     & 11.36                                     & \textbf{71.29}                     & \textbf{63.34}                     & \textbf{88.59}          & \textbf{84.49}          \\
+            \hline
+        \end{tabular}
+    \end{adjustbox}
+    \caption{\textbf{Results on the ImageNet-1000 dataset}, learned with 10 steps of
+        respectively 10 and 100 new classes. E2E and Simple-DER
+        results come from their respective papers, and used a different class
+        ordering. Other results come from \citet{yan2021der}. The $\dagger$ symbol means that
+        \citet{yan2021der} needed setting-sensitive hyperparameters. Moreover, its reported parameters
+        count was an average over all steps (\citet{yan2021der} reported 14.52M on ImageNet1000): the
+        final parameters count (necessarily higher) was not available.}
+    \label{tab:dytox_imagenet}
+\end{table*}
+
+\begin{comment}
+\begin{table*}[t]
+    \centering
+    %	\hspace{mm}
     \begin{tabular}{l|ccccc|ccccc}
         \toprule[0.3mm]
                                                                  & \multicolumn{5}{c|}{ImageNet100 10 steps} & \multicolumn{5}{c}{ImageNet1000 10 steps}                                                                                                                                                                                                                                                           \\
@@ -35,3 +74,4 @@
         final parameters count (necessarily higher) was not available.}
     \label{tab:dytox_imagenet}
 \end{table*}
+\end{comment}

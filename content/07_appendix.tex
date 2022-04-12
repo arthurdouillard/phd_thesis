@@ -34,29 +34,30 @@ considered as background. It's a case of concept shift, where the conditional di
 
 In Continual Learning, a model learns for multiple epochs for each task. On the other hand, in
 Online Learning, also called Stream Learning, there are no notions of tasks nor epochs: a model must
-learn on a stream of samples incoming one by one, and which cannot be replayed by epochs \citep{aljundi2019notaskboundaries}. The
-methods to reduce forgetting described in \autoref{sec:related_methods} can still be applied in
-Online Learning. Modified versions of rehearsal learning, often inspired by reservoir sampling \cite{knuth97tacpvol2}, are
-often used \cite{hayes2019exstream,aljundi2019taskfree}.
+learn on a stream of samples incoming one by one, and which cannot be replayed by epochs
+\citep{aljundi2019notaskboundaries}. The methods to reduce forgetting described in
+\autoref{sec:related_methods} can still be applied in Online Learning. Modified versions of
+rehearsal learning, often inspired by reservoir sampling \citet{knuth97tacpvol2}, are often used
+\citet{hayes2019exstream,aljundi2019taskfree}.
 
 \begin{figure}[tb]
       \begin{center}
             \includegraphics[width=0.6\linewidth]{images/related/loss_drift.png}
       \end{center}
       \caption{\textbf{Task-free detection of drift in the input distribution} by recording the
-            plateau in the loss followed by a peak. y-axis is the loss value, and x-axis the update steps.
-            Image from \cite{aljundi2019taskfree}.}
+            plateau in the loss followed by a peak. y-axis is the loss value, and x-axis the update
+            steps. Image from \citet{aljundi2019taskfree}.}
       \label{fig:related_lossdrift}
 \end{figure}
 
 Multiple regularization methods (\autoref{sec:related_regul}) needs to do some computation between
 tasks. For example, weight-based regularization (\autoref{sec:related_regul_weight}) must compute
-the task-specific importance weights. Because in Online Learning, there are no clear task separation,
-a heuristic must determine when doing this computation. \cite{aljundi2019taskfree}, working a stream
-of images from soap operas, proposed to analyze the loss surface to find drift in the distribution:
-at some point the model is experienced enough, and the loss starts to plateau. When a drift happens,
-the loss will usually peak. This is a sign of task-free drift of the distribution as
-illustrated in \autoref{fig:related_lossdrift}.
+the task-specific importance weights. Because in Online Learning, there are no clear task
+separation, a heuristic must determine when doing this computation. \citet{aljundi2019taskfree},
+working a stream of images from soap operas, proposed to analyze the loss surface to find drift in
+the distribution: at some point the model is experienced enough, and the loss starts to plateau.
+When a drift happens, the loss will usually peak. This is a sign of task-free drift of the
+distribution as illustrated in \autoref{fig:related_lossdrift}.
 
 \subsection{Continual-Meta Learning}
 \label{sec:related_meta}
@@ -82,10 +83,10 @@ were never seen before. To do so, models usually exploit an external knowledge s
 embedding \citep{mikolov2013word2vec} trained on Wikipedia or an attribute matrix. Several works
 have proposed to unify both Continual Learning and \ac{ZSL} where the future classes that haven't
 been seen yet must be classified
-\cite{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}. Rather than simply using
-\ac{ZSL} as end to itself, we proposed, in \citep{douillard2020ghost}, to exploit its properties to
-directly avoid forgetting. This is elaborated further in \autoref{chapter:regularization}
-(\autoref{sec:ghost}).
+\citet{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}. Rather than simply
+using \ac{ZSL} as end to itself, we proposed, in \citep{douillard2020ghost}, to exploit its
+properties to directly avoid forgetting. This is elaborated further in
+\autoref{chapter:regularization} (\autoref{sec:ghost}).
 
 \subsection{Natural Language Processing}
 \label{sec:related_nlp}
@@ -94,7 +95,7 @@ directly avoid forgetting. This is elaborated further in \autoref{chapter:regula
 Continual Learning can be applied to all modalities. After \acf{CV}, the most common one is
 \ac{NLP}. \ac{NLP} saw its "\textit{ImageNet moment}" with the advent of Transformers
 \citep{vaswani2017transformer}, and more recently with multi-tasks learning \citep{raffel2019t5}.
-Continual \ac{NLP} \cite{biesialska2020continualnlp} aims naturally to learn multiple tasks, but in
+Continual \ac{NLP} \citet{biesialska2020continualnlp} aims naturally to learn multiple tasks, but in
 a consecutive fashion with no --or few-- replay of the old tasks data. Applications can be similar
 to \ac{CV} with addition of new classes \citep{masson2019episodiclifelongnlp} or new domains (\eg
 medical corpus, fiction, tweets, etc.) \citep{gerald2021continualri}.
@@ -103,11 +104,11 @@ medical corpus, fiction, tweets, etc.) \citep{gerald2021continualri}.
 \label{sec:related_rl}
 
 
-\ac{RL} \citep{sutton1998rl} more often than not needs support from Continual
-Learning \citep{khetarpal2020continualrl}: for example as an agent evolves in an environment, it
-usually needs rehearsal learning (also known as episodic memory) \citep{mnih2013atarirl}. Overall,
-the methods originally developped for \ac{CV} (\autoref{sec:related_methods}) were then applied to
-both \ac{NLP} and \ac{RL}.
+\ac{RL} \citep{sutton1998rl} more often than not needs support from Continual Learning
+\citep{khetarpal2020continualrl}: for example as an agent evolves in an environment, it usually
+needs rehearsal learning (also known as episodic memory) \citep{mnih2013atarirl}. Overall, the
+methods originally developped for \ac{CV} (\autoref{sec:related_methods}) were then applied to both
+\ac{NLP} and \ac{RL}.
 
 
 \section{Details on PODNet}
@@ -137,9 +138,9 @@ batch size of 128, and cosine annealing scheduling.
 The weight decay is $5\cdot 10^{-4}$ for CIFAR100, and $1\cdot 10^{-4}$ for ImageNet100 and
 ImageNet1000. For CIFAR100 we set model hyperparameters $\lambda_c = 3$ and $\lambda_f=1$, while for
 ImageNet100 and 1000 we set $\lambda_c = 8$ and $\lambda_f =10$. Our model uses POD-spatial and
-POD-flat except when explicitly stated otherwise. Following Hou et al.~\cite{hou2019ucir}, we
-multiply both losses by the adaptive scaling factor: $\lambda=\sqrt{\nicefrac{N}{T}}$ with $N$ being
-the number of seen classes and $T$ the number of classes in the current task.
+POD-flat except when explicitly stated otherwise. Following \citet{hou2019ucir}, we multiply both
+losses by the adaptive scaling factor: $\lambda=\sqrt{\nicefrac{N}{T}}$ with $N$ being the number of
+seen classes and $T$ the number of classes in the current task.
 
 For POD-spatial, before sum-pooling we take the features to the power of 2 element-wise. The vector
 resulting from the pooling is then L2 normalized.
@@ -158,10 +159,10 @@ improved 1.51 p.p. on acc.
 \subsection{Reproducibility}
 
 \paragraph{Code Dependencies} The Python version is  3.7.6. We used the PyTorch
-\cite{paszke2017pytorch} (version 1.2.0) deep learning framework and the libraries Torchvision
-(version 0.4.0), NumPy \cite{oliphant2006numpy} (version 1.17.2), Pillow (version 6.2.1), and
-Matplotlib \cite{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Initial
-experiments were done with the data loaders library Continuum \cite{douillardlesort2020continuum}.
+\citep{paszke2017pytorch} (version 1.2.0) deep learning framework and the libraries Torchvision
+(version 0.4.0), NumPy \citep{oliphant2006numpy} (version 1.17.2), Pillow (version 6.2.1), and
+Matplotlib \citep{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Initial
+experiments were done with the data loaders library Continuum \citep{douillardlesort2020continuum}.
 PODNet's full code is released at:\\
 \href{https://github.com/arthurdouillard/incremental\_learning.pytorch}{\texttt{github.com/arthurdouillard/incremental\_learning.pytorch}}.
 \\We provide all configuration files necessary to reproduce results, including seeds and class
@@ -171,8 +172,8 @@ ordering.
 datasets considered for PODNet: CIFAR100, ImageNet100, and ImageNet1000.
 
 {\begin{description} \setlength{\parskip}{0pt}
-      \item[CIFAR100] contains 32$\times$32-pixel images in 100 classes, with 50k images for training
-            and 10k for testing.
+      \item[CIFAR100] contains 32$\times$32-pixel images in 100 classes, with 50k images for
+            training and 10k for testing.
       \item[ImageNet100] contains 224$\times$224-pixel images in 100 classes, with $\sim$128k images
             for training and $\sim$5k for testing.
       \item[ImageNet1000] contains 224$\times$224-pixel images in 1000 classes, with $\sim$1.28m
@@ -211,15 +212,15 @@ $\delta=0.6$, and the SVM latent-space regularization additional margin $\tau=1$
 feature-extractor-and-classifier pipeline for 90 epochs with an SGD optimizer, learning rate of 0.1,
 cosine scheduling, and weight decay of $10^{-4}$. We train the generator for 1200 epochs, with an
 Adam optimizer and a learning rate of $10^{-5}$. Finally, following
-\cite{hou2019ucir,douillard2020podnet}, we fine-tune the classifier for 60 epochs (with the feature
+\citet{hou2019ucir,douillard2020podnet}, we fine-tune the classifier for 60 epochs (with the feature
 extractor frozen and a small learning rate of $10^-4$) at the end of every task (except the last
 one). We found useful to balance the bias towards the seen classes against the unseen classes. With
-the POD distillation \cite{douillard2020podnet}, we set $\lambda_1=3$  for AwA2, and $\lambda_1=15$
-for aP\&Y; with the Less-Forget distillation \cite{hou2019ucir}, we set $\lambda_1=4$ for both
+the POD distillation \citet{douillard2020podnet}, we set $\lambda_1=3$  for AwA2, and $\lambda_1=15$
+for aP\&Y; with the Less-Forget distillation \citet{hou2019ucir}, we set $\lambda_1=4$ for both
 datasets. We always set $\lambda_2=10^{-3}$, moreover we apply it on L2-normalized features.
 Finally, we do not reinitialize the models between tasks: $f^t$ results from training $f^{t-1}$ on
 task $t$, etc. On the rehearsal memory limitation, we follow the strict setting of Hou et
-al.~\cite{hou2019ucir}, keeping only $s=20$ training images per past class.
+al.~\citet{hou2019ucir}, keeping only $s=20$ training images per past class.
 
 \subsection{Datasets details}
 
@@ -249,10 +250,10 @@ $256\times256$ and then center cropped to $224\times224$.
 \subsection{Reproducibility}
 
 \paragraph{Code Dependencies} The Python version is  3.7.6. We used the PyTorch
-\cite{paszke2017pytorch} (version 1.2.0) deep learning framework and the libraries Torchvision
-(version 0.4.0), NumPy \cite{oliphant2006numpy} (version 1.17.2), Pillow (version 6.2.1), and
-Matplotlib \cite{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Experiments on
-MNIST were done with the data loaders library Continuum \cite{douillardlesort2021continuum}.
+\citet{paszke2017pytorch} (version 1.2.0) deep learning framework and the libraries Torchvision
+(version 0.4.0), NumPy \citet{oliphant2006numpy} (version 1.17.2), Pillow (version 6.2.1), and
+Matplotlib \citet{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Experiments on
+MNIST were done with the data loaders library Continuum \citet{douillardlesort2021continuum}.
 
 The code is released at
 \href{https://github.com/arthurdouillard/incremental_learning.pytorch}{github.com/arthurdouillard/incremental\_learning.pytorch}.
@@ -261,6 +262,199 @@ The code is released at
 VRAM each. Each experiment had access to 10 CPU cores of 3.90 GHz each, and used at most 3 Go of RAM
 and 8 Go of VRAM. A single experiment run on AwA2 took on average 5 hours and, on aP\&Y, 3 hours. We
 ran each experiment thrice with different random seeds (1, 2, and 3).
+
+
+\section{Details on DyTox}
+\label{sec:appendix_dytox}
+
+
+\noindent\autoref{tab:dytox_notation} summarizes the notations used along this paper.
+
+\input{tables/dytox/notation}
+
+
+\subsection{Experimental details}
+
+\paragraph{Datasets} We use three datasets: CIFAR100 \cite{krizhevskycifar100}, ImageNet100, and
+ImageNet1000 \cite{deng2009imagenet}. CIFAR100 is made of 50,000 train RGB images and 10,000 test
+RGB images of size $32\times32$ for 100 classes. ImageNet1000 contains 1.2 million RGB train images
+and 50,000 validation RGB images of size $224\times224$ for 1000 classes. ImageNet100 is a subset of
+100 classes from ImageNet1000. We follow PODNet \cite{douillard2020podnet} and DER \cite{yan2021der}
+and use the same 100 classes they've used. Fine details about the datasets, like the class orders,
+can be found in the provided code in the options files (see readme).
+
+\paragraph{Implementation} For all datasets, we train the model for 500 epochs per task with Adam
+\cite{kingma2014adam} with a learning rate of $5e^{-4}$, including 5 epochs of warmup.
+Following UCIR \cite{hou2019ucir}, PODNet \cite{douillard2020podnet}, and DER \cite{yan2021der}, at
+the end of each task (except the first) we finetuned our model for 20 epochs with a learning rate of
+$5e^{-5}$ on a balanced dataset. In DyTox, we applied the standard data augmentation of DeiT
+\cite{touvron2021deit} but we removed the pixel erasing \cite{zhong2017erasing}, MixUp
+\cite{hingyi2018mixup}, and CutMix \cite{yun2019cutmix} augmentations for fair comparison. In
+contrast, in DyTox+ we used a MixUp \cite{hingyi2018mixup} with beta distribution $\beta(0.8, 0.8)$.
+During all incremental tasks ($t>1$), the old classifiers $\operatorname{Clf}_i,\, i < t$ and the
+old task tokens $\theta_i,\, i < t$ parameters are frozen. During the finetuning phase where classes
+are rebalanced \cite{castro2018end_to_end_inc_learn,hou2019ucir,douillard2020podnet,yan2021der},
+these parameters are optimized, but the SABs are frozen.
+
+\paragraph{Hyperparameter tuning} In contrast with previous works
+\cite{douillard2020podnet,yan2021der}, we wanted stable hyperparameters, tuned for a single setting
+and then applied on all experiments. This avoids optimizing for the number of tasks, which defeats
+the purpose of continual learning \cite{farquhar2018robustcontinual}. We tuned hyperparameters for
+DyTox using a validation subset made of 10\% of the training dataset, and this only on the CIFAR100
+experiment with 10 steps. We provide in \autoref{tab:dytox_tuning} the chosen hyperparameters. Results in
+the main paper shows that those hyperparameters reach state-of-the-art on all other settings and
+notably on ImageNet.
+
+\input{tables/dytox/tuning}
+
+\paragraph{Baselines} E2E \cite{castro2018end_to_end_inc_learn} and Simple-DER \cite{li2021preserve}
+results come from their respective papers. All other baseline results are taken from the DER paper
+\cite{yan2021der}. We now further describe their contributions. iCaRL \cite{rebuffi2017icarl} uses a
+knowledge distillation loss \cite{hinton2015knowledge_distillation} and at test-time predicts using
+a k-NN from its features space. E2E \cite{castro2018end_to_end_inc_learn} learns a model with
+knowledge distillation and applies a finetuning after each step. UCIR \cite{hou2019ucir} uses cosine
+classifier and euclidean distance between the final flattened features as a distillation loss. BiC
+\cite{wu2019bias_correction} uses a knowledge distillation loss and also re-calibrates
+\cite{guo2017miscalibration} the logits of the new classes using a simple linear model trained on
+validation data. WA \cite{zhao2020weightalignement} uses a knowledge distillation loss and
+re-weights at each epoch the classifier weights associated to new classes so that they have the same
+average norm as the classifier weights of the old classes. PODNet \cite{douillard2020podnet} uses a
+cosine classifier and a specific distillation loss (POD) applied at multiple intermediary features
+of the ResNet backbone. RPSNet \cite{rajasegaran2019rpsnet} uses knowledge distillation and
+manipulates subnetworks in its architecture, following the lottery ticket hypothesis
+\cite{frankle2019lottery_ticket}. DER \cite{yan2021der} creates a new ResNet per task. All ResNets'
+embeddings are concatenated and fed to a unique classifier. ResNets are pruned using HAT
+\cite{serra2018hat} masking procedure. Note that DER pruning has multiple hyperparameters that are
+set differently according to the settings. Furthermore, the reported parameters count, after
+pruning, in \cite{yan2021der} is an average of the count over all steps: the final parameters count
+(necessarily higher) wasn't available. Finally, Simple-DER \cite{li2021preserve} is similar to DER,
+with a simpler pruning method which doesn't require any hyperparameter tuning.
+
+\input{tables/dytox/alternatives}
+
+
+\input{tables/dytox/cifar_plusplus}
+\input{tables/dytox/imagenet100_plusplus}
+
+\subsection{Parameter sharing of the TAB}
+
+Previous dynamic methods as DER \cite{yan2021der} and Simple-DER \cite{li2021preserve} shared no
+parameters between tasks until the final classifier. We proposed instead with DyTox to share the
+encoder (SABs) and the decoder (TAB) parameters across tasks, leading to a minimal memory overhead
+while also sharing common information between tasks. In \autoref{tab:dytox_alternatives}, we compare the
+impact of sharing the TAB per task --- and only maintain different tokens per task. In the first
+row, a different TAB is created per task, while in the second row the same TAB is used --- which is
+the DyTox strategy. A different TAB per task leads to better results (56\% \textit{v.s.} 52\% in
+``Last'' accuracy) because the network can be more diverse with each TAB specialized to its
+associated task. This increased diversity has a drawback: the memory overhead is too important (97M
+\textit{v.s.} 10M parameters). We find in practice that DyTox strikes a good balance between memory
+overhead and continual performance.
+
+
+
+\subsection{Novel continual training procedure}
+\label{sec:plusplus}
+
+%\arxiv
+
+\paragraph{DyTox++} We nicknamed DyTox+ our model when combined with a novel continual procedure
+based on MixUp \cite{hingyi2018mixup}. We now refine DyTox+ into DyTox++ by adding a new component
+during the training: the Sharpness-Aware Minimizer (SAM) \cite{kwon2021asam}. Indeed, \textbf{aiming
+      for wider minima} is particularly important in continual learning
+\cite{kirkpatrick2017ewc,verwimp2021rehearsalrevealed}. This is because sharp task-specific minima
+lead to over-specialization to a particular task and consequently to a forgetting of all other
+tasks. Weights constraints as EWC \cite{kirkpatrick2017ewc} or second-order optimization
+\cite{lee2020kroneckercontinual} have similar motivations. SAM estimates the worst closest
+parameters during a first forward/backward pass, and then optimizes the loss w.r.t. to them during a
+second forward/pass. In consequence, DyTox++ optimizes the loss not w.r.t. the current parameters
+but w.r.t. a region of possible parameters leading to wide local minima that span across multiple
+tasks. In practice, we used the Adaptive SAM (ASAM) \cite{kwon2021asam}, an extension of SAM that is
+more robust to hyperparameters.
+
+\paragraph{DyTox+ and DyTox++ experiments} The computational overhead of ASAM is lower than more
+complex second-order methods, but it still doubles the number of forward and backward passes. For
+this reason, we didn't include it in our main experiment but propose in \autoref{tab:dytox_cifar100-b0_pp}
+and \autoref{tab:dytox_imagenet_pp} experiments on CIFAR100 and ImageNet100. The gain provided by MixUp
+then ASAM on our model (DyTox++) leads to a consistent improvement of +4.7\% in ``Avg`` compared to
+the previous State-of-the-Art DER \cite{yan2021der} on CIFAR100 50 steps
+(\autoref{tab:dytox_cifar100-b0_pp} and +4.6\% on ImageNet100 10 steps (\autoref{tab:dytox_imagenet_pp}). Future
+works could consider the promising Look-SAM \cite{liu2021looksam} to reduce the time overhead.
+
+\paragraph{Training procedure introspection} In \autoref{tab:dytox_training_plus}, we compare DyTox+ and
+DyTox++ on CIFAR100 in a joint setting (no continual) and in a continual setting with 50 steps. In
+the joint setting, our model slightly benefits from both MixUp and ASAM: the gain is limited (+1.79
+\textit{p.p.}). On the other hand, those two methods greatly improve the extreme continual setting
+of 50 steps (+6.42 \textit{p.p.}). This shows that the gain is not due to absolute improvements of
+the model performance. Moreover, using the Chaudrhy et al.'s forgetting
+\cite{chaudhry2018riemannien_walk} measure, we compare how much a model has forgotten relatively to
+its previous tasks. This metric is therefore agnostic to absolute performance improvements. DyTox
+had a forgetting of 33.15\%, DyTox+ of 31.50\%, and DyTox++ of 30.47\%: a total reduction of 2.68
+\pp. This validates our novel training procedures that are particularly efficient for continual
+learning.
+
+\input{tables/dytox/plusplus}
+
+\subsection{Patch size effect on forgetting}
+
+Our model is the first application of transformers for continual computer vision. A key component of
+the transformer architecture is the patch tokenizer. The number of patch tokens in an image is
+determined by the patch size: a larger patch size means less tokens, and vice-versa. We wondered
+about the effect of the patch size on forgetting and tested three different kind of patch sizes in
+\autoref{tab:dytox/patch_size}. Echoing results in vision transformers
+\cite{dosovitskiy2020vit,touvron2021deit}, a smaller patch size (4 vs. 8 and 16) performs best in a
+joint training. However, the forgetting defined by Chaudhry et al.
+\cite{chaudhry2018riemannien_walk} is relatively similar, with 33.15\% for a patch of size of 4, and
+33.20\% for a patch size of 16. Therefore, we argue that the transformer architecture is hardly
+sensitive to the patch resolution w.r.t its forgetting in continual learning.
+
+\input{tables/dytox/patch_size}
+
+%\input{tables/nb_sab} \input{tables/nb_tab} \input{tables/nb_heads} \input{tables/nb_dim}
+
+\subsection{ResNet backbone}
+
+DyTox is made of two main components: the SABs and the unique TAB. The TAB structure, taking in
+input both patch tokens and a task token, is crucial to our strategy. Yet, the SAB could be of any
+kind of features extractor, based on convolutions or attentions. Following the hybrid network
+proposed in ablations by Dosovitskiy et al. \cite{dosovitskiy2020vit}, we tried to replace the
+collection of SABs by a ResNet18. The final features of the ResNet, before global pooling, of shape
+$(W \times H \times D)$ can be seen as $W \times H$ tokens of $D$ dimension. We made a few
+modifications to this ResNet to boost its performance, namely removed the fourth and ultimate layer,
+and added a pointwise convolution with 504 output channels (so it can be divided by the 12 attention
+heads of the TAB), a batch normalization \cite{ioffe2015batchnorm}, and a ReLU activation. These
+simple modifications are sufficient for our proof of concept, and thus we also didn't tune deeply
+this model. We display in \autoref{tab:dytox_resnet} the comparison of the two backbones on CIFAR100 50
+steps: (1) with ResNet, and (2) with SABs (DyTox). Performances are slightly lower than DyTox with
+SABs, however, they are still significantly higher than previous state-of-the-art like WA
+\cite{zhao2020weightalignement}, especially in ``Last'' accuracy. Moreover, the parameters count is
+comparable to DyTox. This experiment shows that our DyTox framework, while designed with a
+transformer backbone in mind, is also efficient on non-token-based architectures such as a ResNet.
+
+\input{tables/dytox/resnet_backbone}
+
+\subsection{Alternative task decoders}
+
+We investigate here other approaches for \textit{conditioning} features to the different tasks.
+Residual Adapters \cite{rebuffi2017residualadapters} adds a different residual branch made of a
+pointwise convolution for each domain the model is learned (\eg CIFAR then ImageNet then SVHN). This
+model needs the task/dataset/domain identifier at test-time to determine which residual to use. For
+VQA task \cite{antol2015vqa}, FiLM \cite{perez2018film} proposes to modify the visual features using
+the the textual query.
+
+We adapt these two feature conditioning strategies for our transformer backbone architecture. We
+perform a global token pooling after the ultimate SAB, and apply for each learned task, a residual
+adapter or a FiLM. Residual adapter in our case is a MLP, and FiLM parameters are directly learned.
+As for DyTox, we forward each task-specific embedding to the respective task-specific classifier. We
+showcase the continual performance in \autoref{tab:dytox_task_cond} on CIFAR100 50 steps and ImageNet100
+10 steps. On the former dataset, smaller and easier,  the residual adapters and FiLM have similar
+performance as our TAB approach. On the other hand, as soon as the task complexity increases with
+the more detailed ImageNet100 dataset, FiLM and Residual adapter based conditioning strategies
+forget significantly more than our complete DyTox framework: TAB outperform the Residual Adapters by
++2.98 \pp in ``Last'' top-5 accuracy and FiLM by +6.58 \pp.
+
+\input{tables/dytox/task_cond}
+
+
 
 \section{Continuum: Continual Learning Data Loaders}
 

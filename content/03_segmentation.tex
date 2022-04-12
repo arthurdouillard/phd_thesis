@@ -133,7 +133,7 @@ allows reaching high accuracies with a small memory footprint.
 \label{sec:seg_related}
 
 Continual Semantic Segmentation is a relatively young field that started getting traction following
-\cite{michieli2019ilt} and \cite{cermelli2020modelingthebackground}. However, this field is at the
+\citet{michieli2019ilt} and \citet{cermelli2020modelingthebackground}. However, this field is at the
 intersection of many popular topics. Therefore, we start this section with an overview of recent
 advances in segmentation. We then follow with a more in-depth discussion of existing approaches to
 \ac{CSS}. For a thorough discussion of Continual Learning, please refer to
@@ -162,18 +162,18 @@ learned categories are properly annotated in the images of the new dataset. This
 assumption that fails to consider the background shift: pixels labeled as background at the current
 step are semantically ambiguous, in that they can contain pixels from old classes (including the
 real semantic background class, which is generally deciphered first) as well as pixels from future
-classes. \cite{cermelli2020modelingthebackground} propose a novel classification and distillation
+classes. \citet{cermelli2020modelingthebackground} propose a novel classification and distillation
 losses. Both handle the background shift by summing respectively the old logits with the background
 logits and the new logits with the background. We argue that a distillation loss applied to the
 model output is not strong enough for catastrophic forgetting in \ac{CSS}. Furthermore, their
 classification loss does not preserve enough discriminative power w.r.t the old classes when
 learning new classes under background shift. We introduce our PLOP framework that solves more
-effectively those two aspects. \cite{yu2020continualsegmentationselftraining} proposed to exploit an
+effectively those two aspects. \citet{yu2020continualsegmentationselftraining} proposed to exploit an
 external unlabeled dataset in order to do self-training with a pseudo-labeling loss; we show that
 our model, while not designed with this assumption in mind, can outperform their performance.
-\cite{cermelli2020fewshotcontinualsegm} create a novel setting of continual \textit{few-shots}
+\citet{cermelli2020fewshotcontinualsegm} create a novel setting of continual \textit{few-shots}
 segmentation, we implement their method in our setting and draw inspiration from it to further
-improve PLOP. \cite{michieli2021sdr} draw inspiration from the metric learning literature to
+improve PLOP. \citet{michieli2021sdr} draw inspiration from the metric learning literature to
 conceive a model for continual segmentation that exploits prototypes updated with an exponential
 moving average of the mean batch features.
 
@@ -228,7 +228,7 @@ $t$ must be able to discriminate between all the classes that have been seen so 
 $\mcC^{1:t}$.
 
 This leads us to identify two major pitfalls in \ac{CSS}: the first one, inherited from continual
-learning, is catastrophic forgetting \cite{robins1995catastrophicforgetting}. It suggests that a
+learning, is catastrophic forgetting \citet{robins1995catastrophicforgetting}. It suggests that a
 network will completely forget the old classes $\mcC^{1:t-1}$ when learning the new ones $\mcC^t$.
 
 Furthermore, catastrophic forgetting is aggravated by the second pitfall, specific to \ac{CSS}, that
@@ -237,7 +237,7 @@ they may contain either old (including the real background class, predicted in $
 classes.
 
 We define our model at step $t$ as a composition of a feature extractor $f^t(\cdot)$ (a ResNet 101
-\cite{he2016resnet} backbone and a classifier $g^t(\cdot)$. The output predicted segmentation map
+\citet{he2016resnet} backbone and a classifier $g^t(\cdot)$. The output predicted segmentation map
 can then be written $\hat{\vy}^t = g^t \circ f^t(\vx)$. We denote the intermediate features at each
 layer of the feature extractor $\vh_l^t = f_l^t(\cdot)\,,\, l \in \{1, \dots L\}$. Finally, we
 denote the set of learnable parameters of $f^t$ and $g^t$ as $\Theta^t$.
@@ -251,7 +251,7 @@ general and in \ac{CSS} in particular. An effective method for doing so involves
 between the old ($g^{t-1} \circ f^{t-1}$) and current ($g^{t} \circ f^{t}$) models. These
 constraints aim at enforcing a similar behavior between both models and in turn reduce the loss of
 performance on old classes. A common such constraint is based on applying knowledge distillation
-\cite{hinton2015knowledge_distillation,li2018lwf} between the predicted probabilities of both
+\citet{hinton2015knowledge_distillation,li2018lwf} between the predicted probabilities of both
 models. When applied to \ac{CSS}, such distillation loss must be carefully balanced to find a good
 trade-off between rigidity (\textit{i.e.} too strong constraints, resulting in not being able to
 learn new classes) and plasticity (\textit{i.e.} enforcing loose constraints, which can lead to
@@ -391,7 +391,7 @@ but in practice we define it as the entropy. Therefore, we use for $u$ the curre
 entropy $u(\vy^t[:,w, h]) = -\sum_{c \in C^{1:t}} \vy^t[c,w, h] \log \vy^t[c,w, h]$. Likewise, the
 class-specific threshold $\tau_c$ is computed from the median entropy of the old model over all
 pixels of $\mcD^t$ predicted the class $c$ for all $c \in \mcC^{1:t-1}$ as proposed by
-\cite{saporta2020esl}. Consequently, the cross-entropy loss with pseudo-labeling of the old classes
+\citet{saporta2020esl}. Consequently, the cross-entropy loss with pseudo-labeling of the old classes
 can be written as:
 %
 \begin{equation}
@@ -446,12 +446,12 @@ The cosine normalization can then be expressed as:
 %
 \noindent with $\alpha$ a learned scalar parameter initialized to 1 and helping the convergence, and
 $\vh \in \mathbb{R}^{W \times H \times ch}$ the final features embedding before the classifier.
-First used in continual learning by \cite{hou2019ucir}, this classifier has more recently be
+First used in continual learning by \citet{hou2019ucir}, this classifier has more recently be
 adopted by continual few-shot segmentation \citep{cermelli2020fewshotcontinualsegm} or
 multi-modes continual learning (in PODNet, see \autoref{sec:podnet_local_classifier}). The new
 cosine classifier weights that correspond to the new classifier can then be initialized with
 weight imprinting \citep{qi2018imprintedweights} as recently adapted for segmentation by
-\cite{cermelli2020fewshotcontinualsegm}.
+\citet{cermelli2020fewshotcontinualsegm}.
 
 Furthermore, we propose to exploit the cosine normalization for intermediary features: the
 comparison between the Local POD embeddings of the previous model $f^{t-1}$ with the current $f^t$
@@ -487,7 +487,7 @@ batch \textit{re}normalization \citep{ioffe2017batchrenorm}, i.e.:
 \end{equation}
 %
 Intuitively, batch renormalization avoids the discrepancy between training and testing of the batch
-normalization. Furthermore, following \cite{cermelli2020fewshotcontinualsegm}, we freeze during
+normalization. Furthermore, following \citet{cermelli2020fewshotcontinualsegm}, we freeze during
 training the statistics ($\mu$ and $\sigma$) after the first task to avoid harmful statistics
 drifts.
 
@@ -653,7 +653,7 @@ rehearsal strategy in \autoref{fig:seg_model_objectrehearsal}.
 \label{sec:seg_datasets_protocols}
 
 To ensure fair comparisons with state-of-the-art approaches, we follow the experimental setup of
-~\cite{cermelli2020modelingthebackground} for datasets, protocol, metrics, and baseline
+~\citet{cermelli2020modelingthebackground} for datasets, protocol, metrics, and baseline
 implementations. Although, we also propose to evaluate on new datasets and on more challenging
 protocols. Furthermore, we explore in advanced experiments, for the first time, how rehearsal can
 improve performance in \ac{CSS}.
@@ -669,7 +669,7 @@ images. For all datasets, we use random resize and crop augmentation (scale from
 well as random horizontal flip during training time. The final image size for Pascal-VOC and ADE20k
 is $512 \times 512$ while it is $512 \times 1024$ for Cityscapes.
 
-\paragraph{CSS protocols:} \cite{cermelli2020modelingthebackground} introduced the
+\paragraph{CSS protocols:} \citet{cermelli2020modelingthebackground} introduced the
 \textit{Overlapped} setting where only the current classes are labeled \vs a background class
 $\mcC^t$. Moreover, pixels can belong to any classes $\mcC^{1:t-1} \cup \mcC^{t} \cup \mcC^{t+1:T}$
 (old, current, and future). Those two constraints make this setting both challenging and realistic,
@@ -698,7 +698,7 @@ forgetting but not able to learn anything new is useless.
 \paragraph{Baselines:} We benchmark our model against the latest state-of-the-arts \ac{CSS} methods
 ILT \citep{michieli2019ilt}, MiB \citep{cermelli2020modelingthebackground}, GIFS
 \citep{cermelli2020fewshotcontinualsegm}, and SDR \citep{michieli2021sdr}. Note that while GIFS was
-created by \cite{cermelli2020fewshotcontinualsegm} for continual \textit{few-shots} segmentation, we
+created by \citet{cermelli2020fewshotcontinualsegm} for continual \textit{few-shots} segmentation, we
 adapt it for the more general task of \ac{CSS}. Unless stated otherwise, all the results are
 excerpted from the corresponding papers. We also evaluate general continual models based on weight
 constraints (PI \citep{zenke2017synaptic_intelligence}, EWC \citep{kirkpatrick2017ewc}, and RW
@@ -707,7 +707,7 @@ constraints (PI \citep{zenke2017synaptic_intelligence}, EWC \citep{kirkpatrick20
 included), do not use rehearsal learning.
 
 
-\paragraph{Implementation Details:} As in \cite{cermelli2020modelingthebackground}, we use a
+\paragraph{Implementation Details:} As in \citet{cermelli2020modelingthebackground}, we use a
 Deeplab-V3 \citep{chen2017deeplabv3} architecture with a ResNet-101 \citep{he2016resnet} backbone
 pretrained on ImageNet \citep{deng2009imagenet} for all experiments and models but SDR
 \citep{michieli2021sdr} which used a Deeplab-V3+ \citep{chen2018deeplabv3plus}. For all datasets, we
@@ -721,7 +721,7 @@ $5e-4$ for intermediate feature maps and logits, respectively. Moreover, we mult
 the adaptive weighting $\sqrt{\nicefrac{|C^{1:t}|}{|C^{t}|}}$ introduced by \citep{hou2019ucir} that
 increases the strength of the distillation the further we are into the continual process. For all
 feature maps, Local POD is applied before ReLU, with squared pixel values, as in
-\cite{zagoruyko2016distillation_attention} or PODNet (\autoref{sec:podnet}). We use 3 scales for
+\citet{zagoruyko2016distillation_attention} or PODNet (\autoref{sec:podnet}). We use 3 scales for
 Local POD: $1$, $\nicefrac{1}{2}$, and $\nicefrac{1}{4}$, as adding more scales experimentally
 brought diminishing returns. For PLOPLong only, we L2-normalize all POD embeddings before distilling
 them as also done by \autoref{sec:podnet}. Furthermore, for PLOPLong, the gradient norm-clipping is
@@ -764,7 +764,7 @@ par with our re-implementation of MiB, and surpasses the original paper scores
 continual models (EWC and LwF-MC) and ILT all have very low \ac{mIoU}. While MiB shows significant
 improvements, PLOP still outperforms it by a wide margin. Furthermore, PLOP also significantly
 outperforms the best performing approach on this setting, GIFS
-\cite{cermelli2020fewshotcontinualsegm} (+6.11 \pp). Moreover, \ac{mIoU} for the joint model is
+\citet{cermelli2020fewshotcontinualsegm} (+6.11 \pp). Moreover, \ac{mIoU} for the joint model is
 $77.40\%$, thus PLOP narrows the gap between \ac{CSS} and joint learning on every \ac{CSS} scenario.
 The average \ac{mIoU} is also improved (+5.78 \pp) compared to GIFS, indicating that each \ac{CSS}
 step benefits from the improvements related to our method. This is echoed by
@@ -819,12 +819,12 @@ are slightly different from the main experiments.
 
 \paragraph{Distillation comparisons:} \autoref{tab:seg_ablation_distillation} compares different
 distillation losses when combined with our pseudo-labeling loss. ILT \citep{michieli2019ilt} used
-the naive knowledge distillation of \cite{hinton2015knowledge_distillation}. CSC \citep{park2020csc}
+the naive knowledge distillation of \citet{hinton2015knowledge_distillation}. CSC \citep{park2020csc}
 constrained spatial and channel correlation of intermediary features. This work bears similarity
 with POD and Local POD, but it's much more computationally intensive as it computes pixel-by-pixel
 correlation and not as performant. Finally, UNKD introduced in
-\cite{cermelli2020modelingthebackground} performs better than the Knowledge Distillation (KD) of
-\cite{hinton2015knowledge_distillation}, but not at every step (as indicated by the \textit{avg.}
+\citet{cermelli2020modelingthebackground} performs better than the Knowledge Distillation (KD) of
+\citet{hinton2015knowledge_distillation}, but not at every step (as indicated by the \textit{avg.}
 value), which indicates instability during the training process. POD (\autoref{sec:podnet}),
 improves the results on the old classes, but not on the new classes (16-20). In fact, due to too
 much plasticity, POD model likely overfits and predicts nothing but the new classes, hence a lower
@@ -857,7 +857,7 @@ contexts \citep{kim2019medic} that class ordering can have a large impact on per
 Unfortunately, in real-world settings, the optimal class order can never be known beforehand: thus,
 the performance of an ideal \ac{CSS} method should be as invariant to class order as possible. In
 all experiments done so far, this class order has been kept constant, as defined by
-\cite{cermelli2020modelingthebackground}. We report results in \autoref{fig:seg_order_voc_15-1} as
+\citet{cermelli2020modelingthebackground}. We report results in \autoref{fig:seg_order_voc_15-1} as
 boxplots obtained by applying 20 random permutations of the class order on VOC 15-1. We report in
 \autoref{fig:seg_order_voc_15-1} (from left to right) the \ac{mIoU} for the old, new classes, all
 classes, and average over \ac{CSS} steps. In all cases, PLOP surpasses MiB in terms of avg
@@ -898,15 +898,15 @@ generate synthetic data, which comes at a high time requirement: thus, we exclud
 our comparisons. We first consider the challenging Pascal-VOC 15-1 setting in
 \autoref{tab:seg_voc_rehearsal_learning}. We use PLOP and PLOPLong as baselines with 0 memory
 overhead, as both models only use data from the current task. Moreover, we compare with
-\cite{yu2020continualsegmentationselftraining}, where an unlabeled external dataset such as COCO
+\citet{yu2020continualsegmentationselftraining}, where an unlabeled external dataset such as COCO
 \citep{lin2014mscocodataset} is used through pseudo-labeling to improve performance on Pascal-VOC,
 as both datasets present significant overlap in terms of classes and domains. We reimplemented their
 method and also considered PLOP in this configuration. Using the external COCO provide PLOP an
 important gain of \ac{mIoU} for both old classes (+7 \pp) and new classes (+24 \pp). Furthermore,
 PLOP with COCO is significantly more performant than
-\cite{yu2020continualsegmentationselftraining}'s model (+5.43 \pp) despite the latter was designed
+\citet{yu2020continualsegmentationselftraining}'s model (+5.43 \pp) despite the latter was designed
 explicitly to use such unlabeled external dataset. Notice also how PLOPLong, without any kind of
-rehearsal, remains equivalent to \cite{yu2020continualsegmentationselftraining} in terms of
+rehearsal, remains equivalent to \citet{yu2020continualsegmentationselftraining} in terms of
 \ac{mIoU} on 0-15 (72.00\% \vs 71.40\%), despite the latter using a large pool of data (+20Go).
 Perhaps counter-intuitively the gain is located on the new classes (26.66\% \vs 40.00\%) as the
 rehearsal effect has a regularizing effect leading to less over-predicting of the recent classes. A

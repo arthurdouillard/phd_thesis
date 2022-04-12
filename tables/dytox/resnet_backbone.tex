@@ -1,0 +1,15 @@
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{}l|cccc@{}}
+        \hline
+        Encoder & \textbf{\#P} & \textbf{Avg} & \textbf{Last} \Tstrut\Bstrut \\
+        \hline
+        ResNet  & 10.68        & 68.53        & 50.05\Tstrut                 \\
+        SABs    & 10.77        & 70.20        & 52.34\Bstrut                 \\
+        \hline
+    \end{tabular}
+    \caption{\textbf{Hybrid network} on CIFAR100 50 steps. While the features extractor is made of
+        SABs in DyTox, here we instead use a modified ResNet18. Our framework still works well with a
+        convolution-based approach.}
+    \label{tab:dytox_resnet}
+\end{table}

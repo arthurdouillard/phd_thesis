@@ -80,15 +80,15 @@ where the task identity is known at test-time. However, in the more challenging 
 of single-head, where classes from all tasks, have to be predicted, these methods often barely work
 better than a naive finetuning \citep{lesort2019regulshortcomings}. Therefore, We focused on
 regularizations applied on a model's output. LwF \citep{li2018lwf} first used the \ac{KD} of
-\cite{hinton2015knowledge_distillation}: a KL divergence between the probabilities of the old and
+\citet{hinton2015knowledge_distillation}: a KL divergence between the probabilities of the old and
 new models. While simple, this loss ---with few variations--- has been used by multiple following
 works \citep{rebuffi2017icarl,zhao2020weightalignement}. Few works tried to constrain intermediate
 outputs of the model: LwM \citep{dhar2019learning_without_memorizing_gradcam} proposed to minimize
 the L2 distance between gradient-based attention maps produced by GradCam
 \citep{selvaraju2017gradcam}. M2KD \citep{peng2019m2kd} used a \ac{KD} on both the final predictions
 and intermediate predictions from an auxiliary classifier similar to Inception
-\citep{szegedy2015inception}. \cite{hou2019ucir} maximizes the cosine similarity between the final
-embeddings before the classifier. Finally, \cite{zagoruyko2016distillation_attention}, in the
+\citep{szegedy2015inception}. \citet{hou2019ucir} maximizes the cosine similarity between the final
+embeddings before the classifier. Finally, \citet{zagoruyko2016distillation_attention}, in the
 context of model compression, investigated attention-based distillation for image classifiers, by
 pooling the intermediate features of convolutional networks into attention maps, then used in their
 distillation losses.
@@ -97,16 +97,16 @@ distillation losses.
 iCaRL~\citep{rebuffi2017icarl}: it introduced the \acf{NME} strategy which
 averages the outputs of the deep convolutional network to create a single proxy feature vector per
 class that are then used by a nearest-neighbor classifier predict the final classes.
-\cite{hou2019ucir} adopted this method and also introduced another, named CNN, which uses the output
+\citet{hou2019ucir} adopted this method and also introduced another, named CNN, which uses the output
 class probabilities to classify incoming samples, freezing (during training) the classifier weights
 associated with old classes, and then fine-tuning them on an under-sampled dataset.
-\cite{hou2019ucir}, in the method called here UCIR, made representation learning explicit, by
+\citet{hou2019ucir}, in the method called here UCIR, made representation learning explicit, by
 noticing that the limited memory imposed a severe imbalance on the training samples available for
 the old and for the new classes. To overcome that difficulty, they designed a metric-learning model
 instead of a classification model. That strategy is often used in few-shot
 learning~\citep{gidaris2018fewshot_wo_forgetting} because of its robustness when faced to few data. Because
 classical metric architectures require special training sampling (\eg semi-hard sampling for
-triplets), \cite{luo2018cosine_classifier} chose instead to redesign the classifier's last layer of their model to use
+triplets), \citet{luo2018cosine_classifier} chose instead to redesign the classifier's last layer of their model to use
 the cosine similarity.
 
 
@@ -255,11 +255,11 @@ the different nature of the intermediate outputs (spatial and flat).
 
 As mentioned, the strategy above generalizes disparate propositions existing both in the literature
 of incremental learning, and elsewhere. When $\lambda_{c}=0$, it reduces to the cosine constraint of
-\textit{Less-Forget}, proposed by \cite{hou2019ucir} for incremental learning, which constrains only
+\textit{Less-Forget}, proposed by \citet{hou2019ucir} for incremental learning, which constrains only
 the final embedding. When $\lambda_{f}=0$ and POD-spatial is replaced by POD-pixel, it suggests the
 Perceptual Features loss, proposed for style transfer~\citep{johnson2016perceptual_losses}. When
 $\lambda_{f}=0$ and POD-spatial is replaced by POD-channel, the strategy hints at the loss proposed
-by \cite{zagoruyko2016distillation_attention} to allow distillation across different networks, a
+by \citet{zagoruyko2016distillation_attention} to allow distillation across different networks, a
 situation in which the channel pooling responds to the very practical need to allow the comparison
 of architectures with different number of channels.
 
@@ -285,7 +285,7 @@ model across a single task.
 \subsubsection{Local Similarity Classifier}
 \label{sec:podnet_local_classifier}
 
-\cite{hou2019ucir} observed that the class imbalance of incremental learning has concrete
+\citet{hou2019ucir} observed that the class imbalance of incremental learning has concrete
 manifestations on the parameters of the final layer on classifiers, namely the weights for the
 over-represented (new) classes becoming much larger than those for the underrepresented (old)
 classes. To overcome this issue, their method (called here UCIR) $\ell^2$-normalizes both the
@@ -385,7 +385,7 @@ ImageNet1000~\citep{deng2009imagenet}. ImageNet100 is a subset of ImageNet1000 w
 classes, randomly sampled from the original 1000.
 
 \paragraph{Protocol} We validate our model and the compared baselines using the challenging protocol
-introduced by \cite{hou2019ucir}: we start by training the models on half the classes (i.e., 50 for
+introduced by \citet{hou2019ucir}: we start by training the models on half the classes (i.e., 50 for
 CIFAR100 and ImageNet100, and 500 for ImageNet1000). Then the classes are added incrementally in
 steps. We divide the remaining classes equally among the steps, \eg for CIFAR100 we could have 5
 steps of 10 classes or 50 steps of 1 class. Note that a training of 50 steps is actually made of 51
@@ -400,7 +400,7 @@ For CIFAR100 and ImageNet100, we ran all experiments thrice, varying the order o
 report the averages and standard deviations in tables and graphs. For ImageNet1000, whose models
 took much longer to train, we ran each experiment once.
 
-Following \cite{hou2019ucir}, for all datasets, and all compared models, we limit the memory
+Following \citet{hou2019ucir}, for all datasets, and all compared models, we limit the memory
 $M_\textrm{per}$ to 20 images per old class. For results with different memory settings, refer to
 \autoref{sec:podnet_robustness}.
 
@@ -411,7 +411,7 @@ activation at the last block of each ResNet end-of-stage to provide a signed inp
 PyTorch~\citep{paszke2017pytorch}.
 %
 We compare both ours and UCIR's implementation of iCaRL. Results of UCIR come from the
-implementation of \cite{hou2019ucir}. We provide their reported results and also run their code
+implementation of \citet{hou2019ucir}. We provide their reported results and also run their code
 ourselves. We used our implementation of BiC \citep{wu2019bias_correction} in order to compare with
 the same backbone.
 %
@@ -540,7 +540,7 @@ experiments validating our model's robustness are provided in the appendix
 With PODNet, we reduced forgetting by reducing the shift of feature statistics between the old and
 new model. Orthogonally, we also explored if we could regularize the intermediate latent space so
 that forgetting could be avoided ---or at least reduced--- before even the introduction of
-disrupting new classes. This idea draw inspiration from \cite{aljundi2019selfless} who remarked that
+disrupting new classes. This idea draw inspiration from \citet{aljundi2019selfless} who remarked that
 the ability to make room for future classes is a key limitation of current continual learning
 models, and propose a regularization loss to make the model more “selfless”, by leaving capacity for
 future classes in the representation. However, this pre-allocation of the future classes is done
@@ -556,10 +556,10 @@ not only for present and past tasks, but also for \textit{future} ones, both avo
 forgetting (using a limited number of training samples for past classes), and giving the best
 possible estimates for the future classes (using no training samples at all). To make the setting
 possible, the model must know the classes and have some prior information about them. Indeed,
-\cite{aljundi2019selfless} remark that the ability to make room for future classes is a key
+\citet{aljundi2019selfless} remark that the ability to make room for future classes is a key
 limitation of current continual learning models, and propose a regularization loss to make the model
 more “selfless”, explicitly leaving capacity for future classes in the representation.
-\cite{hanrebuffi2020autodiscovering} proposed a setting where the training samples from all classes
+\citet{hanrebuffi2020autodiscovering} proposed a setting where the training samples from all classes
 are present from the beginning, but the labels become available incrementally. In a way, our setting
 is the inverse: we know which labels we will encounter, but the training data for those labels
 arrive incrementally. For instance, in many real-world applications (\eg fashion product
@@ -849,13 +849,13 @@ found in the appendix (\autoref{sec:appendix_ghost}).
 \label{sec:ghost_quantitative}
 
 \paragraph{Datasets \& Protocols} We perform our experiments on two datasets: AwA2
-\cite{xian2019awa2}, with 50 animals categories, each with 85 attributes; and AP\&Y
-\cite{farhadi2009apy}, with 32 everyday object classes, each with 64 attributes. We employ two
+\citet{xian2019awa2}, with 50 animals categories, each with 85 attributes; and AP\&Y
+\citet{farhadi2009apy}, with 32 everyday object classes, each with 64 attributes. We employ two
 experimental protocols: one typical for continual learning, following
-\cite{hou2019ucir,douillard2020podnet}, starting the first task with half the classes (i.e., 25 for
+\citet{hou2019ucir,douillard2020podnet}, starting the first task with half the classes (i.e., 25 for
 AwA2, and 16 for aP\&Y), then adding the remaining classes in evenly-sized tasks (5 tasks of 5
 classes for AwA2, and 8 tasks of 2 classes for aP\&Y); another inspired from zero-shot learning,
-following \cite{xian2019awa2}, starting with a standard selection of classes for each of the
+following \citet{xian2019awa2}, starting with a standard selection of classes for each of the
 datasets (40 for AwA2, and 20 for aP\&Y), and adding the remaining classes in small increments (5
 tasks of 2 classes for AwA2, and 6 tasks of 2 classes for aP\&Y). Our evaluation protocol is akin to
 the challenging and realist Generalized Zero-shot Learning \citep{scheirer2013generalizedzeroshot,
@@ -874,8 +874,8 @@ innovations proposed in this work. The cosine classifier has a single proxy/repr
 but could easily be generalized to multiple proxies. Implementation details are provided in the
 appendix (\autoref{sec:appendix_ghost}).
 
-\paragraph{Generator} Following the work of \cite{bucher2017zeroshot_gmmn} for zero-shot
-learning, our generator is a Generative Moment Matching Network (GMMN)~\cite{li2015gmmn}
+\paragraph{Generator} Following the work of \citet{bucher2017zeroshot_gmmn} for zero-shot
+learning, our generator is a Generative Moment Matching Network (GMMN)~\citep{li2015gmmn}
 $g^t(\mathbf{\xi}, \mathbf{E}_c)$, which takes as inputs a Gaussian noise vector $\mathbf{\xi}$ and
 a class attributes vector $\mathbf{E}_c$, and outputs a sample from the estimated distribution of
 features for a class with the given attributes. In our experiments on AwA2 and AP\&Y, the class
@@ -968,8 +968,8 @@ seen, and we learn next, in small increment, the remaining classes, i.e., those 
 zero-shot benchmark as unseen. Because the initial task is larger than previously, fewer future
 classes remain, and the base models have better performance. Still, the proposed method improves
 both base methods in both datasets significantly. The setting proposed is different from the —
-markedly less challenging — setting appearing in \cite{pkankuekul2012onlineincrementalzeroshot} and
-\cite{xue2017incrementalzeroshot}, where the set of unseen classes is fixed, and only more seen
+markedly less challenging — setting appearing in \citet{pkankuekul2012onlineincrementalzeroshot} and
+\citet{xue2017incrementalzeroshot}, where the set of unseen classes is fixed, and only more seen
 classes are added incrementally, without any sample limitations given by rehearsal memory.
 
 

@@ -22,9 +22,9 @@
       will have altered so much that one will be able to speak of machines thinking without expecting to
       be contradicted.}{\textit{Alan Turing}}
 
-In this thesis introduction, using layman terms, I describe Artificial Intelligence, and,
-in particular, one of its instances: Deep Learning. Then, I lay out the challenges of this
-thesis and my contributions.
+In this thesis introduction, using layman terms, we describe Artificial Intelligence, and,
+in particular, one of its instances: Deep Learning. Then, we lay out the challenges of this
+thesis and our contributions.
 
 %\section{Artificial Intelligence}
 
@@ -93,44 +93,33 @@ This Ph.D thesis is structured around solving catastrophic forgetting in continu
 considered various specific situations and approaches declined in several chapters:
 
 \begin{itemize}
-      \item \autoref{chapter:related}: \nameref{chapter:related}\\
-            We first briefly cover the neural network architectures used for computer vision. Then,
-            we define exactly the existing continual learning benchmarks. Finally, we give an
-            overview of the major approaches to solve catastrophic forgetting.
-
       \item \autoref{chapter:regularization}: \nameref{chapter:regularization}\\
-            We first tackle continual learning in the context of the image classification: we aim to
-            produce a model that can learn continuously new classes without forgetting the
-            previously seen classes. We study how to constrain efficiently a model in order to be
-            rigid enough (to not forget) while also being plastic (to learn new classes). The work in
-            this chapter has led to two conference publications:
+            We first propose strategies to tackle catastrophic forgetting in deep neural neworks in
+            the context of the image classification. Our main goal is to constrain the evolution of the
+            network parameters during the continual training to be relatively rigid while also
+            avoiding completely freezing the network. The work in this chapter has led to two
+            conference publications:
             \begin{itemize}
                   \item \fullcite{douillard2020podnet}
                   \item \fullcite{douillard2020ghost}
             \end{itemize}
 
       \item \autoref{chapter:segmentation}: \nameref{chapter:segmentation}\\
-            Then, we extend our focus to semantic segmentation where each pixel possesses a class.
-            We show that this context brings new challenges and propose multiple complementary
-            approaches to tackle them. The work in this chapter has led to one conference publication and one
-            submission to a journal:
+            Then, we extend our focus to the task of semantic segmentation. We show that this
+            context brings new challenges, and we propose multiple complementary approaches to tackle
+            them. The work in this chapter has led to one conference publication and one submission
+            to a journal:
             \begin{itemize}
                   \item \fullcite{douillard2020plop}
                   \item \fullcite{douillard2021objectrehearsal}
             \end{itemize}
 
       \item \autoref{chapter:dynamic}: \nameref{chapter:dynamic}\\
-            Finally, we consider a recent family of neural networks called transformers to build a
-            dynamic model for continual image classification. Our goal is to expand the number of
-            neurons to efficiently learn new classes in image classification. The work in this
-            chapter has led to a conference publication:
+            Finally, in our last chapter, we consider the impact of the neural network architecture
+            for continual learning and in particular propose using the recent Transformer. The work
+            in this chapter has led to a conference publication:
             \begin{itemize}
                   \item \fullcite{douillard2021dytox}
             \end{itemize}
-
-      \item \autoref{chapter:conclusion}: \nameref{chapter:conclusion}\\
-            Finally, in a last chapter, we summarize the propositions of this thesis and offer
-            new perspectives for the field of continual learning.
-
 \end{itemize}
 
