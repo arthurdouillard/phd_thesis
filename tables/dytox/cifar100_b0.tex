@@ -20,12 +20,14 @@
             \hline
             DyTox                                  & 10.73                        & 73.66\mysmpm{0.02}                            & 60.67\mysmpm{0.34}           & 10.74               & 72.27\mysmpm{0.18}                            & 56.32\mysmpm{{0.61}}             & 10.77               & 70.20\mysmpm{0.16}                            & 52.34\mysmpm{0.26}               \\
             DyTox+                                 & 10.73                        & \textbf{75.54}\mysmpm{0.10}                   & 62.06\mysmpm{0.25}           & 10.74               & \textbf{75.04}\mysmpm{0.11}                   & 60.03\mysmpm{0.45}               & 10.77               & \textbf{74.35}\mysmpm{0.05}                   & 57.09\mysmpm{0.13}               \\
+            DyTox++                                & 10.73                        & \textbf{77.10\mysmpm{0.08}}                   & 64.53\mysmpm{0.08}           & 10.74               & \textbf{76.57\mysmpm{0.18}}                   & \textbf{62.44\mysmpm{0.22}}      & 10.77               & \textbf{75.45\mysmpm{0.19}}                   & 58.76\mysmpm{0.28}               \\
             \hline
         \end{tabular}
     }
     \caption{\textbf{Results on CIFAR100} averaged over three different class orders. Baselines
         results are come from \cite{yan2021der}. The $\dagger$ symbol means that \cite{yan2021der}
         needed setting-sensitive hyperparameters. Moreover, its reported parameters count was an average
-        over all steps: the final parameters count (necessarily higher) was not available.}
+        over all steps: the final parameters count (necessarily higher) was not available. DyTox+ uses
+        MixUp \citep{hingyi2018mixup} and DyTox++ uses both MixUp and SAM \citep{kwon2021asam}.}
     \label{tab:dytox_cifar100-b0}
 \end{table*}

@@ -2,20 +2,21 @@
     \centering
     \begin{tabular}{@{}l|cc|cc@{}}
         \hline
-                                                             & \multicolumn{2}{c}{CIFAR100} & \multicolumn{2}{c}{ImageNet100}
+                            & \multicolumn{2}{c}{CIFAR100} & \multicolumn{2}{c}{ImageNet100}
         \\
-                                                             & \multicolumn{2}{c}{Top-1}    & \multicolumn{2}{c}{Top-5}
+                            & \multicolumn{2}{c}{Top-1}    & \multicolumn{2}{c}{Top-5}
         \\
-        Task decoder                                         & Avg                          & Last                            & Avg   & Last  \\
+        Task decoder        & Avg                          & Last                            & Avg   & Last  \\
         \hline
-        Residual Adapters \cite{rebuffi2017residualadapters} & 70.00                        & 52.38                           & 91.25 & 85.00 \\
-        FiLM \cite{perez2018film}                            & 69.42                        & 54.05                           & 89.49 & 81.40 \\
-        TAB \textit{(ours)}                                  & 70.20                        & 52.34                           & 92.04 & 87.98 \\
+        Residual Adapters   & 70.00                        & 52.38                           & 91.25 & 85.00 \\
+        FiLM                & 69.42                        & 54.05                           & 89.49 & 81.40 \\
+        TAB \textit{(ours)} & 70.20                        & 52.34                           & 92.04 & 87.98 \\
         \hline
     \end{tabular}
     %}
     \caption{\textbf{Alternative task conditioner} on CIFAR100 50 steps and ImageNet100 10 steps.
-        While the simpler Residual Adapters and FiLM perform similarly to our TAB on CIFAR100, they
-        forget significantly more on the complex ImageNet100.}
+        While the simpler Residual Adapters \citep{rebuffi2017residualadapters} and FiLM
+        \citep{perez2018film} perform similarly to our TAB on CIFAR100, they forget
+        significantly more on the complex ImageNet100.}
     \label{tab:dytox_task_cond}
 \end{table}

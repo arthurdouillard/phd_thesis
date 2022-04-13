@@ -333,8 +333,7 @@ with a simpler pruning method which doesn't require any hyperparameter tuning.
 \input{tables/dytox/alternatives}
 
 
-\input{tables/dytox/cifar_plusplus}
-\input{tables/dytox/imagenet100_plusplus}
+%\input{tables/dytox/cifar_plusplus}
 
 \subsection{Parameter sharing of the TAB}
 
@@ -350,49 +349,6 @@ associated task. This increased diversity has a drawback: the memory overhead is
 \textit{v.s.} 10M parameters). We find in practice that DyTox strikes a good balance between memory
 overhead and continual performance.
 
-
-
-\subsection{Novel continual training procedure}
-\label{sec:plusplus}
-
-%\arxiv
-
-\paragraph{DyTox++} We nicknamed DyTox+ our model when combined with a novel continual procedure
-based on MixUp \cite{hingyi2018mixup}. We now refine DyTox+ into DyTox++ by adding a new component
-during the training: the Sharpness-Aware Minimizer (SAM) \cite{kwon2021asam}. Indeed, \textbf{aiming
-      for wider minima} is particularly important in continual learning
-\cite{kirkpatrick2017ewc,verwimp2021rehearsalrevealed}. This is because sharp task-specific minima
-lead to over-specialization to a particular task and consequently to a forgetting of all other
-tasks. Weights constraints as EWC \cite{kirkpatrick2017ewc} or second-order optimization
-\cite{lee2020kroneckercontinual} have similar motivations. SAM estimates the worst closest
-parameters during a first forward/backward pass, and then optimizes the loss w.r.t. to them during a
-second forward/pass. In consequence, DyTox++ optimizes the loss not w.r.t. the current parameters
-but w.r.t. a region of possible parameters leading to wide local minima that span across multiple
-tasks. In practice, we used the Adaptive SAM (ASAM) \cite{kwon2021asam}, an extension of SAM that is
-more robust to hyperparameters.
-
-\paragraph{DyTox+ and DyTox++ experiments} The computational overhead of ASAM is lower than more
-complex second-order methods, but it still doubles the number of forward and backward passes. For
-this reason, we didn't include it in our main experiment but propose in \autoref{tab:dytox_cifar100-b0_pp}
-and \autoref{tab:dytox_imagenet_pp} experiments on CIFAR100 and ImageNet100. The gain provided by MixUp
-then ASAM on our model (DyTox++) leads to a consistent improvement of +4.7\% in ``Avg`` compared to
-the previous State-of-the-Art DER \cite{yan2021der} on CIFAR100 50 steps
-(\autoref{tab:dytox_cifar100-b0_pp} and +4.6\% on ImageNet100 10 steps (\autoref{tab:dytox_imagenet_pp}). Future
-works could consider the promising Look-SAM \cite{liu2021looksam} to reduce the time overhead.
-
-\paragraph{Training procedure introspection} In \autoref{tab:dytox_training_plus}, we compare DyTox+ and
-DyTox++ on CIFAR100 in a joint setting (no continual) and in a continual setting with 50 steps. In
-the joint setting, our model slightly benefits from both MixUp and ASAM: the gain is limited (+1.79
-\textit{p.p.}). On the other hand, those two methods greatly improve the extreme continual setting
-of 50 steps (+6.42 \textit{p.p.}). This shows that the gain is not due to absolute improvements of
-the model performance. Moreover, using the Chaudrhy et al.'s forgetting
-\cite{chaudhry2018riemannien_walk} measure, we compare how much a model has forgotten relatively to
-its previous tasks. This metric is therefore agnostic to absolute performance improvements. DyTox
-had a forgetting of 33.15\%, DyTox+ of 31.50\%, and DyTox++ of 30.47\%: a total reduction of 2.68
-\pp. This validates our novel training procedures that are particularly efficient for continual
-learning.
-
-\input{tables/dytox/plusplus}
 
 \subsection{Patch size effect on forgetting}
 

@@ -231,7 +231,10 @@ difficult and needed a large --- and private --- dataset called JFT300M. Later w
 \citep{touvron2021deit} proposed an efficient optimization procedure enabling the training of
 transformers on smaller datasets such as ImageNet \citep{russakovsky2015imagenet_ilsvrc}. Finally,
 multiple works improved also the architecture itself, including CaiT \citep{touvron2021cait}, ConViT
-\citep{dascoli2021convit}, and Swin \citep{liu2021swin}.
+\citep{dascoli2021convit}, and Swin \citep{liu2021swin}. Notably, PerceiverIO
+\citep{jaegle2021perceiverio} proposed a general architecture whose output is adapted to different
+modalities using specific learned tokens, and whose computation is reduced using a small number of
+latent tokens.
 
 \section{Continual Learning}
 \label{sec:related_continual}
@@ -607,8 +610,6 @@ propose to have one network per task, where the $i^{\text{th}}$ network would de
 input and all previous networks' intermediate features. Unfortunately, memory consumption is
 quickly prohibitive with many tasks. Following works propose to only add blocks of parameters,
 and only when deemed necessary
-
-
 
 \paragraph{Task Conditioning} Rather than adding many new parameters, it is also possible to only
 add a few parameters that will adapt the existing network behavior for a task.
