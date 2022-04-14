@@ -106,6 +106,20 @@ TreeNets \citep{lee2015treenet} and base our strategy on the Transformer archite
 \section{DyTox transformer model}
 \label{sec:dytox_model}
 
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/dytox/dytox.pdf}
+    \caption{\textbf{DyTox transformer model}. An image is first split into multiple patches,
+    embedded with a linear projection. The resulting patch tokens are processed by 5 successive
+    Self-Attention Blocks (SAB) (\autoref{sec:related_cv}). For each task ($t = 1\dots T$), the processed
+    patch tokens are then given to the Task-Attention Block (TAB) (\autoref{sec:dytox_tab}): each forward
+    through the TAB is modified by a different task-specialized token $\theta_t\, \text{for}\, t \in
+        \{1 \dots T\}$ (\autoref{sec:dytox_ensembling_tab}). The $T$ final embeddings are finally given
+    separately to independent classifiers $\text{Clf}_t$ each predicting their task's classes $C^t$.
+    All $|C^{1:T}|$ logits are activated with a sigmoid. For example, at task $t=3$, one forward is
+    done through the SABs and three task-specific forwards through the unique TAB.}
+    \label{fig:dytox_model}
+\end{figure*}
 
 \label{sec:dytox_problem}
 
@@ -149,21 +163,6 @@ special class token, when processed after all the SABs, is given to a linear cla
 softmax activation to predict the final probabilities. However, more recent works, as CaiT
 \citep{touvron2021cait}, propose instead to introduce the class token only at the ultimate or
 penultimate SAB to improve classification performance.
-
-\begin{figure*}
-    \centering
-    \includegraphics[width=0.95\textwidth]{images/dytox/dytox.pdf}
-    \caption{\textbf{DyTox transformer model}. An image is first split into multiple patches,
-    embedded with a linear projection. The resulting patch tokens are processed by 5 successive
-    Self-Attention Blocks (SAB) (\autoref{sec:related_cv}). For each task ($t = 1\dots T$), the processed
-    patch tokens are then given to the Task-Attention Block (TAB) (\autoref{sec:dytox_tab}): each forward
-    through the TAB is modified by a different task-specialized token $\theta_t\, \text{for}\, t \in
-        \{1 \dots T\}$ (\autoref{sec:dytox_ensembling_cab}). The $T$ final embeddings are finally given
-    separately to independent classifiers $\text{Clf}_t$ each predicting their task's classes $C^t$.
-    All $|C^{1:T}|$ logits are activated with a sigmoid. For example, at task $t=3$, one forward is
-    done through the SABs and three task-specific forwards through the unique TAB.}
-    \label{fig:dytox_model}
-\end{figure*}
 
 \subsection{Task-Attention Block (TAB)}
 \label{sec:dytox_tab}

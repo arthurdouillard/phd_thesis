@@ -40,7 +40,7 @@ Given a \textit{training dataset} $\mathbb{D} = \{(\vx_1, y_1), ..., (\vx_N, y_N
 consists in finding the set of parameters $\theta_*$ which minimizes the loss function:
 %
 \begin{equation}
-      \theta_* = \operatorname{argmin}_{\theta} \left \{ \mathbb{E}_{(\vx,y)\in \mathbb{D}} \mcL(f_\theta(\vx), y)\right \}\,,
+      \theta_* = \operatorname{argmin}_{\theta} \left \{ \frac{1}{|\mathbb{D}|}\sum_{(\vx,y)\in \mathbb{D}} \mcL(f_\theta(\vx), y)\right \}\,,
       \label{eq:intro_optim}
 \end{equation}
 %
@@ -274,8 +274,8 @@ the optimization procedure of the old ($t-1$) and new ($t$) model is different:
 %
 \begin{equation}
       \begin{aligned}
-            \theta_*^{t-1} & = \operatorname{argmin}_{\theta} \left \{ \mathbb{E}_{(\vx,y)\in \mathbb{D}^{t-1}} \mcL(f_\theta(\vx), y)\right \}\,, \\
-            \theta_*^{t}   & = \operatorname{argmin}_{\theta} \left \{ \mathbb{E}_{(\vx,y)\in \mathbb{D}^{t}} \mcL(f_\theta(\vx), y)\right \}\,,
+            \theta_*^{t-1} & = \operatorname{argmin}_{\theta} \left \{ \frac{1}{|\mathbb{D}^{t-1}|}\sum_{(\vx,y)\in \mathbb{D}^{t-1}} \mcL(f_\theta(\vx), y)\right \}\,, \\
+            \theta_*^{t}   & = \operatorname{argmin}_{\theta} \left \{  \frac{1}{|\mathbb{D}^{t}|}\sum_{(\vx,y)\in \mathbb{D}^{t}} \mcL(f_\theta(\vx), y)\right \}\,,
       \end{aligned}
       \label{eq:intro_forgetting_weights}
 \end{equation}

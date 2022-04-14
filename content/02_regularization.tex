@@ -1,4 +1,4 @@
-\chapter{Feature-based Regularizations}
+\chapter{Visual Feature-based Regularizations for Incremental Classification}
 \label{chapter:regularization}
 
 %\newcommand{\mcL}{\mathcal{L}} \newcommand{\vx}{\mathbf{x}} \newcommand{\vh}{\mathbf{h}}
@@ -11,20 +11,23 @@
 
 
 \begin{chapabstract}
-    Regularization-based methods are powerful approaches to reduce catastrophic forgetting,
-    especially in challenging setting such as \ac{CIL} with single-head where task identity is not
-    known at test-time. However, they often consider only constraining the final probability
-    predictions of the network, weakly constraining the model's behavior and in turns falls short to
-    forgetting when faced to large amount of tasks. \\
-    In this chapter, we propose two methods exploiting explicitly the intermediate features to
-    reduce forgetting. The first approach, nicknamed PODNet, aims to constrain similar statistics to
-    avoid a representation drift at all levels of the network. We show that it scales particularly
-    well on extreme scenarios where classes are learned one by one for a long succession of
-    iterations, due to its balancing of rigidity (not forgetting old classes) - plasticity (learning
-    new classes) tradeoff. The second approach, named Ghost, pre-emptively reserves capacity for
-    future ---yet to be seen--- classes avoiding forgetting before it even happens. We pinpoint
-    those classes locations in the representation space by estimating their future positions by
-    drawing inspiration from the \ac{ZSL} literature using their metadata.
+    Regularization-based methods are powerful to reduce catastrophic forgetting, especially in
+    challenging setting such as \ac{CIL} with single-head where task identity is not known at
+    test-time. However, they often consider only constraining the final probability predictions of
+    the network, weakly constraining the model's behavior and in turns falls short to forgetting
+    when faced to large amount of tasks. \\
+    In this chapter, we present two methods exploiting the intermediate features to reduce
+    forgetting. The first approach, nicknamed PODNet, aims to constrain similar statistics to avoid
+    a representation drift at all levels of the network. We show that it scales particularly well on
+    extreme scenarios where classes are learned one by one for a long succession of iterations, due
+    to its balancing of rigidity (not forgetting old classes) - plasticity (learning new classes)
+    tradeoff. The second approach, named Ghost, pre-emptively allocate capacity for future ---yet to
+    be seen--- classes, avoiding forgetting before it even happens. We estimate those class
+    locations in the representation space by drawing inspiration from the \ac{ZSL} literature.
+
+    We evaluate our models on numerous benchmarks, from large image classification datasets (\eg
+    ImageNet), to zeroshot datasets with class attributes (\eg AwA2), and perform ablations
+    to validate the soundness of our methods.
 
     The work in this section has led to a publication to two papers:
 
@@ -44,31 +47,33 @@
 
 \section{Introduction}
 
-\acf{CIL}, where each task brings new classes, is among the most challenging setting of \acf{CL}. When
-evaluated in single-head, where the task identity is not known at test-time, the majority of the
-methods rely on rehearsal learning where a limited amount of old data is replayed. Furthermore, it
-is often combined to regularizations that aim to limit forgetting. These regularizations are often a
-knowledge distillation \citep{hinton2015knowledge_distillation} that enforces similar probabilities
-between the old and current model. First introduced by LwF \citep{li2018lwf}, it has be used
-afterwards by multiple seminal papers including iCaRL \citep{rebuffi2017icarl} and WA
-\citep{zhao2020weightalignement}. We propose in this chapter two proposed regularization methods to
-reduce forgetting. The first one, introduced in \acf{PODNet} \citep{douillard2020podnet} and detailed
-in \autoref{sec:podnet}, aims to regularize the statistics shift at the intermediate feature-level
-to enforce a consistent representation at multiple levels of the feature extractor across all steps
-of the continual training. The second one, nicknamed Ghost \citep{douillard2020ghost} and described
-in \autoref{sec:ghost}, on the other hand, avoid pre-emptively forgetting by regularizing the
-feature space at locations where the model estimates future classes will be.
+\acf{CIL}, where each task brings new classes, is among the most challenging setting of \acf{CL}
+(refer to \autoref{sec:related_continual}). When evaluated in single-head, where the task identity
+is not known at test-time, the majority of the methods rely on rehearsal learning where a limited
+amount of old data is replayed (\autoref{sec:related_rehearsal}). Furthermore, it is often combined
+to regularizations that aim to limit forgetting (\autoref{sec:related_regul_output}).
+Regularization-based approaches defined in the literature have two drawbacks: (1) they focus solely
+on the model's output probabilities, disregarding all intermediary features, and as a result only
+weakly constrain a model's behavior; (2) the regularizations are designed to avoid forgetting of old
+classes (rigidity) to the detriment of giving enough slack to the continual model in order to learn
+new classes (plasticity). We present in this chapter two novel regularizations that consider the
+intermediary visual features.
 
-For both PODNet and Ghost, we will focus on \ac{CIL} where each new task brings new classes. We
-propose then to split a dataset into multiple tasks, \eg CIFAR100 50-1 would be 1 task of 50 classes
-followed by 50 tasks of 1 class each. Following other output-based regularization methods
-(\autoref{sec:related_regul_output}), we allow a rehearsal memory storing a limited amount of
-previous data (\autoref{sec:related_rehearsal}).
+Our first contribution, introduced in \textbf{PODNet} \autoref{sec:podnet}, aims to
+\textbf{regularize the statistics shift at the intermediate feature-level to enforce a consistent
+    representation} at multiple levels of the feature extractor across all steps of the continual
+training. We design this regularization to balance efficiently the rigidity (not forgetting old
+classes) and the plasticity (learning new classes) of continual models.
+
+Our second contribution, nicknamed \textbf{Ghost} \autoref{sec:ghost}, on the other hand,
+\textbf{avoid pre-emptively forgetting by regularizing the feature space} at locations where the
+model estimates future classes will be. The future classes representation is produced using a
+generative model that exploits detailed attributes of said classes.
 
 \section{PODNet: reducing forgetting via intermediate feature statistics}
 \label{sec:podnet}
 
-\subsection{Related Works}
+\subsection{Related Work}
 \label{sec:podnet_related}
 
 We frame our model onto two paradigms: representation learning and regularization-based.
@@ -94,20 +99,19 @@ pooling the intermediate features of convolutional networks into attention maps,
 distillation losses.
 
 \paragraph{Representation learning} was already implicitly present in
-iCaRL~\citep{rebuffi2017icarl}: it introduced the \acf{NME} strategy which
-averages the outputs of the deep convolutional network to create a single proxy feature vector per
-class that are then used by a nearest-neighbor classifier predict the final classes.
-\citet{hou2019ucir} adopted this method and also introduced another, named CNN, which uses the output
-class probabilities to classify incoming samples, freezing (during training) the classifier weights
-associated with old classes, and then fine-tuning them on an under-sampled dataset.
-\citet{hou2019ucir}, in the method called here UCIR, made representation learning explicit, by
-noticing that the limited memory imposed a severe imbalance on the training samples available for
-the old and for the new classes. To overcome that difficulty, they designed a metric-learning model
-instead of a classification model. That strategy is often used in few-shot
-learning~\citep{gidaris2018fewshot_wo_forgetting} because of its robustness when faced to few data. Because
-classical metric architectures require special training sampling (\eg semi-hard sampling for
-triplets), \citet{luo2018cosine_classifier} chose instead to redesign the classifier's last layer of their model to use
-the cosine similarity.
+iCaRL~\citep{rebuffi2017icarl}: it introduced the \acf{NME} strategy which averages the outputs of
+the deep convolutional network to create a single proxy feature vector per class that are then used
+by a nearest-neighbor classifier predict the final classes. \citet{hou2019ucir} adopted this method
+and also introduced another, named CNN, which uses the output class probabilities to classify
+incoming samples, freezing (during training) the classifier weights associated with old classes, and
+then fine-tuning them on an under-sampled dataset. \citet{hou2019ucir}, in the method called here
+UCIR, made representation learning explicit, by noticing that the limited memory imposed a severe
+imbalance on the training samples available for the old and for the new classes. To overcome that
+difficulty, they designed a metric-learning model instead of a classification model. That strategy
+is often used in few-shot learning~\citep{gidaris2018fewshot_wo_forgetting} because of its
+robustness when faced to few data. Because classical metric architectures require special training
+sampling (\eg semi-hard sampling for triplets), \citet{luo2018cosine_classifier} chose instead to
+redesign the classifier's last layer of their model to use the cosine similarity.
 
 
 \begin{figure}[tb]
@@ -116,18 +120,18 @@ the cosine similarity.
     \end{center}
     \caption{\textbf{Training protocol for incremental learning}. At each training task we learn a
         new set of classes, and the model must retain knowledge about \textit{all} classes. The
-        model is allowed a \textit{limited} memory of samples of old classes. In our experiments, the first task
-        contain more classes than the following tasks (50 \vs 10 on this figure).}
+        model is allowed a \textit{limited} memory of samples of old classes. In our experiments,
+        the first task contain more classes than the following tasks (50 \vs 10 on this figure).}
     \label{fig:podnet_protocol}
 \end{figure}
 
 \subsection{Model}
 \label{sec:podnet_model}
 
-We follow the notations defined in the \hyperref[chap:notations]{Notations}. Our model is
-evaluated in the class incremental setting with rehearsal memory (\autoref{sec:related_rehearsal})
-depicted \autoref{fig:podnet_protocol}. Our strategy is made of two keys components: a distillation
-loss applied at the intermediate feature-level, and a local-similarity classifier.
+We follow the notations defined in the \hyperref[chap:notations]{Notations}. Our model is evaluated
+in the class incremental setting with rehearsal memory (\autoref{sec:related_rehearsal}) depicted
+\autoref{fig:podnet_protocol}. Our strategy is made of two keys components: a distillation loss
+applied at the intermediate feature-level, and a local-similarity classifier.
 
 \subsubsection{POD: Pooled Outputs Distillation loss}
 \label{sec:podnet_pod}
@@ -196,8 +200,8 @@ those activations across the space,
     \label{eq:podnet_pod_channel}
 \end{equation}
 %
-\noindent or, contrarily, by pooling the space (equivalent, up to a factor, to a Global Average Pooling), one
-preserves \textit{only} the channels:
+\noindent or, contrarily, by pooling the space (equivalent, up to a factor, to a Global Average
+Pooling), one preserves \textit{only} the channels:
 %
 \begin{equation}
     \mcL_{\text{POD-gap}}(\vh^{t-1}_\ell, \vh^t_\ell) = \sum_{c=1}^{C} \left\Vert \sum_{w=1}^{W} \sum_{h=1}^H \vh^{t-1}_\ell[c,w,h] - \sum_{w=1}^{W} \sum_{h=1}^H \vh^{t}_\ell[c,w,h] \right\Vert^2\,.
@@ -217,8 +221,8 @@ statistics across just one of the spatial dimensions:
     \label{eq:podnet_pod_width}
 \end{equation}
 %
-\noindent or, likewise, for the vertical dimension, resulting in POD-height. Each of those variants measure
-the distribution of activation pixels across their respective axis. These two complementary
+\noindent or, likewise, for the vertical dimension, resulting in POD-height. Each of those variants
+measure the distribution of activation pixels across their respective axis. These two complementary
 intermediate statistics can be further combined:
 %
 \begin{equation}
@@ -255,9 +259,9 @@ the different nature of the intermediate outputs (spatial and flat).
 
 As mentioned, the strategy above generalizes disparate propositions existing both in the literature
 of incremental learning, and elsewhere. When $\lambda_{c}=0$, it reduces to the cosine constraint of
-\textit{Less-Forget}, proposed by \citet{hou2019ucir} for incremental learning, which constrains only
-the final embedding. When $\lambda_{f}=0$ and POD-spatial is replaced by POD-pixel, it suggests the
-Perceptual Features loss, proposed for style transfer~\citep{johnson2016perceptual_losses}. When
+\textit{Less-Forget}, proposed by \citet{hou2019ucir} for incremental learning, which constrains
+only the final embedding. When $\lambda_{f}=0$ and POD-spatial is replaced by POD-pixel, it suggests
+the Perceptual Features loss, proposed for style transfer~\citep{johnson2016perceptual_losses}. When
 $\lambda_{f}=0$ and POD-spatial is replaced by POD-channel, the strategy hints at the loss proposed
 by \citet{zagoruyko2016distillation_attention} to allow distillation across different networks, a
 situation in which the channel pooling responds to the very practical need to allow the comparison
@@ -296,8 +300,8 @@ product. For each class $c$, their last layer becomes
     \vyh_{c}=\frac{\exp\left(\eta\langle\theta_{c},\vh\rangle\right)}{\sum_{i} \exp \left(\eta\langle\theta_{i}, \vh\rangle\right)}\,,
 \end{equation}
 %
-\noindent where $\theta_c$ are the last-layer weights for class $c$, $\eta$ is a learned scaling parameter,
-and $\langle\cdot,\cdot\rangle$ is the cosine similarity.
+\noindent where $\theta_c$ are the last-layer weights for class $c$, $\eta$ is a learned scaling
+parameter, and $\langle\cdot,\cdot\rangle$ is the cosine similarity.
 
 However, this strategy optimizes a \textit{global similarity}: its training objective increases the
 similarity between the extracted features and their associated weights. For each class, the
@@ -369,13 +373,13 @@ i.e., the model trained for task $t$, is simply their addition $\mathcal{L}_{\{f
 \subsection{Experiment Results}
 \label{sec:podnet_exp}
 
-We compare our technique (PODNet) with three state-of-the-art models. Those models are
-particularly comparable to ours since they all employ a sample memory with a fixed capacity. Both
+We compare our technique (PODNet) with three state-of-the-art models. Those models are particularly
+comparable to ours since they all employ a sample memory with a fixed capacity. Both
 iCaRL~\citep{rebuffi2017icarl} and UCIR~\citep{hou2019ucir} use the same inference method
 --\ac{NME}, although UCIR also proposes a second inference method based on the classifier
-probabilities (called here UCIR-CNN). We evaluate PODNet with both inference methods for a
-small scale dataset, and the latter for larger scale datasets. BiC~\citep{wu2019bias_correction},
-while not focused on representation learning, is specially designed to be effective on large scale
+probabilities (called here UCIR-CNN). We evaluate PODNet with both inference methods for a small
+scale dataset, and the latter for larger scale datasets. BiC~\citep{wu2019bias_correction}, while
+not focused on representation learning, is specially designed to be effective on large scale
 datasets, and thus provided an interesting baseline.
 
 \paragraph{Datasets} We employ three images datasets --\,extensively used in the literature of
@@ -444,25 +448,25 @@ different kinds of inference: \ac{NME} and CNN. With both methods, our model sur
 State-of-the-Art models on all steps. Moreover, our model relative improvement grows as the number
 the steps increases, surpassing existing models by 0.82, 2.81, 5.14, and 12.1 percent points (\pp)
 for respectively 5, 10, 25, and 50 steps. Larger numbers of steps imply  stronger forgetting; those
-results confirm that PODNet manages to reduce drastically the said forgetting. While
-PODNet with \ac{NME} has the largest gain, PODNet with CNN also outperforms the previous
-State-of-the-Art by up to 8.68\pp. See \autoref{fig:podnet_plots} for a plot of the incremental
-accuracies on this dataset. In the extreme setting of 50 increments of 1 class
-(\autoref{fig:podnet_cifar_inc1}), our model showcases large differences, with slow degradation
-(``\textit{gradual forgetting}'' \citep{french1999catastrophicforgetting}) due to forgetting
-throughout the run, while the other models show a quick performance collapse (``\textit{catastrophic
-    forgetting}'') at the start of the run.
+results confirm that PODNet manages to reduce drastically the said forgetting. While PODNet with
+\ac{NME} has the largest gain, PODNet with CNN also outperforms the previous State-of-the-Art by up
+to 8.68\pp. See \autoref{fig:podnet_plots} for a plot of the incremental accuracies on this dataset.
+In the extreme setting of 50 increments of 1 class (\autoref{fig:podnet_cifar_inc1}), our model
+showcases large differences, with slow degradation (``\textit{gradual forgetting}''
+\citep{french1999catastrophicforgetting}) due to forgetting throughout the run, while the other
+models show a quick performance collapse (``\textit{catastrophic forgetting}'') at the start of the
+run.
 
 \paragraph{ImageNet100} We run our comparisons on 5, 10, 25, and 50 steps with respectively 10, 5,
-2, and 1 classes per step. For both ImageNet100, and ImageNet1000 we report only PODNet with
-CNN, as the kNN-based \ac{NME} classifier did not generalize as well to larger-scale datasets. With
-the more complex images of ImageNet100, our model also outperforms the State-of-the-Art on all
-tested runs, by up to 6.51\pp.
+2, and 1 classes per step. For both ImageNet100, and ImageNet1000 we report only PODNet with CNN, as
+the kNN-based \ac{NME} classifier did not generalize as well to larger-scale datasets. With the more
+complex images of ImageNet100, our model also outperforms the State-of-the-Art on all tested runs,
+by up to 6.51\pp.
 
 \paragraph{ImageNet1000} This dataset is the most challenging, with much greater image complexity
 than CIFAR100, and ten times the number of classes as ImageNet100. We evaluate the models in 5 and
-10 steps, and results confirm the consistent improvement of PODNet against existing arts by up
-to 2.85\pp.
+10 steps, and results confirm the consistent improvement of PODNet against existing arts by up to
+2.85\pp.
 
 \input{tables/podnet/ablations.tex}
 
@@ -494,10 +498,9 @@ could signal a lack of confidence in the class).
 \paragraph{Spatial-based distillation} We apply our distillation loss \ac{POD} differently for the
 flat final embedding $\vh$ (POD-flat) and the \ac{ConvNet}'s intermediate features maps $\vh_\ell$
 (POD-spatial). We designed and evaluated several alternatives for the latter whose results are shown
-in \autoref{tab:podnet_ablation_perceptual}.
-Refer to \autoref{sec:podnet_pod} for their definition. In this table, all losses are with
-POD-flat ("\textit{None}" is using only POD-flat). Note that We provide in the appendix
-(\autoref{sec:appendix_podnet}) the same table without POD-flat.
+in \autoref{tab:podnet_ablation_perceptual}. Refer to \autoref{sec:podnet_pod} for their definition.
+In this table, all losses are with POD-flat ("\textit{None}" is using only POD-flat). Note that We
+provide in the appendix (\autoref{sec:appendix_podnet}) the same table without POD-flat.
 
 Overall, we see that not using pooling results in bad performance (POD-pixels). Our final loss,
 POD-spatial, surpasses all others by taking advantages of the statistics aggregated from both
@@ -509,23 +512,22 @@ later --\,used for style transfer\,-- computes a gram matrix for each channel.
 \paragraph{Forgetting and plasticity balance} Forgetting can be drastically reduced by imposing a
 high factor on the distillation losses. Unfortunately, it will also degrade the capacity (its
 \textit{plasticity}) to learn new classes. When POD-spatial is added on top of POD-flat
-(\autoref{tab:podnet_ablation_perceptual}), we manage to increase the oldest classes' performance (+7
-percentage points) while the newest classes' performance were barely reduced (-0.2\pp). Because our
-loss POD-spatial constraints only statistics, it is less stringent than a loss based on exact pixels
-values as POD-pixel. The latter hurts the newest classes (-2\pp) for a smaller improvement of old
-classes (+5\pp). Furthermore, our experiments confirmed that \ac{LSC} reduced the sensibility of the
-model to distribution shift, as the performance it brings was localized on the old classes.
+(\autoref{tab:podnet_ablation_perceptual}), we manage to increase the oldest classes' performance
+(+7 percentage points) while the newest classes' performance were barely reduced (-0.2\pp). Because
+our loss POD-spatial constraints only statistics, it is less stringent than a loss based on exact
+pixels values as POD-pixel. The latter hurts the newest classes (-2\pp) for a smaller improvement of
+old classes (+5\pp). Furthermore, our experiments confirmed that \ac{LSC} reduced the sensibility of
+the model to distribution shift, as the performance it brings was localized on the old classes.
 
 \label{sec:podnet_robustness}
-\paragraph{Robustness of our model} While previous results showed that PODNet improved
-significantly over the state-of-the-arts, we wish here to demonstrate here the robustness of our
-model to various factors. In \autoref{tab:podnet_ablation_memorysize}, we compared how PODNet
-behaves against the baseline when the memory size per class $M_{\text{per}}$ changes: PODNet
-improvements increase as the memory size decrease, up to a gain of 26.20\pp\ with \ac{NME} (resp.
-13.42\pp\ for CNN) with $M_{\text{per}} = 5$. Notice in our main experiments
-(\autoref{sec:podnet_quantitative_results}), only 20 images per class are kept in the memory. More
-experiments validating our model's robustness are provided in the appendix
-(\autoref{sec:appendix_podnet}).
+\paragraph{Robustness of our model} While previous results showed that PODNet improved significantly
+over the state-of-the-arts, we wish here to demonstrate here the robustness of our model to various
+factors. In \autoref{tab:podnet_ablation_memorysize}, we compared how PODNet behaves against the
+baseline when the memory size per class $M_{\text{per}}$ changes: PODNet improvements increase as
+the memory size decrease, up to a gain of 26.20\pp\ with \ac{NME} (resp. 13.42\pp\ for CNN) with
+$M_{\text{per}} = 5$. Notice in our main experiments (\autoref{sec:podnet_quantitative_results}),
+only 20 images per class are kept in the memory. More experiments validating our model's robustness
+are provided in the appendix (\autoref{sec:appendix_podnet}).
 
 
 \input{tables/podnet/ablation_memorysize}
@@ -537,20 +539,7 @@ experiments validating our model's robustness are provided in the appendix
 \section{Ghost: avoiding pre-emptively forgetting via ghost features}
 \label{sec:ghost}
 
-With PODNet, we reduced forgetting by reducing the shift of feature statistics between the old and
-new model. Orthogonally, we also explored if we could regularize the intermediate latent space so
-that forgetting could be avoided ---or at least reduced--- before even the introduction of
-disrupting new classes. This idea draw inspiration from \citet{aljundi2019selfless} who remarked that
-the ability to make room for future classes is a key limitation of current continual learning
-models, and propose a regularization loss to make the model more “selfless”, by leaving capacity for
-future classes in the representation. However, this pre-allocation of the future classes is done
-without supervision by enforcing sparsity. We propose instead to pre-allocate explicitly using weak
-information about the future classes. Drawing inspiration from the \acf{ZSL} literature
-\citep{lampert2009zeroshot}, we exploit classes metadata to estimate the representation of future
-classes.
-
-\begin{comment}
-Continual learning aims to perform equally well on past and present tasks. We proposed instead a
+Continual learning aims to perform equally well on past and present tasks. We present instead a
 challenging new setting, \textit{prescient continual learning}, in which the model must perform well
 not only for present and past tasks, but also for \textit{future} ones, both avoiding catastrophic
 forgetting (using a limited number of training samples for past classes), and giving the best
@@ -566,12 +555,14 @@ arrive incrementally. For instance, in many real-world applications (\eg fashion
 classification), due to budget constraints, models are released incrementally, with partial classes
 and training data, despite the classes being known from the beginning, and being well-characterized
 by attributes.
-\end{comment}
 
-\subsection{Related Works}
-\label{sec:ghost_related}
+We design a framework, nicknamed \textit{Ghost}, to exploit these class attributes estimate the
+representation of future, yet unseen, classes. We use these approximated representations to
+regularize the latent space so that forgetting could be avoided ---or at least reduced--- before
+even the introduction of disrupting new classes. This is orthogonal to the proposed PODNet strategy
+where forgetting was reduced \textit{after} a class introduction.
 
-To address the proposed model, we take inspiration from \acf{ZSL}
+To develop our framework, we take inspiration from \acf{ZSL}
 \citep{lampert2009zeroshot,xian2019awa2}, which allows classifying examples from unseen classes by
 combining a vision model with an embedding possessing knowledge about the classes (\eg a word
 embedding \citep{mikolov2013word2vec,pennington2014glove} or an attribute matrix). Although several
@@ -586,7 +577,7 @@ model due to a careful construction of the losses.
 
 The contributions of this work are two-fold: (1) we propose a new challenging setting,
 \textit{prescient} continual learning, where the model must perform well on past, present, and
-\textit{future} classes; (2) we propose our \textit{ghost model} to address that setting,
+\textit{future} classes; (2) we propose our \textit{Ghost} model to address that setting,
 integrating continual and zero-shot learning into a coherent whole where future classes are
 pre-allocated, reducing their ---yet not happened--- forgetting.
 
@@ -674,12 +665,12 @@ $\mcC^t$, produced by the feature extractor $f$.
 
 \label{sec:ghost_generator}
 
-\paragraph{Complete classifier} Remind that the parameters  $\{\theta_c\,,\forall c \in \mcC^{1:t}\}$ on
-the representation-based classifier (\autoref{eq:podnet_lsc}) may be interpreted as proxies for the
-classes $\mcC^{1:t}$. The base model for task $t$ will, thus, learn $\mcN^{1:t} = |\mcC^{1:t}|$ such
-proxies, one for each of the seen classes. To extend the model for the unseen future classes, the
-complete classifier will learn $\mcN^{1:t} + \mcN^{t+1:T}$ proxies, which changes
-\autoref{eq:podnet_nca} to:
+\paragraph{Complete classifier} Remind that the parameters  $\{\theta_c\,,\forall c \in
+    \mcC^{1:t}\}$ on the representation-based classifier (\autoref{eq:podnet_lsc}) may be interpreted as
+proxies for the classes $\mcC^{1:t}$. The base model for task $t$ will, thus, learn $\mcN^{1:t} =
+    |\mcC^{1:t}|$ such proxies, one for each of the seen classes. To extend the model for the unseen
+future classes, the complete classifier will learn $\mcN^{1:t} + \mcN^{t+1:T}$ proxies, which
+changes \autoref{eq:podnet_nca} to:
 %
 \begin{equation}
     \mcL^\text{\tiny{nca-ghost}}_{\Theta_f,\Theta_{\clf}} = \left[- \log\frac{\exp\left(\vyh_y - \delta\right)}{\sum_{\substack{c \neq y\\c \in \mcC^{1:t}}} \exp \vyh_{c} + \sum_{\substack{c \neq y\\c \in \mcC^{t+1:T}}} \exp \vyh_{c}} \right]_+ \,.
@@ -687,9 +678,9 @@ complete classifier will learn $\mcN^{1:t} + \mcN^{t+1:T}$ proxies, which change
 \end{equation}
 %
 This classification loss maximizes the similarity $\vyh_y$ (or, conversely, minimizes the distance)
-between sample feature $\vh_y$ and correct class proxy $\theta_y$ in the numerator. In the denominator,
-the loss pushes away all wrong class proxies, from both seen and unseen (future) classes, by
-minimizing the similarities with $\vy_c, \, \forall c \neq y$.
+between sample feature $\vh_y$ and correct class proxy $\theta_y$ in the numerator. In the
+denominator, the loss pushes away all wrong class proxies, from both seen and unseen (future)
+classes, by minimizing the similarities with $\vy_c, \, \forall c \neq y$.
 
 The participation of future classes in the classification loss has two effects. Most obviously, it
 allows the model to perform zero-shot-like guesses for those classes during test time. The
@@ -713,9 +704,9 @@ features are produced once per task by the generator and are kept fixed for the 
     \centering
     \includegraphics[width=0.7\linewidth]{images/ghost/svm_reg.pdf}
     \caption{\textbf{Latent-space regularization} establishes margin-based one-unseen-class \vs
-        all-seen-classes linear separations. Those separations are employed to directly condition the
-        feature space, creating space for future unseen classes. In the following task, some unseen
-        classes will become seen, and may occupy the feature space with less interference.}
+        all-seen-classes linear separations. Those separations are employed to directly condition
+        the feature space, creating space for future unseen classes. In the following task, some
+        unseen classes will become seen, and may occupy the feature space with less interference.}
     \label{fig:ghost_svm_reg}
 \end{figure}
 
@@ -733,8 +724,8 @@ could have similar behavior. To compute that loss, we learn binary
 one-unseen-class-Vs-all-seen-classes SVM classifiers, one for each unseen class. We employ a linear
 kernel, since the feature extractor and feature vector dimensionality (512) allows good linear
 separation, but more complex kernels could be used. Those \acs{SVM} define hyperplanes
-$\mathbf{w}_c$ and biases $b_c,\, \forall c \in \mcC^{t+1:T}$, separating each unseen region from the
-mass of seen features $\mathbf{h}^{(i)}$ (\autoref{fig:ghost_svm_reg}):
+$\mathbf{w}_c$ and biases $b_c,\, \forall c \in \mcC^{t+1:T}$, separating each unseen region from
+the mass of seen features $\mathbf{h}^{(i)}$ (\autoref{fig:ghost_svm_reg}):
 %
 \begin{equation}
     \mcL^\text{\tiny{svm-reg}}_{\Theta_f} = \frac{1}{\mcN^{t+1:T}} \sum_{c\in \mcC^{t+1:T}} [\mathbf{w}_c \cdot \vh^t + b_c + \tau]_+\,,
@@ -749,8 +740,8 @@ The margin-based regularization of \autoref{eq:ghost_svm} refines the ghost clas
 \autoref{eq:ghost_nca}. While the latter acts over the classifier conditioning the feature space
 indirectly via the action of the class proxies, the former acts directly over the latent/feature
 space and the feature extractor backbone that creates it. The computational overhead of training
-several SVMs, detailed in the appendix (\autoref{sec:appendix_ghost}), is negligible compared to the total training
-time.
+several SVMs, detailed in the appendix (\autoref{sec:appendix_ghost}), is negligible compared to the
+total training time.
 
 \paragraph{Complete strategy} All modules and losses fit neatly into the goal of learning
 continuously over seen and unseen classes. We train feature extractor (plus classifier) and
@@ -766,26 +757,26 @@ loss, in addition to a distillation loss to counter-act catastrophic forgetting
     \label{eq:ghost_loss}
 \end{equation}
 %
-The model is illustrated in \autoref{fig:ghost_training_procedure} and \autoref{algo:ghost_task_training} is the
-algorithm of our model in pseudocode, showcasing a procedural view of the execution of one task.
+The model is illustrated in \autoref{fig:ghost_training_procedure} and
+\autoref{algo:ghost_task_training} is the algorithm of our model in pseudocode, showcasing a
+procedural view of the execution of one task.
 
 \begin{algorithm}[H]
     \begin{algorithmic}[1]
-        \Require
-        \Statex task id $t$
-        \Statex $f^t$, $c^t$, and $g^t$
-        \Statex Data from new task and rehearsal memory $(X, y)$
+        \Require \Statex task id $t$ \Statex $f^t$, $c^t$, and $g^t$ \Statex Data from new task and
+        rehearsal memory $(X, y)$
 
-        \If{$t = 1$ or $t = T$} \State Train $f^t$ and $g^t$ with $\mcL^\text{\tiny{nca}}$
-        and $\mcL^\text{\tiny{distill}}$ on $(\vx, y)$ and Ghost samples. \Else \State Train $f^t$ and $g^t$
-        with $\mcL^\text{\tiny{nca-ghost}}$, $\mcL^\text{\tiny{svm-reg}}$ and $\mcL^\text{\tiny{distill}}$
-        on $(\vx, y)$ and Ghost samples. \EndIf
+        \If{$t = 1$ or $t = T$} \State Train $f^t$ and $g^t$ with $\mcL^\text{\tiny{nca}}$ and
+        $\mcL^\text{\tiny{distill}}$ on $(\vx, y)$ and Ghost samples. \Else \State Train $f^t$ and
+        $g^t$ with $\mcL^\text{\tiny{nca-ghost}}$, $\mcL^\text{\tiny{svm-reg}}$ and
+        $\mcL^\text{\tiny{distill}}$ on $(\vx, y)$ and Ghost samples. \EndIf
 
         \State Evaluate on all classes: $\mcC^{1:t} \cup \mcC^{t+1:T}$.
 
-        \If{$t \ne 1$ and $t < T - 1$} \State Train $g^t$ with $\mcL^\text{\tiny{MMD}}$ using attributes of
-        seen classes $\mathbf{E}_{c} \,, \forall c \in \mcC^{1:t}$ \State Generate Ghost samples for next
-        task using attributes of unseen classes $\mathbf{E}_{c} \,, \forall c \in \mcC^{t+2:T}$ \EndIf
+        \If{$t \ne 1$ and $t < T - 1$} \State Train $g^t$ with $\mcL^\text{\tiny{MMD}}$ using
+        attributes of seen classes $\mathbf{E}_{c} \,, \forall c \in \mcC^{1:t}$ \State Generate
+        Ghost samples for next task using attributes of unseen classes $\mathbf{E}_{c} \,, \forall c
+            \in \mcC^{t+2:T}$ \EndIf
     \end{algorithmic}
     \caption{Task procedure of the Ghost model}
     \label{algo:ghost_task_training}
@@ -816,11 +807,11 @@ are the same, but the SVM-based regularization was not employed since it made li
 latent space.
 
 The 2D feature space allows us to directly visualize the evolution of the feature space as the tasks
-progress, without the need for dimensionality reduction techniques that complicate the analysis
-(\eg t-SNE \citep{maaten2008tsne}). \autoref{fig:ghost_toy_weights_3steps} may be interpreted
-upfront: as the three tasks progress left-to-right, we see the evolution of the feature space on the
-base model (PODNet, on the top branch) and on the proposed model with ghost features (bottom
-branch). The base model presents a strong overlap between the initial classes, and the latter added  8
+progress, without the need for dimensionality reduction techniques that complicate the analysis (\eg
+t-SNE \citep{maaten2008tsne}). \autoref{fig:ghost_toy_weights_3steps} may be interpreted upfront: as
+the three tasks progress left-to-right, we see the evolution of the feature space on the base model
+(PODNet, on the top branch) and on the proposed model with ghost features (bottom branch). The base
+model presents a strong overlap between the initial classes, and the latter added  8
 ({\color{orange}orange}) and 9 ({\color{violet}dark purple}). That comes partially from shape
 similarities (‘8’ is similar to ‘0’ and ‘5’), partially from continual learning, and results in
 severe forgetting of old classes in favor of new ones. The proposed model organizes better the
@@ -866,25 +857,24 @@ data are limited by rehearsal memory.
 \paragraph{Base Models} We evaluate our contributions on top of two different representation-based
 models, both based on ResNet18 \citep{he2016resnet} feature extractor backbones (with feature vector
 size of 512) and cosine classifiers. They differ on the distillation loss $\mcL_\text{distil}$
-employed, the first model (PODNet)
-constraining the statistics of the intermediate features after each residual block (\autoref{sec:podnet}), and the second
-(UCIR) using Hou et al.'s distillation \citep{hou2019ucir} enforcing a cosine constraint on the
-final flat latent space. The former performs better than the latter, but both are improved by the
-innovations proposed in this work. The cosine classifier has a single proxy/representative per class
-but could easily be generalized to multiple proxies. Implementation details are provided in the
-appendix (\autoref{sec:appendix_ghost}).
+employed, the first model (PODNet) constraining the statistics of the intermediate features after
+each residual block (\autoref{sec:podnet}), and the second (UCIR) using Hou et al.'s distillation
+\citep{hou2019ucir} enforcing a cosine constraint on the final flat latent space. The former
+performs better than the latter, but both are improved by the innovations proposed in this work. The
+cosine classifier has a single proxy/representative per class but could easily be generalized to
+multiple proxies. Implementation details are provided in the appendix
+(\autoref{sec:appendix_ghost}).
 
-\paragraph{Generator} Following the work of \citet{bucher2017zeroshot_gmmn} for zero-shot
-learning, our generator is a Generative Moment Matching Network (GMMN)~\citep{li2015gmmn}
-$g^t(\mathbf{\xi}, \mathbf{E}_c)$, which takes as inputs a Gaussian noise vector $\mathbf{\xi}$ and
-a class attributes vector $\mathbf{E}_c$, and outputs a sample from the estimated distribution of
-features for a class with the given attributes. In our experiments on AwA2 and AP\&Y, the class
-attributes vectors are the average of the attributes for the training samples in the class. For each
-task $t$, the feature extractor $f^t$ and the generator $g^t$ are trained to minimize the Maximum
-Mean Discrepancy (MMD) \citep{gretton2007twosampleMMD,gretton2012twosampletestMMD} between the
-actual features of seen classes $\vh_c = f^t(\vx_c) \, , \forall c \in \mcC^{1:t}$ and their
-distribution on the generator $\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in
-    \mcC^{1:t}$.
+\paragraph{Generator} Following the work of \citet{bucher2017zeroshot_gmmn} for zero-shot learning,
+our generator is a Generative Moment Matching Network (GMMN)~\citep{li2015gmmn} $g^t(\mathbf{\xi},
+    \mathbf{E}_c)$, which takes as inputs a Gaussian noise vector $\mathbf{\xi}$ and a class attributes
+vector $\mathbf{E}_c$, and outputs a sample from the estimated distribution of features for a class
+with the given attributes. In our experiments on AwA2 and AP\&Y, the class attributes vectors are
+the average of the attributes for the training samples in the class. For each task $t$, the feature
+extractor $f^t$ and the generator $g^t$ are trained to minimize the Maximum Mean Discrepancy (MMD)
+\citep{gretton2007twosampleMMD,gretton2012twosampletestMMD} between the actual features of seen
+classes $\vh_c = f^t(\vx_c) \, , \forall c \in \mcC^{1:t}$ and their distribution on the generator
+$\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in \mcC^{1:t}$.
 
 We train the generator and the main model (feature extractor and classifier) alternately, as shown
 in \autoref{fig:ghost_training_procedure}. We always train the generator at the end of the task,
@@ -908,20 +898,20 @@ $\tilde{\vh}_c = g^t(\mathbf{\xi}, \mathbf{E}_{c}) \,, \forall c \in \mcC^{1:t}$
 \end{equation}
 %
 \noindent with $\phi(\cdot)$ being a Gaussian kernel, and the superscript $\cdot^i$ denotes the
-$i^{th}$ sample. The trained generator uses the attributes of the classes
-— which is the only information we have about them — to estimate sample features that we call
-\textit{ghost features}. To better estimate the statistics, we use all the real features of a single
-seen class per batch. We denote the number of real features by $N$. The generator produces as many
-ghost features as real features.
+$i^{th}$ sample. The trained generator uses the attributes of the classes — which is the only
+information we have about them — to estimate sample features that we call \textit{ghost features}.
+To better estimate the statistics, we use all the real features of a single seen class per batch. We
+denote the number of real features by $N$. The generator produces as many ghost features as real
+features.
 
 Our main model has mechanisms to fight Catastrophic Forgetting, which we found were sufficient also
 to protect the generator. The feature extractor has an explicit distillation loss to prevent the
-problem, and since its output is used to train the generator, the latter is also protected.
-We considered applying a distillation loss to the generator, trying to minimize a drift between
-the produced features of the previous and current generator. We measured such drift according to
-several metrics: cosine similarity, Kullback-Leiber divergence, L2 distance, and maximum mean
-discrepancy. The first metric, cosine similarity, gave the best results. However, as the generator was
-well protected, we gained at most 0.50 Continual Accuracy \pp on AwA2.
+problem, and since its output is used to train the generator, the latter is also protected. We
+considered applying a distillation loss to the generator, trying to minimize a drift between the
+produced features of the previous and current generator. We measured such drift according to several
+metrics: cosine similarity, Kullback-Leiber divergence, L2 distance, and maximum mean discrepancy.
+The first metric, cosine similarity, gave the best results. However, as the generator was well
+protected, we gained at most 0.50 Continual Accuracy \pp on AwA2.
 
 
 \input{tables/ghost/continual_half}
@@ -994,13 +984,13 @@ model's performance with generated future data is close to this upper bound.
 \input{tables/ghost/tsne_awa.tex}
 
 \paragraph{Ghost visualization} We inspect the ghost samples created by our generator with
-visualization in \autoref{fig:ghost_tsne}: we compare the features extracted from the
-actual images with their generated homologous, produced by the GMMN on the AwA2 dataset. To allow
-visualization, we reduce the dimensionality of the features to two with t-SNE. In
-\autoref{fig:ghost_tsne_seen}, we compare, at task $t$, the actual features (in dark colors) to generated
-features (in light colors) for seen classes. The generated features are, in most cases, near the
-clusters of real features, and all clusters — real and generated are tightly bound. We then compare
-in \autoref{fig:ghost_tsne_unseen} the real and generated features on unseen classes. Compared to
+visualization in \autoref{fig:ghost_tsne}: we compare the features extracted from the actual images
+with their generated homologous, produced by the GMMN on the AwA2 dataset. To allow visualization,
+we reduce the dimensionality of the features to two with t-SNE. In \autoref{fig:ghost_tsne_seen}, we
+compare, at task $t$, the actual features (in dark colors) to generated features (in light colors)
+for seen classes. The generated features are, in most cases, near the clusters of real features, and
+all clusters — real and generated are tightly bound. We then compare in
+\autoref{fig:ghost_tsne_unseen} the real and generated features on unseen classes. Compared to
 \autoref{fig:ghost_tsne_seen}, even the real features show a bigger spread, due, we believe, to the
 feature extractor $f^t$ not having met those unseen images. The generated features are also more
 spread but are still, in general, reasonably placed, indicating the ability of the generator to
@@ -1008,23 +998,21 @@ extrapolate — at least partially — the features for unseen classes from thei
 
 \section{Conclusion}
 
-In this chapter, We covered our works on regularizations of the feature space. We proposed to
+In this chapter, we covered our works on regularizations of the feature space. We proposed to
 regularize, not the model's outputs as the vast majority of the literature, but intermediate
 features. In this context, we tackle catastrophic forgetting via two approaches. Those approaches
 are orthogonal and can be combined.
 
-The first approach, PODNet, reduces the drift between the old and new models by constraining
-statistics of the intermediate features. We show that a naive constraint balances poorly the
+The first approach, \textbf{PODNet, reduces the drift between the old and new models by constraining
+    statistics of the intermediate feature}s. We show that a naive constraint balances poorly the
 plasticity-rigidity trade-off. Thus, we propose carefully designed pooling to directly exploit the
 spatial nature of the images. By constraining long-range statistics of the horizontal and vertical
 axes, we reduce drastically forgetting, especially in challenging settings with a large number of
 tasks with few classes per task. Furthermore, we design a robust metric-based classifier that
 exploits the multi-modality of the classes.
 
-The second approach, Ghost, avoids pre-emptively forgetting by estimating the future locations of
-yet unseen classes. Drawing inspiration from the zeroshot Learning literature, we exploit present classes'
-metadata to generate what we called "Ghost features" of the future classes. We then regularize
-the latent space, via a modified NCA loss and a SVM-based constraint, to allocate the future
-locations of unseen classes. In addition, of the novel zeroshot capabilities, useful to the new
-Prescient Continual Learning setting we introduced, we show that final performance has been improved
-by avoiding confusion thanks to our pre-allocation strategy.
+The second approach, \textbf{Ghost, avoids pre-emptively forgetting by estimating the future
+    locations of yet unseen classes}. Using the paradigm of representation learning to incorporate
+capabilities of zero-shot learning into the continual learning model in a seamless way. We refined
+that model with a novel SVM-based regularization loss acting over the feature space to reinforce
+exclusion zones, reserved for future classes.
