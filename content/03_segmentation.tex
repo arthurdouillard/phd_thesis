@@ -2,19 +2,22 @@
 \label{chapter:segmentation}
 
 \begin{chapabstract}
-    In \acf{CIL}, new classes are learned with each new task. However, most of the literature in
-    that domain focus on image classification, where a single label is possible per sample. In
-    \textbf{\acf{CSS}}, the setting is the same (continual addition of new classes), but the
-    implications are wildly different. In Semantic Segmentation, an image has one label per pixel.
-    Therefore, an image could contain pixels from old, current, and future classes. \\
-    In this chapter, we tackle the recent field of \acf{CSS}: We first highlight the main challenges
-    of this domain: an important \textbf{catastrophic forgetting} linked to the higher complexity of
-    segmentation images, and a \textbf{background shift} where images are partially labeled with
-    only the current classes' ground-truth being present. Then, we propose multiple complementary
-    methods to solve those challenges: We design an uncertainty-based hard pseudo-labeling loss and
-    an efficient object rehearsal method to tackle the background shift. We also propose a
-    multi-scale distillation loss inspired by our previous POD to drastically reduce forgetting of
-    the previous classes.
+    In \acf{CIL},  most of the literature in focuses on image classification. In \textbf{\acf{CSS}},
+    the continual setting is the same (incremental addition of new classes), but the implications
+    are wildly different. In Semantic Segmentation, an image has one label per pixel. Therefore, an
+    image could contain pixels from old, current, and future classes. \\
+    In this chapter, we present a new approach for Continual Semantic Segmentation: We first
+    highlight the main challenges of this domain: an important \textbf{catastrophic forgetting}
+    linked to the higher complexity of segmentation images, and a \textbf{background shift} where
+    images are partially labeled: the new classes' ground-truth labels are present but all other
+    classes are unlabeled despite their presence in an image. To tackle the background shift, we
+    design an uncertainty-based hard pseudo-labeling loss and an efficient object rehearsal method.
+    To reduce the catastrophic forgetting of old classes, we also propose a multi-scale distillation
+    loss inspired by our previous POD.
+
+    We evaluate our model on multiple datasets (\eg VOC, ADE, Cityscapes), propose new benchmarks,
+    and perform extensive quantitative and qualitative ablations validating the efficiency of our
+    strategy.
 
     The work in this section has led to the writing of two papers:
 

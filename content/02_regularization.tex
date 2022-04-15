@@ -59,13 +59,13 @@ classes (rigidity) to the detriment of giving enough slack to the continual mode
 new classes (plasticity). We present in this chapter two novel regularizations that consider the
 intermediary visual features.
 
-Our first contribution, introduced in \textbf{PODNet} \autoref{sec:podnet}, aims to
+Our first contribution, introduced in \textbf{PODNet} (\autoref{sec:podnet}), aims to
 \textbf{regularize the statistics shift at the intermediate feature-level to enforce a consistent
     representation} at multiple levels of the feature extractor across all steps of the continual
 training. We design this regularization to balance efficiently the rigidity (not forgetting old
 classes) and the plasticity (learning new classes) of continual models.
 
-Our second contribution, nicknamed \textbf{Ghost} \autoref{sec:ghost}, on the other hand,
+Our second contribution, nicknamed \textbf{Ghost} (\autoref{sec:ghost}), on the other hand,
 \textbf{avoid pre-emptively forgetting by regularizing the feature space} at locations where the
 model estimates future classes will be. The future classes representation is produced using a
 generative model that exploits detailed attributes of said classes.
@@ -76,7 +76,12 @@ generative model that exploits detailed attributes of said classes.
 \subsection{Related Work}
 \label{sec:podnet_related}
 
-We frame our model onto two paradigms: representation learning and regularization-based.
+We design our model explicitly for a \acf{CIL} setting with a large number of classes. In this
+challenging setting, rehearsal learning is essential. We use the simple but efficient rehearsal
+method of \citet{rebuffi2017icarl}, refer to \autoref{sec:related_rehearsal} for more information.
+Moreover, we limit the forgetting of our continual model using a regularization-based approach that
+constrain the model's output. Furthermore, we aim to explicitly learn a robust feature
+representation by drawing inspiration from the few-shot literature.
 
 \paragraph{Regularization of the model's output} Regularizations constraining the rate of change of
 the weights \citep{kirkpatrick2017ewc} or the gradients \citep{farajtabar2020ogd} have been
