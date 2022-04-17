@@ -2,21 +2,21 @@
 \label{chapter:dynamic}
 
 \begin{chapabstract}
-    Deep network architectures struggle to continually learn new tasks without forgetting the
-    previous tasks. A recent trend indicates that dynamic architectures based on an expansion of the
-    parameters can reduce catastrophic forgetting efficiently in continual learning. However,
+    Continual models aim to learn an ever-growing number of tasks. Dynamic architectures expand
+    their parameters to tackle this increasing complexity. However,
     existing approaches often require a task identifier at test-time, need complex tuning to balance
     the growing number of parameters, and barely share any information across tasks. As a result,
     they struggle to scale to a large number of tasks without significant overhead.\\
-    In this paper, we propose a transformer architecture based on a dedicated encoder/decoder
+    In this chapter, we propose a transformer architecture based on a dedicated encoder/decoder
     framework. Critically, the encoder and decoder are shared among all tasks. Through a dynamic
     expansion of special tokens, we specialize each forward of our decoder network on a task
     distribution. Our strategy scales to a large number of tasks while having negligible memory and
-    time overheads due to strict control of the expansion of the parameters. Moreover, this
-    efficient strategy doesn't need any hyperparameter tuning to control the network's expansion.
-    Our model reaches excellent results on CIFAR100 and state-of-the-art performances on the
-    large-scale ImageNet100 and ImageNet1000 while having fewer parameters than concurrent dynamic
-    frameworks.
+    time overheads due to strict control of the expansion of the parameters. Moreover, as a result,
+    this efficient strategy doesn't need any hyperparameter tuning to control the network's
+    expansion.\\
+    We evaluate our model on multiple datasets and show the interest of our parameter expansion strategy,
+    striking the right balance between performance and overhead. We also extensively ablate our
+    model to highlight each component contribution.
 
     \begin{itemize}
         \item \fullcite{douillard2021dytox}
@@ -35,17 +35,13 @@
 \label{sec:dytox_intro}
 
 
-Recent works
-\citep{yoon2018dynamically_expandable_networks,li2019learning_to_grow,hung2019cpg,fernando2017path_net,golkar2019neural_pruning,serra2018hat}
-dynamically expand the network architectures
-\citep{yoon2018dynamically_expandable_networks,li2019learning_to_grow} or re-arrange their internal
-structures \citep{fernando2017path_net,serra2018hat,hung2019cpg,golkar2019neural_pruning}.
-Unfortunately at test-time, they require to know the task to which the test sample belongs --- in
-order to know which parameters should be used. More recently, DER \citep{yan2021der} and Simple-DER
-\citep{li2021preserve} discarded the need for this task identifier by learning a single classifier on
-the concatenation of all produced embeddings by different subsets of parameters. Yet, these
-strategies induce dramatic memory overhead when tackling a large number of tasks, and thus need
-complex pruning as post-processing.
+Recent works expand the network architectures or re-arrange their internal structures using dynamic
+strategies (see \autoref{sec:related_structural}). Unfortunately at test-time, they require to know
+the task to which the test sample belongs --- in order to know which parameters should be used. More
+recently, DER \citep{yan2021der} and Simple-DER \citep{li2021preserve} discarded the need for this
+task identifier by learning a single classifier on the concatenation of all produced embeddings by
+different subsets of parameters. Yet, these strategies induce dramatic memory overhead when tackling
+a large number of tasks, and thus need complex pruning as post-processing.
 
 To improve the ease of use of continual learning frameworks for real-world applications, we aim to
 design a dynamically expandable representation (almost) `for free' by having the three following
@@ -53,22 +49,22 @@ properties: \#1 \textbf{limited memory overhead} as the number of tasks grows, \
     time overhead} at test time and \#3 \textbf{no setting-specific hyperparameters} for improved
 robustness when faced to an unknown (potentially large) number of tasks.
 
-To this end, we leverage the computer vision transformer ViT \citep{dosovitskiy2020vit}. Transformers
-\citep{vaswani2017transformer} offer a very interesting framework to satisfy the previously
-mentioned constraints. Indeed, we build upon this architecture to design a \textbf{encoder/decoder
-    strategy}: the encoder layers are shared among all members of our dynamic network; the unique
-decoder layer is also shared but its forward pass is specialized by a \textbf{task-specific learned
-    token} to produce task-specific embeddings. Thus, the memory growth of the dynamic network is
-extremely limited: only a 384d vector per task, validating property \#1. Moreover, this requires no
-hyperparameter tuning (property \#3). Finally, the decoder is explicitly designed to be
-computationally lightweight (satisfying property \#2). We nicknamed our framework, DyTox, for
-\textbf{DYnamic TOken eXpansion}. To the best of our knowledge, we are the first to apply the
-transformer architecture to continual computer vision.
+To this end, we leverage the computer vision transformers (refer to \autoref{sec:related_cv}).
+Transformers \citep{vaswani2017transformer} offer a very interesting framework to satisfy the
+previously mentioned constraints. Indeed, we build upon this architecture to design a
+\textbf{encoder/decoder strategy}: the encoder layers are shared among all members of our dynamic
+network; the unique decoder layer is also shared, but its forward pass is specialized by a
+\textbf{task-specific learned token} to produce task-specific embeddings. Thus, the memory growth of
+the dynamic network is extremely limited: only a 384d vector per task, validating property \#1.
+Moreover, this requires no hyperparameter tuning (property \#3). Finally, the decoder is explicitly
+designed to be computationally lightweight (satisfying property \#2). We nicknamed our framework,
+DyTox, for \textbf{DYnamic TOken eXpansion}. To the best of our knowledge, we are the first to apply
+the transformer architecture to continual computer vision.
 
-Our strategy is robust to different settings, and can easily scale to a large number of tasks. In
-particular, we validate the efficiency of our approach on CIFAR100, ImageNet100, and ImageNet1000
-(displayed on \autoref{fig:dytox_imagenet1000}) for multiple settings. We reach state-of-the-art results,
-with only a small overhead thanks to our efficient dynamic strategy.
+Our strategy is robust to different settings, and can easily scale to a large number of tasks with
+minimal time and memory overheads. In particular, we validate the efficiency of our approach on
+CIFAR100, ImageNet100, and ImageNet1000 for multiple settings. We also perform ablations confirming
+the soundness of our dynamic strategy.
 
 \section{Related work}
 \label{sec:dytox_related}
@@ -76,7 +72,7 @@ with only a small overhead thanks to our efficient dynamic strategy.
 In this chapter, we focus on continual dynamic networks
 (\autoref{sec:related_structural}) that expand their parameters coupled with rehearsal learning
 (\autoref{sec:related_rehearsal}). Moreover, to satisfy our desiderata listed previously, we based
-our framework on the recent Transformer architecture \autoref{sec:related_cv}.
+our framework on the recent Transformer architecture (see \autoref{sec:related_cv}).
 
 \paragraph{Continual dynamic networks}  Notably, most dynamic strategies require the sample's task
 identifier at test-time to select the right subset of parameters
@@ -144,20 +140,20 @@ sections.
 \label{sec:dytox_vit}
 
 The vision transformer \citep{dosovitskiy2020vit} has three main components: the patch tokenizer, the
-encoder made of Self-Attention Blocks, and the classifier. We described in the related work
-(\autoref{sec:related_cv}) the general architecture. We denote in this chapter a Self-Attention
-Block by its acronym: SAB, and we depict it in \autoref{fig:dytox_sab}.
+encoder made of Self-Attention Blocks (SABs), and the classifier. We described in the related work
+(\autoref{sec:related_cv}) the general architecture. A SAB is depicted in \autoref{fig:dytox_sab}.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0\textwidth]{images/dytox/sab.pdf}
+    \includegraphics[width=1\textwidth]{images/dytox/sab.pdf}
     \caption{\textbf{The Self-Attention Block (SAB)} combines a Self-Attention (SA), two Layer
         Norms, and one MLP with a single hidden layer. As in a ResNet, two shortcuts are used with
-        element-wise addition.\vspace{-2em}}
+        element-wise addition.}
+    %\vspace{-2em}
     \label{fig:dytox_sab}
 \end{figure}
 
-Importantly, recall that in the original vision transformer (ViT \citep{dosovitskiy2020vit}), a learned
+Importantly, recall that in the original vision transformer ViT \citep{dosovitskiy2020vit}, a learned
 vector called the ``\textit{class token}'' is appended to the patch tokens after the tokenizer. This
 special class token, when processed after all the SABs, is given to a linear classifier with a
 softmax activation to predict the final probabilities. However, more recent works, as CaiT
@@ -299,7 +295,7 @@ time overhead is sub-linear. We quantitatively show this in \autoref{sec:dytox_e
     \end{algorithmic}
 \end{algorithm}
 
-\vspace{-1em}
+%\vspace{-1em}
 \paragraph{Context} The current transformer paradigm starting from BERT \citep{devlin2018bert} and
 continuing with ViT \citep{dosovitskiy2020vit} is based on a encoder+classifier structure.
 Differently, our dynamic framework strays is a resurgence of the encoder/decoder structure of the
@@ -307,12 +303,12 @@ original transformer \citep{vaswani2017transformer}: the encoder is shared (both
 execution) for all outputs. The decoder parameters are also shared, but its execution is
 task-specific with each task token, with each forward akin to a task-specific expert chosen from a
 mixture of experts \citep{masoudnia2014mixture}. Moreover, multi-tasks text-based transformers have
-natural language tokens as an indicator of a task \citep{raffel2019t5} (\textit{e.g.} "summarize the
+natural language tokens as an indicator of a task \citep{raffel2019t5} (\eg "summarize the
 following text"), in our context of vision we used our defined task tokens as indicators.
 
 \label{sec:dytox_training}
 
-\vspace{-0.5em}
+%\vspace{-0.5em}
 \paragraph{Losses} Our model is trained with three losses: (1) the classification loss
 $\mathcal{L_\text{clf}}$, a binary-cross entropy, (2) a knowledge distillation
 \citep{hinton2015knowledge_distillation} $\mathcal{L_\text{kd}}$ applied on the probabilities, and
@@ -332,7 +328,7 @@ task tokens. The total loss is:
 %
 with $\lambda$ a hyperparameter set to $0.1$ for \textbf{all} experiments. $\alpha$ correspond to
 the fraction of the number of old classes over the number of new classes
-$\frac{|C^{1:t-1}|}{|C^{1:t}|}$ as done by \citep{zhao2020weightalignement}. Therefore, $\alpha$ is
+$\frac{|C^{1:t-1}|}{|C^{1:t}|}$ as done by \citet{zhao2020weightalignement}. Therefore, $\alpha$ is
 automatically set; this removes the need to finely tune this hyperparameter.
 
 \subsection{Improved Continual Training Procedure}
@@ -353,17 +349,17 @@ this MixUp procedure, nicknamed as DyTox+, the forgetting is significantly reduc
 experiments.
 
 \paragraph{DyTox++} We nicknamed DyTox+ our model when combined with a novel continual procedure
-based on MixUp \cite{hingyi2018mixup}. We now refine DyTox+ into DyTox++ by adding a new component
-during the training: the Sharpness-Aware Minimizer (SAM) \cite{kwon2021asam}. Indeed, \textbf{aiming
+based on MixUp \citep{hingyi2018mixup}. We now refine DyTox+ into DyTox++ by adding a new component
+during the training: the Sharpness-Aware Minimizer (SAM) \citep{foret2020sam}. Indeed, \textbf{aiming
     for wider minima} is particularly important in continual learning
-\cite{kirkpatrick2017ewc,verwimp2021rehearsalrevealed}. This is because sharp task-specific minima
+\citep{kirkpatrick2017ewc,verwimp2021rehearsalrevealed}. This is because sharp task-specific minima
 lead to over-specialization to a particular task and consequently to a forgetting of all other
-tasks. Weights constraints as EWC \cite{kirkpatrick2017ewc} or second-order optimization
-\cite{lee2020kroneckercontinual} have similar motivations. SAM estimates the worst closest
+tasks. Weights constraints as EWC \citep{kirkpatrick2017ewc} or second-order optimization
+\citep{lee2020kroneckercontinual} have similar motivations. SAM estimates the worst closest
 parameters during a first forward/backward pass, and then optimizes the loss w.r.t. to them during a
 second forward/pass. In consequence, DyTox++ optimizes the loss not w.r.t. the current parameters
 but w.r.t. a region of possible parameters leading to wide local minima that span across multiple
-tasks. In practice, we used the Adaptive SAM (ASAM) \cite{kwon2021asam}, an extension of SAM that is
+tasks. In practice, we used the Adaptive SAM (ASAM) \citep{kwon2021asam}, an extension of SAM that is
 more robust to hyperparameters.
 
 
@@ -400,16 +396,15 @@ than usual "tiny" models \citep{dosovitskiy2020vit,touvron2021deit,touvron2021ca
 hyperparameters for CIFAR100 with 10 steps on a validation set made of 10\% of the training set, and
 then kept them fixed for all other settings, ImageNet included. The only difference between the two
 datasets is that ImageNet images are larger; thus the patch size is larger, and overall the base
-transformer has slightly more parameters on ImageNet than on CIFAR (11.00M vs 10.72M) because of a
+transformer has slightly more parameters on ImageNet than on CIFAR (11.00M \vs 10.72M) because of a
 bigger positional embedding. We use the attention with spatial prior (introduced by ConViT
-\citep{dascoli2021convit}) for all SABs which allows training transformers on a small dataset (like
+\citep{dascoli2021convit}) for all SABs, which allows training transformers on a small dataset (like
 CIFAR) without pretraining on large datasets or complex regularizations. Following previous works
 \citep{rebuffi2017icarl,yan2021der}, we use for all models (baselines included) 2,000 images of
-rehearsal memory for CIFAR100 and ImageNet100, and 20,000 images for ImageNet1000. The
-implementations of the continual scenarios are provided by Continuum
-\citep{douillardlesort2021continuum}. Our network implementation is based on the DeiT
-\citep{touvron2021deit} code base which itself uses extensively the timm library
-\citep{wightman2019timm}. The code is released
+rehearsal memory for CIFAR100 and ImageNet100, and 20,000 images for ImageNet1000. The Continuum
+library \citep{douillardlesort2021continuum} provides the implementations of the continual
+scenarios. Our network implementation is based on the DeiT \citep{touvron2021deit} code base, which
+itself extensively uses the timm library \citep{wightman2019timm}. The code is released
 publicly\footnote{\footnotesize{\url{https://github.com/arthurdouillard/dytox}.}}. The full
 implementation details are in the appendix (\autoref{sec:appendix_dytox}).
 
@@ -430,7 +425,7 @@ implementation details are in the appendix (\autoref{sec:appendix_dytox}).
     \end{subfigure}
     \caption{\textbf{Performance evolution on ImageNet-\{100, 1000\}.} The top-5 accuracy (\%) is
         reported after learning each task. Our model DyTox (in \textbf{\textcolor{red}{red}}) reaches
-        state-of-the-parterformance while using significantly less parameters than concurrent models.
+        state-of-the-art performance while using significantly fewer parameters than concurrent models.
         Note that at the initial step before the continual process begins, our model has performance
         comparable to other baselines: the performance gain is achieved by reducing catastrophic
         forgetting.}
@@ -501,19 +496,19 @@ DyTox is able to scale correctly while handling seamlessly the parameter growth 
 the weights across tasks. In contrast, DER had to propose a complex pruning method; unfortunately,
 this pruning required different hyperparameter values for different settings. Despite this, the
 pruning in DER$^\dagger$ is less efficient when classes diversity increase: DER$^\dagger$ doubles in
-size between ImageNet100 and ImageNet1000 (\citep{yan2021der} reports 7.67M \textit{vs.} 14.52M)
+size between ImageNet100 and ImageNet1000 (\citet{yan2021der} reports 7.67M \textit{vs.} 14.52M)
 while handling the same amount of tasks (10). Note that these parameter counts reported for
-DER$^\dagger$ in \citep{yan2021der} are in fact averages over all steps: the final parameters count
+DER$^\dagger$ in \citet{yan2021der} are in fact averages over all steps: the final parameters count
 (necessarily higher) was not available and thus is not reported in our tables. Simple-DER also
 applies pruning but without hyperparameter tuning; while simpler, the pruning is also less efficient
 and induces larger model (28.00M parameters).
 
-\vspace{-0.5em}
+%\vspace{-0.5em}
 \paragraph{CIFAR100} \autoref{tab:dytox_cifar100-b0} shows results for all approaches on CIFAR100. The
 more steps there are, the larger the forgetting is and thus the lower the performances are. Those
 settings are also displayed in \autoref{fig:dytox_increment_cifar} after each task. In every setting,
 DyTox is close to DER w/o P  for much fewer parameters (up to 52x less). Critically, DyTox is
-significantly above other baselines: \textit{e.g.} DyTox is up to +25\% in ``Last'' accuracy in the
+significantly above other baselines: \eg DyTox is up to +25\% in ``Last'' accuracy in the
 50 steps setup. Note that our improved continual training procedure, with DyTox+ and DyToX++,
 further increases the results in all settings. Notably DyTox++ increases the ``Àvg'' accuracy in the
 50 setup over DER by +3.4 \pp. Remark also that DER ``Avg'' accuracy degrades by 2.59 \pp between
@@ -528,22 +523,27 @@ growing classifier which is common for all continual models) is only of $+0.004\
 the challenging setting of CIFAR100 with 50 tasks, our memory overhead is almost null ($+0.2\%$).
 
 \label{sec:dytox_comp_over}
-\vspace{-1em}
+%\vspace{-1em}
 \paragraph{Computational overhead} The vast majority of the computation is done in the SABs, thus
 shared among all tasks. The dynamical component of our model is located at the ultimate TAB.
 Moreover, the Task-Attention, contrary to the Self-Attention, has a time complexity linear in terms
 of tokens and not quadratic reducing the time overhead to an acceptable sub-linear amount. Overall,
-for each new task, one forward pass takes $2.24\%$ more time than for the base transformer.
+for each new task, one forward pass is only $2.24\%$ slower than at the previous task.
+Furthermore, the procedure can be accelerated by doing a single forward pass through the TAB with
+a masked attention \citep{vaswani2017transformer}: the query is the concatenation of all task
+tokens, then we mask the attention logits corresponding to an interaction between task tokens. For
+an almost equivalent result (modulo numerical imprecision), a new task only increases the time spent
+in a forward pass by $1.09\%$.
 
-\vspace{-1em}
+%\vspace{-1em}
 \input{tables/dytox/plusplus}
 
 \paragraph{Training procedure introspection} Our DyTox+ and DyTox++ strategies really reduce
 catastrophic forgetting and does not just improve raw performances. This is shown in
 \autoref{tab:dytox_training_plusplus}, where we compare DyTox \vs DyTox+ \vs DyTox++ strategies on
 CIFAR100. In the joint setting, our model slightly benefits from both MixUp and ASAM: the gain is
-limited (+1.79 \textit{p.p.}). On the other hand, those two methods greatly improve the extreme
-continual setting of 50 steps (+6.42 \textit{p.p.}). This shows that the gain is not due to absolute
+limited (+1.79 \pp). On the other hand, those two methods greatly improve the extreme
+continual setting of 50 steps (+6.42 \pp). This shows that the gain is not due to absolute
 improvements of the model performance. Moreover, using the forgetting measure of
 \citet{chaudhry2018riemannien_walk}, we compare how much a model has forgotten relatively to its
 previous tasks. This metric is therefore agnostic to absolute performance improvements. DyTox had a
@@ -554,12 +554,15 @@ doubles the number of forward and backward passes. For this reason, we didn't ev
 the large ImageNet1000. However, future works could consider the promising Look-SAM
 \cite{liu2021looksam} to reduce the time overhead.
 
-\vspace{-1em}
+\input{tables/dytox/ablations}
+\FloatBarrier
+
+%\vspace{-1em}
 \label{sec:dytox_ablations}
 \paragraph{Model ablations} We ablate the importance of the different components of DyTox in
 \autoref{tab:dytox_ablation}. We add on the base transformer a naive knowledge distillation
 \citep{hinton2015knowledge_distillation} and a finetuning
-\citep{castro2018end_to_end_inc_learn,hou2019ucir,douillard2020podnet,yan2021der} applied after each
+\citep{castro2018end_to_end_inc_learn} applied after each
 task on a balanced set of new data and rehearsal data. Finally, our DyTox strategy exploits directly
 the very nature of transformers (separated task information from the pixels information) to tackle
 catastrophic forgetting with three components: (1) a task token expansion, (2) a divergence
@@ -567,18 +570,18 @@ classifier, and (3) independent classifiers. All three greatly improve over the 
 ($42.21\% \rightarrow 52.34\%$ in ``Last'') while having almost no memory overhead ($+0.2\%$). The
 divergence classifier improves the diversity between task tokens: we observed that the minimal
 Euclidean distance between them increases by 8\%. Moreover, we also remarked that having independent
-classifiers reduces the Chaudhry et al.'s forgetting \citep{chaudhry2018riemannien_walk} by more than
+classifiers reduces the forgetting defined by \citet{chaudhry2018riemannien_walk} by more than
 24\%.
 
-\input{tables/dytox/ablations}
 
 \section{Conclusion}
 
-In this paper, we propose DyTox, a new dynamic strategy for continual learning based on transformer
-architecture. In our model, self-attention layers are shared across all tasks, and we add
-task-specific tokens to achieve task-specialized embeddings through a new task-attention layer.
-This architecture allows us to dynamically process new tasks with very little memory overhead and
-does not require complex hyperparameter tuning. Our experiments show that our framework scales to
-large datasets like ImageNet1k with state-of-the-art performances. Moreover, when a large number of
-tasks is considered (\textit{i.e.} CIFAR100 50 steps) our number of parameters increases reasonably
-contrary to previous dynamic strategies.
+In this chapter, we covered our work on dynamic architectures. While in previous chapters, we aimed
+to constrain the visual features, we decided here to condition the features to specific tasks. With
+DyTox, a new dynamic strategy for continual learning based on transformer architecture, all tasks
+share a common encoding produced by self-attention layers. Then, task-specific tokens to achieve
+task-specialized embeddings through a new task-attention layer. This architecture allows us to
+dynamically process new tasks with very little memory overhead and does not require complex
+hyperparameter tuning. Our experiments show that our framework scales to large datasets and an
+important number of tasks efficiently while using significantly fewer parameters than concurrent
+dynamic strategies.
