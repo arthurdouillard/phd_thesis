@@ -20,12 +20,20 @@ Then, in \autoref{chapter:segmentation}, we explore continual approaches for
 semantic segmentation. Finally, in \autoref{chapter:dynamic}, we exploit the transformer
 architecture in a dynamic framework to condition features per task.
 
-\paragraph{Visual Features regularization} pass
+\paragraph{Visual Features regularization} We study in \autoref{chapter:regularization} \ac{CIL} for
+image classification. In this setting, regularization constraining a model's output is the most
+common approach. We challenge this paradigm by outlining two drawbacks: it balances poorly the
+rigidity (not forgetting old classes) \vs plasticity (learning new classes) trade-off. Moreover,
+constraining intermediary visual features is a stronger regularization. Then, we design two
+feature-based regularizations: (1) PODNet minimizes the drift between statistics of the visual
+features between the old and new models. The design of this method explicitly reduce forgetting
+while letting enough slack to learn efficiently new classes. (2) Our second approach, Ghost, avoids
+forgetting before it even happens by pre-allocating areas of the latent space for future classes by
+drawing inspiration from the zeroshot literature.
 
 \paragraph{Continual Semantic Segmentation} pass
 
 \paragraph{Dynamic Strategy with Transformers} pass
-
 
 
 \section{Future Work}
