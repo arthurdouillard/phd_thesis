@@ -14,11 +14,11 @@ explore the future directions of Continual Learning.
 
 During this thesis, we aim to learn an increasing number of classes with \ac{DL} architectures for
 \ac{CV} without forgetting. We design multiple methods to achieve this goal, with a particular
-interest on how the visual features of a continual model evolve through time. First, in \autoref{chapter:regularization}, we
-investigate how to constrain features while satisfying a rigidity-plasticity trade-off.
-Then, in \autoref{chapter:segmentation}, we explore continual approaches for
-semantic segmentation. Finally, in \autoref{chapter:dynamic}, we exploit the transformer
-architecture in a dynamic framework to condition features per task.
+interest on how the visual features of a continual model evolve through time. First, in
+\autoref{chapter:regularization}, we investigate how to constrain features while satisfying a
+rigidity-plasticity trade-off. Then, in \autoref{chapter:segmentation}, we explore continual
+approaches for semantic segmentation. Finally, in \autoref{chapter:dynamic}, we exploit the
+transformer architecture in a dynamic framework to condition features per task.
 
 \paragraph{Visual Features regularization} We study in \autoref{chapter:regularization} \ac{CIL} for
 image classification. In this setting, regularization constraining a model's output is the most
@@ -31,11 +31,41 @@ while letting enough slack to learn efficiently new classes. (2) Our second appr
 forgetting before it even happens by pre-allocating areas of the latent space for future classes by
 drawing inspiration from the zeroshot literature.
 
-\paragraph{Continual Semantic Segmentation} pass
+\paragraph{Continual Semantic Segmentation} We explore \ac{CSS} in \autoref{chapter:segmentation}.
+We highlight the two main challenges: an important catastrophic forgetting linked to the higher
+complexity of segmentation images, and a background shift where only classes of the current task are
+labeled. To reduce the catastrophic forgetting of old classes, inspired by our previous POD, we
+present a multi-scale distillation loss that constrains local regions of visual features. Then, to
+tackle the background shift, we design an uncertainty-based hard pseudo-labeling loss. We show that
+despite its usefulness, our pseudo-labeling can fails for particular situations, and complement it
+with an efficient object rehearsal method.
 
-\paragraph{Dynamic Strategy with Transformers} pass
-
+\paragraph{Dynamic Strategy with Transformers} Finally, in \autoref{chapter:dynamic}, we propose to
+use the recent transformer architecture with a dynamic strategy in \acf{CIL} for image
+classification. Previous dynamic networks, that expand their parameters as the number of learned
+tasks increases, struggle to limit their memory and time overheads. We propose instead to share a
+common encoding produced by self-attention layers, and to condition the features for each task using
+task-specific tokens. This architecture allows us to dynamically process new tasks with very little
+memory overhead even when faced to a large number of tasks.
 
 \section{Future Work}
 
+When discussing the future directions of the Continual Learning field, we will distinguish between
+those related to the data and those to the architectures \& losses themselves.
 
+We now discuss future directions of the Continual Learning field and how our contributions could be
+extended.
+
+\paragraph{Mixture-of-Experts}
+
+\paragraph{Task-specific Attention Heads}
+
+\paragraph{Compositionality of task tokens}
+
+\paragraph{Time bounded instead of memory bounded}
+
+\paragraph{Large-scale training \& models}
+
+\paragraph{Multi-modalities}
+
+\paragraph{Second-order optimization}
