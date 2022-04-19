@@ -1,23 +1,23 @@
 \begin{table}[t]
     \centering
-    \resizebox{\textwidth}{!}{%
-        \begin{tabular}{l|ccccc}
-            \hline
-            \multirow{2}{*}{\textbf{Methods}}   & \multirow{2}{*}{\textbf{$\#$P}} & \multicolumn{2}{c}{\textbf{top-1}} & \multicolumn{2}{c}{\textbf{top-5}}                                   \\
-                                                &                                 & \textbf{Avg}                       & \textbf{Last}                      & \textbf{Avg}   & \textbf{Last}  \\
-            \hline
-            ResNet18 joint                      & $11.22$                         & -                                  & -                                  & -              & $95.1$         \\
-            Transf. joint                       & 11.00                           & -                                  & 79.12                              & -              & 93.48          \\
-            \hline
-            WA \citep{zhao2020weightalignement} & $11.22$                         & -                                  & -                                  & $91.00$        & $84.10$        \\
-            DER w/o P \citep{yan2021der}        & 112.27                          & 77.18                              & 66.70                              & 93.23          & 87.52          \\
-            \hline
-            DyTox                               & 11.01                           & 77.15                              & 69.10                              & 92.04          & 87.98          \\
-            DyTox+                              & 11.01                           & 79.22                              & 69.06                              & 93.72          & 88.82          \\
-            DyTox++                             & 11.01                           & \textbf{80.76}                     & \textbf{72.46}                     & \textbf{94.40} & \textbf{90.10} \\
-            \hline
-        \end{tabular}
-    }
+    %\resizebox{\textwidth}{!}{%
+    \begin{tabular}{l|ccccc}
+        \hline
+        \multirow{2}{*}{\textbf{Methods}}                & \multirow{2}{*}{\textbf{$\#$P}} & \multicolumn{2}{c}{\textbf{top-1}} & \multicolumn{2}{c}{\textbf{top-5}}                                   \\
+                                                         &                                 & \textbf{Avg}                       & \textbf{Last}                      & \textbf{Avg}   & \textbf{Last}  \\
+        \hline
+        ResNet18 joint                                   & $11.22$                         & -                                  & -                                  & -              & $95.1$         \\
+        Transf. joint                                    & 11.00                           & -                                  & 79.12                              & -              & 93.48          \\
+        \hline
+        WA \scriptsize{\citep{zhao2020weightalignement}} & $11.22$                         & -                                  & -                                  & $91.00$        & $84.10$        \\
+        DER w/o P \scriptsize{\citep{yan2021der}}        & 112.27                          & 77.18                              & 66.70                              & 93.23          & 87.52          \\
+        \hline
+        DyTox                                            & 11.01                           & 77.15                              & 69.10                              & 92.04          & 87.98          \\
+        DyTox+                                           & 11.01                           & 79.22                              & 69.06                              & 93.72          & 88.82          \\
+        DyTox++                                          & 11.01                           & \textbf{80.76}                     & \textbf{72.46}                     & \textbf{94.40} & \textbf{90.10} \\
+        \hline
+    \end{tabular}
+    %}
     \caption{\textbf{Results on ImageNet-100} with 10 steps of 10 new classes each. WA and DER w/o P
         results are reported from \cite{yan2021der}. DyTox+ uses MixUp in addition of the DyTox
         strategy, DyTox++ further adds a sharpness-aware minimizer.}

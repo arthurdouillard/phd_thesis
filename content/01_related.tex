@@ -214,7 +214,7 @@ a self-attention block, a \ac{MLP}, and residual connections. Thus, the self-att
             A & =\operatorname{Softmax}\left(Q \cdot K^{T} / \sqrt{D / h}\right)\,, \\
             O & = W_{o} A V+b_{o}\,,
       \end{aligned}
-      \label{sec:related_sa}
+      \label{eq:related_sa}
 \end{equation}
 %
 \noindent $\vx$ are the $N$ patch tokens and the class token, of shape $(N, D)$, $D$ being the

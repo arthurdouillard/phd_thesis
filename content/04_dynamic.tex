@@ -71,7 +71,7 @@ the soundness of our dynamic strategy.
 
 In this chapter, we focus on continual dynamic networks
 (\autoref{sec:related_structural}) that expand their parameters coupled with rehearsal learning
-(\autoref{sec:related_rehearsal}). Moreover, to satisfy our desiderata listed previously, we based
+(\autoref{sec:related_rehearsal}). Moreover, to satisfy our desiderata listed previously, we base
 our framework on the recent Transformer architecture (see \autoref{sec:related_cv}).
 
 \paragraph{Continual dynamic networks}  Notably, most dynamic strategies require the sample's task
@@ -89,7 +89,7 @@ classes is not known in advance in a true continual situation. Simple-DER \citep
 also uses multiple extractors, but its pruning method doesn't need any hyperparameters; the negative
 counterpart is that Simple-DER controls less the parameter growth (2.5x higher than a base model).
 In contrast, we propose a framework dedicated to continual learning that seamlessly enables a
-task-dynamic strategy, efficient on all settings, without any setting-dependant modification and at
+task-dynamic strategy, efficient on all settings, without any setting specific modification and at
 almost no memory overhead. We share early class-agnostic \citep{olah2017feature} layers similarly to
 TreeNets \citep{lee2015treenet} and base our strategy on the Transformer architecture.
 
@@ -201,7 +201,7 @@ Task-Attention Block (TAB) is then a variation of the SAB where the attention is
     \label{eq:dytox_ca_block}
 \end{equation}
 Overall, our new architecture can be summarized by the repetition of SA Blocks
-$\{\operatorname{SAB}_l\}_{l=1}^{L}$ (defined in \autoref{eq:dytox_sa_block}) ended by a single TA Block
+$\{\operatorname{SAB}_l\}_{l=1}^{L}$ (defined in \autoref{eq:related_sa}) ended by a single TA Block
 $\operatorname{TAB}$ (defined in \autoref{eq:dytox_ca_block}):
 %
 \begin{equation}

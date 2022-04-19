@@ -4,25 +4,25 @@
     \begin{adjustbox}{max width=\textwidth}
         \begin{tabular}{l|ccccc}
             \toprule[0.3mm]
-                                                                      & \multicolumn{5}{c}{ImageNet1000 10 steps}                                                                                                                               \\
+                                                                                   & \multicolumn{5}{c}{ImageNet1000 10 steps}                                                                                                                               \\
             %\cmidrule{2-11}
-                                                                      & \multirow{2}{*}{\textbf{$\#$P}}           & \multicolumn{2}{c}{\textbf{top-1}} & \multicolumn{2}{c}{\textbf{top-5}}                                                     \\
+                                                                                   & \multirow{2}{*}{\textbf{$\#$P}}           & \multicolumn{2}{c}{\textbf{top-1}} & \multicolumn{2}{c}{\textbf{top-5}}                                                     \\
             \cmidrule{3-6}
-            \textbf{Methods}                                          &                                           & \textbf{Avg}                       & \textbf{Last}                      & \textbf{Avg}            & \textbf{Last}           \\
+            \textbf{Methods}                                                       &                                           & \textbf{Avg}                       & \textbf{Last}                      & \textbf{Avg}            & \textbf{Last}           \\
             \hline
-            ResNet18 joint                                            & $11.68$                                   & -                                  & -                                  & -                       & $89.27$                 \\
-            Transf. joint                                             & 11.35                                     & -                                  & 73.58                              & -                       & 90.60                   \\
+            ResNet18 joint                                                         & $11.68$                                   & -                                  & -                                  & -                       & $89.27$                 \\
+            Transf. joint                                                          & 11.35                                     & -                                  & 73.58                              & -                       & 90.60                   \\
             \midrule
-            LwF-MC \citep{rebuffi2017icarl}                           & 11.68                                     & -                                  & -                                  & 48.45                   & 25.06                   \\
-            \textit{E2E} \citep{castro2018end_to_end_inc_learn}       & 11.68                                     & -                                  & -                                  & 72.09                   & 52.29                   \\
-            \textit{Simple-DER} \citep{li2021preserve}                & 28.00                                     & 66.63                              & 59.24                              & 85.62                   & 80.76                   \\
-            iCaRL \citep{rebuffi2017icarl}                            & $11.68$                                   & $38.40$                            & $22.70$                            & $63.70$                 & $44.00$                 \\
-            BiC \citep{hou2019ucir}                                   & $11.68$                                   & -                                  & -                                  & $84.00$                 & $73.20$                 \\
-            WA \citep{zhao2020weightalignement}                       & $11.68$                                   & $65.67$                            & $55.60$                            & $86.60$                 & $81.10$                 \\
-            DER w/o P \citep{yan2021der}                              & 116.89                                    & 68.84                              & 60.16                              & 88.17                   & 82.86                   \\ % no pruning
-            \textcolor{gray}{$\text{DER}^\dagger$} \citep{yan2021der} & \textcolor{gray}{-}                       & \textcolor{gray}{66.73}            & \textcolor{gray}{58.62}            & \textcolor{gray}{87.08} & \textcolor{gray}{81.89} \\
+            LwF-MC \scriptsize{\citep{rebuffi2017icarl}}                           & 11.68                                     & -                                  & -                                  & 48.45                   & 25.06                   \\
+            \textit{E2E} \scriptsize{\citep{castro2018end_to_end_inc_learn}}       & 11.68                                     & -                                  & -                                  & 72.09                   & 52.29                   \\
+            \textit{Simple-DER} \scriptsize{\citep{li2021preserve}}                & 28.00                                     & 66.63                              & 59.24                              & 85.62                   & 80.76                   \\
+            iCaRL \scriptsize{\citep{rebuffi2017icarl}}                            & $11.68$                                   & $38.40$                            & $22.70$                            & $63.70$                 & $44.00$                 \\
+            BiC \scriptsize{\citep{hou2019ucir}}                                   & $11.68$                                   & -                                  & -                                  & $84.00$                 & $73.20$                 \\
+            WA \scriptsize{\citep{zhao2020weightalignement}}                       & $11.68$                                   & $65.67$                            & $55.60$                            & $86.60$                 & $81.10$                 \\
+            DER w/o P \scriptsize{\citep{yan2021der}}                              & 116.89                                    & 68.84                              & 60.16                              & 88.17                   & 82.86                   \\ % no pruning
+            \textcolor{gray}{$\text{DER}^\dagger$} \scriptsize{\citep{yan2021der}} & \textcolor{gray}{-}                       & \textcolor{gray}{66.73}            & \textcolor{gray}{58.62}            & \textcolor{gray}{87.08} & \textcolor{gray}{81.89} \\
             \hline
-            DyTox                                                     & 11.36                                     & \textbf{71.29}                     & \textbf{63.34}                     & \textbf{88.59}          & \textbf{84.49}          \\
+            DyTox                                                                  & 11.36                                     & \textbf{71.29}                     & \textbf{63.34}                     & \textbf{88.59}          & \textbf{84.49}          \\
             \hline
         \end{tabular}
     \end{adjustbox}
