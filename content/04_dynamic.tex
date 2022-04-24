@@ -64,40 +64,19 @@ the transformer architecture to continual computer vision.
 Our strategy is robust to different settings, and can easily scale to a large number of tasks with
 minimal time and memory overheads. In particular, we validate the efficiency of our approach on
 CIFAR100, ImageNet100, and ImageNet1000 for multiple settings. We also perform ablations confirming
-the soundness of our dynamic strategy.
+the soundness of our dynamic strategy. In this chapter, we focus on continual dynamic networks
+(refer to \autoref{sec:related_structural}) that expand their parameters coupled with rehearsal
+learning (\autoref{sec:related_rehearsal}). Moreover, to satisfy our desiderata listed previously,
+we base our framework on the recent Transformer architecture (see \autoref{sec:related_cv}).
 
-\section{Related work}
-\label{sec:dytox_related}
-
-In this chapter, we focus on continual dynamic networks
-(\autoref{sec:related_structural}) that expand their parameters coupled with rehearsal learning
-(\autoref{sec:related_rehearsal}). Moreover, to satisfy our desiderata listed previously, we base
-our framework on the recent Transformer architecture (see \autoref{sec:related_cv}).
-
-\paragraph{Continual dynamic networks}  Notably, most dynamic strategies require the sample's task
-identifier at test-time to select the right subset of parameters
-\citep{fernando2017path_net,golkar2019neural_pruning}. We argue this is an unrealistic assumption in
-a real-life situation where new samples could come from any task. Recently, DER \citep{yan2021der}
-proposed a dynamic expansion of the representation by adding a new feature extractor per task. All
-extractors' embeddings would then be concatenated and fed to a unified classifier, discarding the
-need for a task identifier at test-time. To limit an explosion in the number of parameters, they
-aggressively prune each model after each task using the HAT \citep{serra2018hat} procedure.
-Unfortunately, the pruning is hyperparameter sensitive. Therefore, hyperparameters are tuned
-differently on each experiment: for example, learning a dataset in 10 steps or in 50 steps use
-different hyperparameters. While being impracticable, it is also unrealistic because the number of
-classes is not known in advance in a true continual situation. Simple-DER \citep{li2021preserve}
-also uses multiple extractors, but its pruning method doesn't need any hyperparameters; the negative
-counterpart is that Simple-DER controls less the parameter growth (2.5x higher than a base model).
-In contrast, we propose a framework dedicated to continual learning that seamlessly enables a
-task-dynamic strategy, efficient on all settings, without any setting specific modification and at
-almost no memory overhead. We share early class-agnostic \citep{olah2017feature} layers similarly to
-TreeNets \citep{lee2015treenet} and base our strategy on the Transformer architecture.
-
-%Despite being successful across various benchmarks, transformers have not
-%yet been considered for continual computer vision to the best of our knowledge. Yet, we don't use
-%the transformer architecture for its own sake, but rather because of the intrinsic properties of
-%transformers; in particular, the seminal encoder/decoder framework allows us to build an efficient
-%architecture with strong capabilities against catastrophic forgetting.
+\paragraph{Positioning with respect to PODNet} Note that while our methods PODNet
+(\autoref{sec:podnet}) and DyTox (presented in this chapter) are both designed for class-incremental
+image classification, they differ in terms of both objective and benchmark: PODNet aims to constrain
+the features drift to reduce forgetting, while DyTox conditions features to a particular task.
+Moreover, PODNet, a metric-based model, requires a larger initial task size to perform well.
+Therefore, PODNet was evaluated when half of the dataset's classes are seen in the first step. On
+the other hand, DyTox is considered here in the setting of \citet{yan2021der} where all steps,
+including the first one, bring an equal number of new classes.
 
 \section{DyTox transformer model}
 \label{sec:dytox_model}
@@ -433,34 +412,6 @@ implementation details are in the appendix (\autoref{sec:appendix_dytox}).
 \end{figure}
 
 
-\begin{comment}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.45\textwidth]{images/dytox/imagenet1000.png}
-    \caption{\textbf{DyTox's continual learning performance on ImageNet1000}: for each task, 100 new
-        classes are learned while previously learned classes are not fully accessible but shouldn't be
-        forgotten. Our strategy DyTox (in \textbf{\textcolor{red}{red}}) is state-of-the-art by a large
-        margin. Note that at the initial step before the continual process begins (denoted by a dashed
-        rectangle, our model has performance
-        comparable to other baselines: the performance gain is achieved by reducing catastrophic
-        forgetting. Moreover, we have systematically fewer parameters than previous approaches.}
-    \label{fig:dytox_imagenet1000}
-\end{figure}
-% \includegraphics[width=1.9ex]{images/dytox/rectangle.png})
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.40\textwidth]{images/dytox/imagenet100.png}
-    \caption{\textbf{Performance evolution on ImageNet100}. The top-5 accuracy (\%) is reported
-        after learning each task. Our model DyTox (in \textbf{\textcolor{red}{red}}) surpasses
-        significantly most baselines, and is of equal performance as the complex DER that uses pruning
-        with setting-specific hyperparameters.\vspace{-1em}}
-    \label{fig:dytox_imagenet100}
-\end{figure}
-\end{comment}
-
-
 \subsection{Quantitative results}
 
 \paragraph{ImageNet}
@@ -496,7 +447,7 @@ DyTox is able to scale correctly while handling seamlessly the parameter growth 
 the weights across tasks. In contrast, DER had to propose a complex pruning method; unfortunately,
 this pruning required different hyperparameter values for different settings. Despite this, the
 pruning in DER$^\dagger$ is less efficient when classes diversity increase: DER$^\dagger$ doubles in
-size between ImageNet100 and ImageNet1000 (\citet{yan2021der} reports 7.67M \textit{vs.} 14.52M)
+size between ImageNet100 and ImageNet1000 (\citet{yan2021der} report 7.67M \textit{vs.} 14.52M)
 while handling the same amount of tasks (10). Note that these parameter counts reported for
 DER$^\dagger$ in \citet{yan2021der} are in fact averages over all steps: the final parameters count
 (necessarily higher) was not available and thus is not reported in our tables. Simple-DER also
@@ -504,16 +455,23 @@ applies pruning but without hyperparameter tuning; while simpler, the pruning is
 and induces larger model (28.00M parameters).
 
 %\vspace{-0.5em}
-\paragraph{CIFAR100} \autoref{tab:dytox_cifar100-b0} shows results for all approaches on CIFAR100. The
-more steps there are, the larger the forgetting is and thus the lower the performances are. Those
-settings are also displayed in \autoref{fig:dytox_increment_cifar} after each task. In every setting,
-DyTox is close to DER w/o P  for much fewer parameters (up to 52x less). Critically, DyTox is
-significantly above other baselines: \eg DyTox is up to +25\% in ``Last'' accuracy in the
-50 steps setup. Note that our improved continual training procedure, with DyTox+ and DyToX++,
-further increases the results in all settings. Notably DyTox++ increases the ``Àvg'' accuracy in the
-50 setup over DER by +3.4 \pp. Remark also that DER ``Avg'' accuracy degrades by 2.59 \pp between
-the easiest 10 steps setting and the hardest 50 steps setting. In comparison, DyTox++ only loses
-1.65 \pp, proving a better robustness to forgetting as the number of tasks increases.
+\paragraph{CIFAR100} \autoref{tab:dytox_cifar100-b0} shows results for all approaches on CIFAR100.
+The more steps there are, the larger the forgetting is and thus the lower the performances are.
+Those settings are also displayed in \autoref{fig:dytox_increment_cifar} after each task. In every
+setting, DyTox is close to DER w/o P  for much fewer parameters (up to 52x less). Critically, DyTox
+is significantly above other baselines: \eg DyTox is up to +25\% in ``Last'' accuracy in the 50
+steps setup. Note that our improved continual training procedure, with DyTox+ and DyToX++, further
+increases the results in all settings. Notably DyTox++ increases the ``Àvg'' accuracy in the 50
+setup over DER by +3.4 \pp. Remark also that DER ``Avg'' accuracy degrades by 2.59 \pp between the
+easiest 10 steps setting and the hardest 50 steps setting. In comparison, DyTox++ only loses 1.65
+\pp, proving a better robustness to forgetting as the number of tasks increases. Remark that the
+results in this table of our PODNet, presented in \autoref{chapter:regularization}, can be explained
+because of the slightly different setting: PODNet was designed for situation where half of the
+dataset's classes were learned in a single step, and thus providing a better initialization. PODNet,
+a metric-based model (as also UCIR), excelled in those situations, but struggle when the initial
+step contains few classes (as it is the case in this chapter) due to slower initial learning.
+Arguably, in a real-life scenario, a model should be pretrained on a large dataset and therefore
+this ``\textit{weakness}'' of PODNet won't materialize.
 
 \subsection{Model introspection on CIFAR100}
 

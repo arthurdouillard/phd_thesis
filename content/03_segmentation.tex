@@ -721,7 +721,7 @@ and $1e-3$ for all the following ones. Note that for Cityscapes, the first step 
 epochs. We reduce the learning rate exponentially with a decay rate of $9e-1$. We use SGD optimizer
 with $9e-1$ Nesterov momentum. The Local POD weighting hyperparameter $\lambda$ is set to $1e-2$ and
 $5e-4$ for intermediate feature maps and logits, respectively. Moreover, we multiply this factor by
-the adaptive weighting $\sqrt{\nicefrac{|C^{1:t}|}{|C^{t}|}}$ introduced by \citep{hou2019ucir} that
+the adaptive weighting $\sqrt{\nicefrac{|C^{1:t}|}{|C^{t}|}}$ introduced by \citet{hou2019ucir} that
 increases the strength of the distillation the further we are into the continual process. For all
 feature maps, Local POD is applied before ReLU, with squared pixel values, as in
 \citet{zagoruyko2016distillation_attention} or PODNet (\autoref{sec:podnet}). We use 3 scales for
@@ -1051,7 +1051,7 @@ allows further refinement of the predicted masks resulting in sharper boundaries
 \label{sec:seg_conclusion}
 
 Continual Semantic Segmentation (\ac{CSS}) is an emerging but challenging computer vision domain. In
-this paper, we highlighted two major issues in \ac{CSS}: catastrophic forgetting and background
+this chapter, we highlighted two major issues in \ac{CSS}: catastrophic forgetting and background
 shift. To deal with the former, we proposed Local POD, a multi-scale distillation scheme that
 preserves both long and short-range spatial statistics between pixels. This leads to an effective
 balance between rigidity and plasticity for \ac{CSS}, which in turn alleviates catastrophic

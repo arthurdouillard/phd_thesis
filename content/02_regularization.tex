@@ -549,17 +549,14 @@ challenging new setting, \textit{prescient continual learning}, in which the mod
 not only for present and past tasks, but also for \textit{future} ones, both avoiding catastrophic
 forgetting (using a limited number of training samples for past classes), and giving the best
 possible estimates for the future classes (using no training samples at all). To make the setting
-possible, the model must know the classes and have some prior information about them. Indeed,
-\citet{aljundi2019selfless} remark that the ability to make room for future classes is a key
-limitation of current continual learning models, and propose a regularization loss to make the model
-more “selfless”, explicitly leaving capacity for future classes in the representation.
-\citet{hanrebuffi2020autodiscovering} proposed a setting where the training samples from all classes
-are present from the beginning, but the labels become available incrementally. In a way, our setting
-is the inverse: we know which labels we will encounter, but the training data for those labels
-arrive incrementally. For instance, in many real-world applications (\eg fashion product
-classification), due to budget constraints, models are released incrementally, with partial classes
-and training data, despite the classes being known from the beginning, and being well-characterized
-by attributes.
+possible, the model must know the classes and have some prior information about them: our desiderata
+is to make room for future classes to avoid interference with old classes once these new classes are
+actually learned. This could be done weakly by increasing the sparsity of the latent representation,
+but, given classes metadata, we present how to do it explicitly. In our setting, we know which
+labels we will encounter, but the training data for those labels arrive incrementally. For instance,
+in many real-world applications (\eg fashion product classification), due to budget constraints,
+models are released incrementally, with partial classes and training data, despite the classes being
+known from the beginning, and being well-characterized by attributes.
 
 We design a framework, nicknamed \textit{Ghost}, to exploit these class attributes estimate the
 representation of future, yet unseen, classes. We use these approximated representations to
@@ -580,7 +577,7 @@ classes become present classes, and then past classes. Moreover, we will be able
 representation space for future classes. All those goals all integrated into a simple, streamlined
 model due to a careful construction of the losses.
 
-The contributions of this work are two-fold: (1) we propose a new challenging setting,
+Our contributions are two-fold: (1) we propose a new challenging setting,
 \textit{prescient} continual learning, where the model must perform well on past, present, and
 \textit{future} classes; (2) we propose our \textit{Ghost} model to address that setting,
 integrating continual and zero-shot learning into a coherent whole where future classes are
@@ -863,10 +860,10 @@ data are limited by rehearsal memory.
 models, both based on ResNet18 \citep{he2016resnet} feature extractor backbones (with feature vector
 size of 512) and cosine classifiers. They differ on the distillation loss $\mcL_\text{distil}$
 employed, the first model (PODNet) constraining the statistics of the intermediate features after
-each residual block (\autoref{sec:podnet}), and the second (UCIR) using Hou et al.'s distillation
-\citep{hou2019ucir} enforcing a cosine constraint on the final flat latent space. The former
-performs better than the latter, but both are improved by the innovations proposed in this work. The
-cosine classifier has a single proxy/representative per class but could easily be generalized to
+each residual block (\autoref{sec:podnet}), and the second (UCIR) using \citet{hou2019ucir}'s
+distillation enforcing a cosine constraint on the final flat latent space. The former performs
+better than the latter, but both are improved by the innovations proposed with the Ghost framework.
+The cosine classifier has a single proxy/representative per class but could easily be generalized to
 multiple proxies. Implementation details are provided in the appendix
 (\autoref{sec:appendix_ghost}).
 
@@ -963,7 +960,7 @@ seen, and we learn next, in small increment, the remaining classes, i.e., those 
 zero-shot benchmark as unseen. Because the initial task is larger than previously, fewer future
 classes remain, and the base models have better performance. Still, the proposed method improves
 both base methods in both datasets significantly. The setting proposed is different from the —
-markedly less challenging — setting appearing in \citet{pkankuekul2012onlineincrementalzeroshot} and
+markedly less challenging — setting appearing in \citet{kankuekul2012onlineincrementalzeroshot} and
 \citet{xue2017incrementalzeroshot}, where the set of unseen classes is fixed, and only more seen
 classes are added incrementally, without any sample limitations given by rehearsal memory.
 
@@ -978,7 +975,7 @@ shows the comparison, with the surprising result that generated features perform
 actual features from samples (respectively first and second row). Note that the latter are extracted
 once per task. We hypothesize it explains the score difference because the feature extractor was
 never adapted for the unseen classes distribution. The "oracle" experiments in the third and fourth
-row in \autoref{tab:ghost_generated_vs_real} establish an upper bound for what we could achieve by
+rows in \autoref{tab:ghost_generated_vs_real} establish an upper bound for what we could achieve by
 "cheating" around the experimental protocol restrictions. The partial oracle from third row is the
 same model as the second row, fine-tuning the feature extractor with samples coming from the future.
 The full oracle of the fourth line uses all images from all classes without any restriction in a
@@ -1005,8 +1002,7 @@ extrapolate — at least partially — the features for unseen classes from thei
 
 In this chapter, we covered our works on regularizations of the feature space. We proposed to
 regularize, not the model's outputs as the vast majority of the literature, but intermediate
-features. In this context, we tackle catastrophic forgetting via two approaches. Those approaches
-are orthogonal and can be combined.
+features. In this context, we tackle catastrophic forgetting via two approaches.
 
 The first approach, \textbf{PODNet, reduces the drift between the old and new models by constraining
     statistics of the intermediate feature}s. We show that a naive constraint balances poorly the
@@ -1017,7 +1013,8 @@ tasks with few classes per task. Furthermore, we design a robust metric-based cl
 exploits the multi-modality of the classes.
 
 The second approach, \textbf{Ghost, avoids pre-emptively forgetting by estimating the future
-    locations of yet unseen classes}. Using the paradigm of representation learning to incorporate
-capabilities of zero-shot learning into the continual learning model in a seamless way. We refined
-that model with a novel SVM-based regularization loss acting over the feature space to reinforce
-exclusion zones, reserved for future classes.
+    locations of yet unseen classes}. This model, an extension of PODNet when class attributes are
+available, incorporates capabilities of zero-shot learning into the continual learning model in
+a seamless way using the paradigm of representation learning. We refined that model with a novel
+SVM-based regularization loss acting over the feature space to reinforce exclusion zones,
+reserved for future classes.

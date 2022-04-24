@@ -114,17 +114,19 @@ a form of gradient descent.
 \label{sec:related_cv}
 
 A common type of architectures for computer vision is the \acf{ConvNet}. First defined by
-\citet{fukushima1980neocognitron} and then trained with backpropagation by \citet{lecun1999lenet}, it
-is a neural network architecture whose linear operators are \textit{convolutions}. While
+\citet{fukushima1980neocognitron} and then trained with backpropagation by \citet{lecun1999lenet},
+it is a neural network architecture whose linear operators are \textit{convolutions}. While
 handcrafted convolutions \citep{lowe1999sift} rely on well-defined features, a \ac{ConvNet} learns
 the convolution kernels to detect more complex patterns in order to minimize the classification
 loss. In 2012, thanks to a large dataset and more efficient code working on \acp{GPU} allowing
 training larger networks, \citet{krizhevsky2012alexnet} won the ILSVC competition
 \citep{russakovsky2015imagenet_ilsvrc} where they had to classify a large dataset ---ImageNet---
 made of 1M28 training images and 1000 classes. From that point forward, multiple improvements were
-made to \acp{ConvNet} \citep{ioffe2015batchnorm,he2016resnet} and these methods have been applied not
-only to classification but also object detection \citep{ren20fasterrcnn}, semantic segmentation
-\citep{chen2018deeplab}, visual question answering \citep{antol2015vqa}, \etc.
+made to \acp{ConvNet} \citep{ioffe2015batchnorm,he2016resnet} and these methods have been applied
+not only to classification but also object detection \citep{ren20fasterrcnn}, semantic segmentation
+\citep{chen2018deeplab}, visual question answering \citep{antol2015vqa,benyounes2017mutan}, image
+generation \citep{goodfellow2014gan}, image editing \citep{grechka2021magecally,couairon2022flexit},
+\etc.
 
 Most \acp{ConvNet} follow a similar structure with blocks of convolutions and pooling. Often, the
 final spatial features are flattened by \ac{GAP} and fed to a linear classifier
@@ -517,7 +519,7 @@ outperformed by the simple (but somewhat memory costly) rehearsal learning.
 rehearsal learning. The algorithm requires that the loss on a given stored sample must not increase
 despite the model learning new classes. The authors, given a locality assumption, rewrite this
 formulation as enforcing that the gradient of a new sample ($g$) to be in the same \textit{direction} as
-the gradient of a stored old sample ($g_i$):
+the gradient of all stored old samples ($g_i \, \text{for all}\, i \in \mcM$):
 %
 \begin{equation}
       \langle g,\, g_i\rangle \ge 0,\, \text{for all}\, i \in \mcM\,,
@@ -604,12 +606,24 @@ test-time in order to select the right subnetwork (see \textit{multi-heads} in
 identifier by selecting the subnetwork with the lowest entropy. This subnetwork-based approach is
 illustrated in \autoref{fig:related_subnetwork}.
 
-\paragraph{Expandable Networks} A neural network can also be expanded through its continual
+\paragraph{Dynamically Expandable Networks} A neural network can also be expanded through its continual
 training to accommodate the growing amount of tasks to solve. First, \citet{rusu2016progressive}
 propose to have one network per task, where the $i^{\text{th}}$ network would depend both on the
 input and all previous networks' intermediate features. Unfortunately, memory consumption is
 quickly prohibitive with many tasks. Following works propose to only add blocks of parameters,
-and only when deemed necessary
+and only when deemed necessary \citep{veniat2021mntdp}. While these dynamic networks often require
+an identifier at test-time to select the right subset of parameters, recently, DER
+\citep{yan2021der} removed this need by learning a classifier upon the concatenated features of all tasks:
+Their dynamic expansion of the representation adds a new feature extractor per task. All
+extractors' embeddings would then be concatenated and fed to a unified classifier, discarding the
+need for a task identifier at test-time. To limit an explosion in the number of parameters, they
+aggressively prune each model after each task using the HAT \citep{serra2018hat} procedure.
+Unfortunately, the pruning is hyperparameter sensitive. Therefore, hyperparameters are tuned
+differently on each experiment: for example, learning a dataset in 10 steps or in 50 steps use
+different hyperparameters. While being impracticable, it is also unrealistic because the number of
+classes is not known in advance in a true continual situation. Simple-DER \citep{li2021preserve}
+also uses multiple extractors, but its pruning method doesn't need any hyperparameters; the negative
+counterpart is that Simple-DER controls less the parameter growth.
 
 \paragraph{Task Conditioning} Rather than adding many new parameters, it is also possible to only
 add a few parameters that will adapt the existing network behavior for a task.
