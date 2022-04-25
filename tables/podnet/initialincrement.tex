@@ -2,16 +2,16 @@
     \centering
     \begin{tabular}{@{}l|ccccc@{}}
         \toprule
-                                                           & \multicolumn{5}{c}{Initial task size}                                                                     \\
+                                                                        & \multicolumn{5}{c}{Initial task size}                                                                     \\
         \cmidrule{2-6}
-        Loss                                               & 10                                    & 20             & 30             & 40             & \textbf{50}    \\
+        Loss                                                            & 10                                    & 20             & 30             & 40             & \textbf{50}    \\
         \midrule
-        iCaRL \citep{rebuffi2017icarl}                     & 40.97                                 & 41.28          & 43.38          & 44.35          & 44.20          \\
-        BiC \citep{wu2019bias_correction}                  & 41.58                                 & 40.95          & 42.27          & 45.18          & 47.09          \\
-        UCIR\,{\scriptsize (\ac{NME})} \citep{hou2019ucir} & 42.33                                 & 40.81          & 46.80          & 46.71          & 48.57          \\
-        UCIR\,{\scriptsize (CNN)}                          & 43.25                                 & 41.69          & 47.85          & 47.51          & 49.30          \\
-        PODNet\,{\scriptsize (\ac{NME})}                   & \textbf{45.09}                        & \textbf{49.03} & \textbf{55.30} & \textbf{57.89} & \textbf{61.40} \\
-        PODNet\,{\scriptsize (CNN)}                        & \textbf{44.95}                        & \textbf{47.68} & \textbf{52.88} & \textbf{55.42} & \textbf{57.98} \\
+        iCaRL \scriptsize{\citep{rebuffi2017icarl}}                     & 40.97                                 & 41.28          & 43.38          & 44.35          & 44.20          \\
+        BiC \scriptsize{\citep{wu2019bias_correction}}                  & 41.58                                 & 40.95          & 42.27          & 45.18          & 47.09          \\
+        UCIR\,{\scriptsize (\ac{NME})} \scriptsize{\citep{hou2019ucir}} & 42.33                                 & 40.81          & 46.80          & 46.71          & 48.57          \\
+        UCIR\,{\scriptsize (CNN)}                                       & 43.25                                 & 41.69          & 47.85          & 47.51          & 49.30          \\
+        PODNet\,{\scriptsize (\ac{NME})}                                & \textbf{45.09}                        & \textbf{49.03} & \textbf{55.30} & \textbf{57.89} & \textbf{61.40} \\
+        PODNet\,{\scriptsize (CNN)}                                     & \textbf{44.95}                        & \textbf{47.68} & \textbf{52.88} & \textbf{55.42} & \textbf{57.98} \\
         \bottomrule
     \end{tabular}
     \caption{\textbf{Varying initial task size:} with $M_\mathrm{per} = 20$, and followed by 50 to 90 tasks made of a single class}

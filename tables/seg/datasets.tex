@@ -3,11 +3,11 @@
     \begin{adjustbox}{max width=\textwidth}
         \begin{tabular}{@{}l|ccccc@{}}
             \toprule
-            Dataset                                    & \# classes & {\scriptsize Background?} & \# train & \# test & {\scriptsize Image size} \\
+            Dataset                                                 & \# classes & {\scriptsize Background?} & \# train & \# test & {\scriptsize Image size} \\
             \midrule
-            Pascal-VOC \citep{everingham2015pascalvoc} & 20         & \cmark                    & 10k      & 1.5k    & $512 \times 512$         \\
-            Cityscapes \citep{cordts2016cityscapes}    & 19         & \xmark                    & 3k       & 0.5k    & $512 \times 1024$        \\
-            ADE20k \citep{zhou2017adedataset}          & 150        & \xmark                    & 20k      & 2.0k    & $512 \times 512$         \\
+            Pascal-VOC \scriptsize{\citep{everingham2015pascalvoc}} & 20         & \cmark                    & 10k      & 1.5k    & $512 \times 512$         \\
+            Cityscapes \scriptsize{\citep{cordts2016cityscapes}}    & 19         & \xmark                    & 3k       & 0.5k    & $512 \times 1024$        \\
+            ADE20k \scriptsize{\citep{zhou2017adedataset}}          & 150        & \xmark                    & 20k      & 2.0k    & $512 \times 512$         \\
             \bottomrule
         \end{tabular}
     \end{adjustbox}
@@ -40,6 +40,6 @@
         \end{tabular}
     \end{adjustbox}
     \caption{\textbf{Description of the 12 different benchmarks} evaluated in this paper. For some
-    of these, each task brings new classes while, for others, it comes with new domains.}
+        of these, each task brings new classes while, for others, it comes with new domains.}
     \label{tab:seg_setting_description}
 \end{table}

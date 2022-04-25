@@ -4,19 +4,19 @@
     \begin{adjustbox}{max width=\textwidth}
         \begin{tabular}{@{}l|cccc@{}}
             \toprule
-                                                                         & \multicolumn{4}{|c}{CIFAR100}                                                                            \\
-                                                                         & 50 steps                      & 25 steps               & 10 steps               & 5 steps                \\
-            \multicolumn{1}{r|}{New classes per step}                    & 1                             & 2                      & 5                      & 10                     \\
+                                                                                      & \multicolumn{4}{|c}{CIFAR100}                                                                            \\
+                                                                                      & 50 steps                      & 25 steps               & 10 steps               & 5 steps                \\
+            \multicolumn{1}{r|}{New classes per step}                                 & 1                             & 2                      & 5                      & 10                     \\
             \midrule
-            \textit{iCaRL*} \citep{rebuffi2017icarl}                     & ---                           & ---                    & 52.57$\mspace{51mu}$   & 57.17$\mspace{51mu}$   \\
-            iCaRL                                                        & 44.20\std0.98                 & 50.60\std1.06          & 53.78\std1.16          & 58.08\std0.59          \\
-            BiC \citep{wu2019bias_correction}                            & 47.09\std1.48                 & 48.96\std1.03          & 53.21\std1.01          & 56.86\std0.46          \\
-            \textit{UCIR\,{\scriptsize (\ac{NME})}*} \citep{hou2019ucir} & ---                           & ---                    & 60.12$\mspace{51mu}$   & 63.12$\mspace{51mu}$   \\
-            UCIR\,{\scriptsize (\ac{NME})}                               & 48.57\std0.37                 & 56.82\std0.19          & 60.83\std0.70          & 63.63\std0.87          \\
-            \textit{UCIR\,{\scriptsize (CNN)}*}                          & ---                           & ---                    & 60.18$\mspace{51mu}$   & 63.42$\mspace{51mu}$   \\
-            UCIR\,{\scriptsize (CNN)}                                    & 49.30\std0.32                 & 57.57\std0.23          & 61.22\std0.69          & 64.01\std0.91          \\
-            PODNet\,{\scriptsize (\ac{NME})}                             & \textbf{61.40\std0.68}        & \textbf{62.71\std1.26} & \textbf{64.03\std1.30} & \textbf{64.48\std1.32} \\
-            PODNet\,{\scriptsize (CNN)}                                  & \textbf{57.98\std0.46}        & \textbf{60.72\std1.36} & \textbf{63.19\std1.16} & \textbf{64.83\std0.98} \\
+            \textit{iCaRL*} \scriptsize{\citep{rebuffi2017icarl}}                     & ---                           & ---                    & 52.57$\mspace{51mu}$   & 57.17$\mspace{51mu}$   \\
+            iCaRL                                                                     & 44.20\std0.98                 & 50.60\std1.06          & 53.78\std1.16          & 58.08\std0.59          \\
+            BiC \scriptsize{\citep{wu2019bias_correction}}                            & 47.09\std1.48                 & 48.96\std1.03          & 53.21\std1.01          & 56.86\std0.46          \\
+            \textit{UCIR\,{\scriptsize (\ac{NME})}*} \scriptsize{\citep{hou2019ucir}} & ---                           & ---                    & 60.12$\mspace{51mu}$   & 63.12$\mspace{51mu}$   \\
+            UCIR\,{\scriptsize (\ac{NME})}                                            & 48.57\std0.37                 & 56.82\std0.19          & 60.83\std0.70          & 63.63\std0.87          \\
+            \textit{UCIR\,{\scriptsize (CNN)}*}                                       & ---                           & ---                    & 60.18$\mspace{51mu}$   & 63.42$\mspace{51mu}$   \\
+            UCIR\,{\scriptsize (CNN)}                                                 & 49.30\std0.32                 & 57.57\std0.23          & 61.22\std0.69          & 64.01\std0.91          \\
+            PODNet\,{\scriptsize (\ac{NME})}                                          & \textbf{61.40\std0.68}        & \textbf{62.71\std1.26} & \textbf{64.03\std1.30} & \textbf{64.48\std1.32} \\
+            PODNet\,{\scriptsize (CNN)}                                               & \textbf{57.98\std0.46}        & \textbf{60.72\std1.36} & \textbf{63.19\std1.16} & \textbf{64.83\std0.98} \\
             \bottomrule
         \end{tabular}
     \end{adjustbox}

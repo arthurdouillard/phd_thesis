@@ -2,18 +2,18 @@
     \centering
     \begin{tabular}{@{}lcc@{}}
         \toprule
-        Loss                                                        & NME            & CNN            \\
+        Loss                                                                     & NME            & CNN            \\
         \midrule
-        \textit{None}                                               & 53.29          & 52.98          \\
-        POD-pixels                                                  & 49.74          & 52.34          \\
-        POD-channels                                                & 57.21          & 54.64          \\
-        POD-gap                                                     & 58.80          & 55.95          \\
-        POD-width                                                   & 60.92          & 57.51          \\
-        POD-height                                                  & 60.64          & 57.50          \\
-        POD-spatial                                                 & \textbf{61.40} & \textbf{57.98} \\
+        \textit{None}                                                            & 53.29          & 52.98          \\
+        POD-pixels                                                               & 49.74          & 52.34          \\
+        POD-channels                                                             & 57.21          & 54.64          \\
+        POD-gap                                                                  & 58.80          & 55.95          \\
+        POD-width                                                                & 60.92          & 57.51          \\
+        POD-height                                                               & 60.64          & 57.50          \\
+        POD-spatial                                                              & \textbf{61.40} & \textbf{57.98} \\
         \cmidrule{1-3}
-        GradCam~\citep{dhar2019learning_without_memorizing_gradcam} & 54.13          & 52.48          \\
-        Perceptual Style~\citep{johnson2016perceptual_losses}       & 51.01          & 52.25          \\
+        GradCam \scriptsize{\citep{dhar2019learning_without_memorizing_gradcam}} & 54.13          & 52.48          \\
+        Perceptual Style \scriptsize{\citep{johnson2016perceptual_losses}}       & 51.01          & 52.25          \\
         \bottomrule
     \end{tabular}
     \caption{\textbf{Comparison of distillation losses} based on intermediary features. All losses evaluated

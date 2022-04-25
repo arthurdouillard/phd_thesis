@@ -1,4 +1,4 @@
-\chapter{Appendix: more papers}
+\chapter{Appendix}
 \label{chapter:appendix}
 
 %\minitoc
@@ -11,7 +11,7 @@
 \label{sec:related_variation}
 
 While \acf{CIL}, detailed in \autoref{chapter:related}, is the most common benchmark in Continual
-Learning, there are multiple variations of benchmark regardless which kind of shift is involved.
+Learning, there are multiple variations of benchmark regardless of which kind of shift is involved.
 
 \subsection{Multiple labels}
 \label{sec:related_multiple_labels}
@@ -37,8 +37,8 @@ Online Learning, also called Stream Learning, there are no notions of tasks nor 
 learn on a stream of samples incoming one by one, and which cannot be replayed by epochs
 \citep{aljundi2019notaskboundaries}. The methods to reduce forgetting described in
 \autoref{sec:related_methods} can still be applied in Online Learning. Modified versions of
-rehearsal learning, often inspired by reservoir sampling \citet{knuth97tacpvol2}, are often used
-\citet{hayes2019exstream,aljundi2019taskfree}.
+rehearsal learning, often inspired by reservoir sampling \citep{knuth97tacpvol2}, are often used
+\citep{hayes2019exstream,aljundi2019taskfree}.
 
 \begin{figure}[tb]
       \begin{center}
@@ -83,10 +83,7 @@ were never seen before. To do so, models usually exploit an external knowledge s
 embedding \citep{mikolov2013word2vec} trained on Wikipedia or an attribute matrix. Several works
 have proposed to unify both Continual Learning and \ac{ZSL} where the future classes that haven't
 been seen yet must be classified
-\citet{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}. Rather than simply
-using \ac{ZSL} as end to itself, we proposed, in \citep{douillard2020ghost}, to exploit its
-properties to directly avoid forgetting. This is elaborated further in
-\autoref{chapter:regularization} (\autoref{sec:ghost}).
+\citep{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}.
 
 \subsection{Natural Language Processing}
 \label{sec:related_nlp}
@@ -113,6 +110,8 @@ methods originally developed for \ac{CV} (\autoref{sec:related_methods}) were th
 
 \section{Details on PODNet}
 \label{sec:appendix_podnet}
+
+We provide here more details on our PODNet model which was presented in \autoref{sec:podnet}.
 
 We also compared our model against baselines with a more flexible memory $M_{\text{total}} = 2000$
 \citep{rebuffi2017icarl,wu2019bias_correction}, and with various initial task size (by default it is
@@ -157,15 +156,16 @@ ImageNet100, with 10 steps/tasks (increments of give classes per task), moving f
 improved 1.51 p.p. on acc.
 
 \subsection{Reproducibility}
+\label{sec:appendix_podnet_repro}
 
-\paragraph{Code Dependencies} The Python version is  3.7.6. We used the PyTorch
+\paragraph{Code Dependencies} The Python version is 3.7.6. We used the PyTorch
 \citep{paszke2017pytorch} (version 1.2.0) deep learning framework and the libraries Torchvision
 (version 0.4.0), NumPy \citep{oliphant2006numpy} (version 1.17.2), Pillow (version 6.2.1), and
 Matplotlib \citep{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Initial
-experiments were done with the data loaders library Continuum \citep{douillardlesort2020continuum}.
-PODNet's full code is released at:\\
-\href{https://github.com/arthurdouillard/incremental\_learning.pytorch}{\texttt{github.com/arthurdouillard/incremental\_learning.pytorch}}.
-\\We provide all configuration files necessary to reproduce results, including seeds and class
+experiments were done with the data loaders library Continuum \citep{douillardlesort2021continuum}.
+PODNet's full code is released
+publicly\footnote{\href{https://github.com/arthurdouillard/incremental\_learning.pytorch}{\texttt{github.com/arthurdouillard/incremental\_learning.pytorch}}}.
+We provide all configuration files necessary to reproduce results, including seeds and class
 ordering.
 
 \paragraph{Datasets description} I provide bellow extensive details on the content of the three
@@ -196,6 +196,8 @@ with and without POD-flat.
 \section{Details on Ghost}
 \label{sec:appendix_ghost}
 
+We provide here more details on our Ghost model which was presented in \autoref{sec:ghost}.
+
 
 \subsection{Overhead of SVMs training}
 
@@ -211,16 +213,16 @@ of less than 2\%, which we deemed acceptable. For reference, the SVMs were train
 $\delta=0.6$, and the SVM latent-space regularization additional margin $\tau=1$. We train the
 feature-extractor-and-classifier pipeline for 90 epochs with an SGD optimizer, learning rate of 0.1,
 cosine scheduling, and weight decay of $10^{-4}$. We train the generator for 1200 epochs, with an
-Adam optimizer and a learning rate of $10^{-5}$. Finally, following
-\citet{hou2019ucir,douillard2020podnet}, we fine-tune the classifier for 60 epochs (with the feature
+Adam optimizer and a learning rate of $10^{-5}$. Finally, following \citet{hou2019ucir} and our work
+on PODNet (\autoref{sec:podnet}), we fine-tune the classifier for 60 epochs (with the feature
 extractor frozen and a small learning rate of $10^-4$) at the end of every task (except the last
 one). We found useful to balance the bias towards the seen classes against the unseen classes. With
-the POD distillation \citet{douillard2020podnet}, we set $\lambda_1=3$  for AwA2, and $\lambda_1=15$
-for aP\&Y; with the Less-Forget distillation \citet{hou2019ucir}, we set $\lambda_1=4$ for both
+the POD distillation (\autoref{sec:podnet}), we set $\lambda_1=3$  for AwA2, and $\lambda_1=15$
+for aP\&Y; with the Less-Forget distillation of \citet{hou2019ucir}, we set $\lambda_1=4$ for both
 datasets. We always set $\lambda_2=10^{-3}$, moreover we apply it on L2-normalized features.
 Finally, we do not reinitialize the models between tasks: $f^t$ results from training $f^{t-1}$ on
-task $t$, etc. On the rehearsal memory limitation, we follow the strict setting of Hou et
-al.~\citet{hou2019ucir}, keeping only $s=20$ training images per past class.
+task $t$, etc. On the rehearsal memory limitation, we follow the strict setting of
+\citet{hou2019ucir}, keeping only $s=20$ training images per past class.
 
 \subsection{Datasets details}
 
@@ -267,10 +269,10 @@ ran each experiment thrice with different random seeds (1, 2, and 3).
 \section{Details on DyTox}
 \label{sec:appendix_dytox}
 
+We provide here more details on our PODNet model which was presented in \autoref{sec:dytox}.
 
-\noindent\autoref{tab:dytox_notation} summarizes the notations used along this paper.
-
-\input{tables/dytox/notation}
+%\noindent\autoref{tab:dytox_notation} summarizes the notations used along this paper.
+%\input{tables/dytox/notation}
 
 
 \subsection{Experimental details}
@@ -279,13 +281,14 @@ ran each experiment thrice with different random seeds (1, 2, and 3).
 ImageNet1000 \citep{deng2009imagenet}. CIFAR100 is made of 50,000 train RGB images and 10,000 test
 RGB images of size $32\times32$ for 100 classes. ImageNet1000 contains 1.2 million RGB train images
 and 50,000 validation RGB images of size $224\times224$ for 1000 classes. ImageNet100 is a subset of
-100 classes from ImageNet1000. We follow PODNet \citep{douillard2020podnet} and DER \citep{yan2021der}
-and use the same 100 classes they've used. Fine details about the datasets, like the class orders,
-can be found in the provided code in the options files (see readme).
+100 classes from ImageNet1000. We follow PODNet (\autoref{sec:podnet}) and DER \citep{yan2021der}
+and use the same 100 classes they've used. Note that while we considered PODNet in a setting where
+the initial step contained half of all the classes, while for DyTox we consider that each step
+brings an equal amount of classes.
 
 \paragraph{Implementation} For all datasets, we train the model for 500 epochs per task with Adam
 \citep{kingma2014adam} with a learning rate of $5e^{-4}$, including 5 epochs of warmup.
-Following UCIR \citep{hou2019ucir}, PODNet \citep{douillard2020podnet}, and DER \citep{yan2021der}, at
+Following UCIR \citep{hou2019ucir}, PODNet (\autoref{sec:podnet}), and DER \citep{yan2021der}, at
 the end of each task (except the first) we finetuned our model for 20 epochs with a learning rate of
 $5e^{-5}$ on a balanced dataset. In DyTox, we applied the standard data augmentation of DeiT
 \citep{touvron2021deit} but we removed the pixel erasing \citep{zhong2017erasing}, MixUp
@@ -293,11 +296,11 @@ $5e^{-5}$ on a balanced dataset. In DyTox, we applied the standard data augmenta
 contrast, in DyTox+ we used a MixUp \citep{hingyi2018mixup} with beta distribution $\beta(0.8, 0.8)$.
 During all incremental tasks ($t>1$), the old classifiers $\operatorname{Clf}_i,\, i < t$ and the
 old task tokens $\theta_i,\, i < t$ parameters are frozen. During the finetuning phase where classes
-are rebalanced \citep{castro2018end_to_end_inc_learn,hou2019ucir,douillard2020podnet,yan2021der},
+are rebalanced \citep{castro2018end_to_end_inc_learn,hou2019ucir,yan2021der},
 these parameters are optimized, but the SABs are frozen.
 
 \paragraph{Hyperparameter tuning} In contrast with previous works
-\citep{douillard2020podnet,yan2021der}, we wanted stable hyperparameters, tuned for a single setting
+\citep{yan2021der}, we wanted stable hyperparameters, tuned for a single setting
 and then applied on all experiments. This avoids optimizing for the number of tasks, which defeats
 the purpose of continual learning \citep{farquhar2018robustcontinual}. We tuned hyperparameters for
 DyTox using a validation subset made of 10\% of the training dataset, and this only on the CIFAR100
@@ -318,7 +321,7 @@ classifier and euclidean distance between the final flattened features as a dist
 \citep{guo2017miscalibration} the logits of the new classes using a simple linear model trained on
 validation data. WA \citep{zhao2020weightalignement} uses a knowledge distillation loss and
 re-weights at each epoch the classifier weights associated to new classes so that they have the same
-average norm as the classifier weights of the old classes. PODNet \citep{douillard2020podnet} uses a
+average norm as the classifier weights of the old classes. PODNet (\autoref{sec:podnet}) uses a
 cosine classifier and a specific distillation loss (POD) applied at multiple intermediary features
 of the ResNet backbone. RPSNet \citep{rajasegaran2019rpsnet} uses knowledge distillation and
 manipulates subnetworks in its architecture, following the lottery ticket hypothesis
@@ -329,9 +332,6 @@ set differently according to the settings. Furthermore, the reported parameters 
 pruning, in \citep{yan2021der} is an average of the count over all steps: the final parameters count
 (necessarily higher) wasn't available. Finally, Simple-DER \citep{li2021preserve} is similar to DER,
 with a simpler pruning method which doesn't require any hyperparameter tuning.
-
-\input{tables/dytox/alternatives}
-
 
 %\input{tables/dytox/cifar_plusplus}
 
@@ -349,6 +349,9 @@ associated task. This increased diversity has a drawback: the memory overhead is
 \textit{v.s.} 10M parameters). We find in practice that DyTox strikes a good balance between memory
 overhead and continual performance.
 
+\input{tables/dytox/alternatives}
+
+
 
 \subsection{Patch size effect on forgetting}
 
@@ -356,11 +359,12 @@ Our model is the first application of transformers for continual computer vision
 the transformer architecture is the patch tokenizer. The number of patch tokens in an image is
 determined by the patch size: a larger patch size means less tokens, and vice-versa. We wondered
 about the effect of the patch size on forgetting and tested three different kind of patch sizes in
-\autoref{tab:dytox/patch_size}. Echoing results in vision transformers
+\autoref{tab:dytox_patch_size}. Echoing results in vision transformers
 \citep{dosovitskiy2020vit,touvron2021deit}, a smaller patch size (4 vs. 8 and 16) performs best in a
-joint training. However, the forgetting defined by \citet{chaudhry2018riemannien_walk} is relatively similar, with 33.15\% for a patch of size of 4, and
-33.20\% for a patch size of 16. Therefore, we argue that the transformer architecture is hardly
-sensitive to the patch resolution w.r.t its forgetting in continual learning.
+joint training. However, the forgetting defined by \citet{chaudhry2018riemannien_walk} is relatively
+similar, with 33.15\% for a patch of size of 4, and 33.20\% for a patch size of 16. Therefore, we
+argue that the transformer architecture is hardly sensitive to the patch resolution w.r.t its
+forgetting in continual learning.
 
 \input{tables/dytox/patch_size}
 
@@ -408,13 +412,4 @@ forget significantly more than our complete DyTox framework: TAB outperform the 
 +2.98 \pp in ``Last'' top-5 accuracy and FiLM by +6.58 \pp.
 
 \input{tables/dytox/task_cond}
-
-
-
-\section{Continuum: Continual Learning Data Loaders}
-
-\section{CTKT: Continual Domain Adaptation}
-
-\section{Scaling Laws for Continual Learning}
-
 

@@ -30,14 +30,14 @@ notations introduced in this chapter and through the thesis are listed in the
 Neural Networks are based on the statistical learning theory \citep{vapnik1999statstheory}. In the
 \textit{supervised setting}, the goal of a neural network is to learn the best mapping function $f :
       \mathcal{X} \rightarrow \mathcal{Y}$ between an input space $\mathcal{X}$ and an output space
-$\mathcal{Y}$.  We consider a \textit{loss} function $\mcL : \mathcal{Y} \times \mathcal{Y} \rightarrow
-      \mathbb{R}^+$ that measures the disagreement between a ground-truth label $y$ and the network's
-prediction $\hat{\vy} = f(\vx)$. In the context of image classification, the $\vx$ is the image
-pixels, $y$ is the \textit{class} label of the object present in the image, and $\hat{\vy}$ is a
-vector of probabilities, with one probability per class the model has to predict. The highest class
-with the highest predicted probability/confidence is chosen as the prediction.
-Given a \textit{training dataset} $\mathbb{D} = \{(\vx_1, y_1), ..., (\vx_N, y_N)\}$, training a neural network
-consists in finding the set of parameters $\theta_*$ which minimizes the loss function:
+$\mathcal{Y}$.  We consider a \textit{loss} function $\mcL : \mathcal{Y} \times \mathcal{Y}
+      \rightarrow \mathbb{R}^+$ that measures the disagreement between a ground-truth label $y$ and the
+network's prediction $\hat{\vy} = f(\vx)$. In the context of image classification, $\vx$ is the
+image pixels, $y$ is the \textit{class} label of the object present in the image, and $\hat{\vy}$ is
+a vector of probabilities, with one probability per class the model has to predict. The class with
+the highest predicted probability/confidence is chosen as the prediction. Given a \textit{training
+      dataset} $\mathbb{D} = \{(\vx_1, y_1), ..., (\vx_N, y_N)\}$, training a neural network consists in
+finding the set of parameters $\theta_*$ which minimizes the loss function:
 %
 \begin{equation}
       \theta_* = \operatorname{argmin}_{\theta} \left \{ \frac{1}{|\mathbb{D}|}\sum_{(\vx,y)\in \mathbb{D}} \mcL(f_\theta(\vx), y)\right \}\,,
@@ -49,9 +49,9 @@ to predict the correct label on the testing set. Therefore, to avoid this \texti
 phenomenon, regularization functions that limit the parameters space are used as additional
 constraints in addition to the classification loss $\mcL$.
 
-In practice, the function $f_\theta$ learned by a neural network is composed of a succession of linear
-transformations and non-linear \textit{activation} functions. For example, a simple neural network,
-called \ac{MLP}, could be defined as:
+In practice, the function $f_\theta$ learned by a neural network is composed of a succession of
+linear transformations and non-linear \textit{activation} functions. For example, a simple neural
+network, called \ac{MLP}, here with two layers, could be defined as:
 %
 \begin{equation}
       \hat{\vy} = f_\theta(\vx) = \operatorname{softmax}(\vW_o \sigma(\vW_h \vx + \vb_h) + \vb_o))\,,
@@ -117,11 +117,11 @@ A common type of architectures for computer vision is the \acf{ConvNet}. First d
 \citet{fukushima1980neocognitron} and then trained with backpropagation by \citet{lecun1999lenet},
 it is a neural network architecture whose linear operators are \textit{convolutions}. While
 handcrafted convolutions \citep{lowe1999sift} rely on well-defined features, a \ac{ConvNet} learns
-the convolution kernels to detect more complex patterns in order to minimize the classification
+the convolution kernels to detect more complex patterns required to minimize the classification
 loss. In 2012, thanks to a large dataset and more efficient code working on \acp{GPU} allowing
 training larger networks, \citet{krizhevsky2012alexnet} won the ILSVC competition
 \citep{russakovsky2015imagenet_ilsvrc} where they had to classify a large dataset ---ImageNet---
-made of 1M28 training images and 1000 classes. From that point forward, multiple improvements were
+made of 1.28M training images and 1000 classes. From that point forward, multiple improvements were
 made to \acp{ConvNet} \citep{ioffe2015batchnorm,he2016resnet} and these methods have been applied
 not only to classification but also object detection \citep{ren20fasterrcnn}, semantic segmentation
 \citep{chen2018deeplab}, visual question answering \citep{antol2015vqa,benyounes2017mutan}, image
@@ -272,12 +272,14 @@ previous data that can be kept. In the extreme case, a model only has access to 
 data. Evidently, if the initialization of the parameters is random, the model cannot predict
 the past data distribution. However, the new model parameters can be initialized using the
 previous parameters ($\theta^{t} := \theta_*^{t-1}$). Remark, from \autoref{eq:intro_optim}, that
-the optimization procedure of the old ($t-1$) and new ($t$) model is different:
+the optimization procedure of the old ($t-1$) and new ($t$) model is different. Given the average
+loss $L(f_\theta, \mathbb{D}) = \nicefrac{1}{|\mathbb{D}|}\sum_{(\vx,y)\in \mathbb{D}}
+      \mcL(f_{\theta}(\vx), y)$:
 %
 \begin{equation}
       \begin{aligned}
-            \theta_*^{t-1} & = \operatorname{argmin}_{\theta} \left \{ \frac{1}{|\mathbb{D}^{t-1}|}\sum_{(\vx,y)\in \mathbb{D}^{t-1}} \mcL(f_\theta(\vx), y)\right \}\,, \\
-            \theta_*^{t}   & = \operatorname{argmin}_{\theta} \left \{  \frac{1}{|\mathbb{D}^{t}|}\sum_{(\vx,y)\in \mathbb{D}^{t}} \mcL(f_\theta(\vx), y)\right \}\,,
+            \theta_*^{t-1} & = \operatorname{argmin}_{\theta^{t-1}} \left\{ L(f_{\theta^{t-1}}, \mathbb{D}^{t-1})\right \}\,, \\
+            \theta_*^{t}   & = \operatorname{argmin}_{\theta^{t}} \left\{ L(f_{\theta^{t}}, \mathbb{D}^{t})\right \}\,,       \\
       \end{aligned}
       \label{eq:intro_forgetting_weights}
 \end{equation}
@@ -286,8 +288,9 @@ where the loss is minimized respectively with respect to the old ($\mathbb{D}^{t
 dataset ($\mathbb{D}^{t}$). Evidently, the optimal parameters $\theta_*$ are different for the task
 $t$ and $t-1$. This difference results in what we call a \textit{forgetting}: $\theta_*^t$ is
 optimal for the new task $t$ but is suboptimal for the task $t-1$, therefore performance on the
-previous task is degraded. This performance drop is actually so important that the literature names
-it a \textbf{Catastrophic Forgetting} \citep{robins1995catastrophicforgetting}. It is particularly
+previous task is degraded ($L(f_{\theta^{t}}, \mathbb{D}^{t-1}) \gg L(f_{\theta^{t-1}},
+      \mathbb{D}^{t-1})$). This performance drop is actually so important that the literature names it a
+\textbf{Catastrophic Forgetting} \citep{robins1995catastrophicforgetting}. It is particularly
 critical in the context of image classification where each new task brings new classes to be
 classified as described below.
 
@@ -304,10 +307,10 @@ classified as described below.
 \paragraph{Class-Incremental Example} More concretely, a common benchmark in \acf{CIL} is learning
 the image classification CIFAR100 dataset \citep{krizhevskycifar100}, made of 100 classes, in
 multiple steps, each made of several new classes. During the first step $t=1$, the model $g^1 \circ
-      f^1$ learns the first 10 classes $\mcC^{t=1}$. During the second step $t=2$, the model $g^2 \circ
-      f^2$ is initialized from the learned parameters of the previous model $g^1 \circ f^1$ and learns the
+f^1$ learns the first 10 classes $\mcC^{t=1}$. During the second step $t=2$, the model $g^2 \circ
+f^2$ is initialized from the learned parameters of the previous model $g^1 \circ f^1$ and learns the
 next 10 classes $\mcC^{t=2}$., and so on, until all 100 classes are learned at the last step $t=T$.
-After each step, we evaluate the model on the testing data of all seen classes $\mcC^{1:t}$. The
+After each step, we evaluate the model on the testing data of all seen classes $\mcC^{1:t}$.
 \autoref{fig:related_protocol} illustrates such continual protocol, and
 \autoref{fig:related_forgetting} depicts the continual performance of a both trained from scratch on
 all data for each task and a continual model finetuned only on new data. The continual model
@@ -332,14 +335,14 @@ benchmarks in detail in the appendix (\autoref{sec:related_variation}).
 
 \paragraph{Single-Head \vs Multi-Heads} are the two main evaluation settings in Continual Learning
 \citep{chaudhry2018riemannien_walk}. In the former setting, a model has to classify samples among
-all seen classes $\mcC^{1:t}$, that could have been learned from any of the seen steps. The latter
-setting knows at test-time the step/task identifier $i$ of the samples. Thus, it only has to
-classify among the limited number of classes brought by a step ($\mcC^i$). Multi-Heads evaluation is
-closely related to multi-tasks learning. During this thesis, we focus on the Single-Head evaluation
-because it is more realistic as it is rarely possible to know from which step a sample comes
-from in a real-life setting. This setting is also more challenging because a unique classifier must
-discriminate among all tasks' classes instead of having a different classifier per task
-\citep{lesort2019regulshortcomings}.
+all seen classes $\mcC^{1:t}$, that could have been learned from any of the seen steps. On the other
+hand, in a multi-heads setting, a model knows at test-time the step/task identifier $i$ of the
+samples. Thus, it only has to classify among the limited number of classes brought by a step
+($\mcC^i$). Multi-Heads evaluation is closely related to multi-tasks learning. During this thesis,
+we focus on the Single-Head evaluation because it is more realistic as it is rarely possible to know
+from which step a sample comes from in a real-life setting. This setting is also more challenging
+because a unique classifier must discriminate among all tasks' classes instead of having a different
+classifier per task \citep{lesort2019regulshortcomings}.
 
 
 %\subsection{Metrics for Continual Learning}
@@ -441,7 +444,7 @@ intermediate features \citep{kemker2018fearnet,ayub2021eec} or use \ac{GAN}
 struggle to scale to large images, the generator size may be superior to a classic rehearsal memory
 size which would defeat the goal of using less storage, and finally, the generator may itself suffer
 from catastrophic forgetting \citep{zhai2019lifelonggan}. \citet{liu2020mnemonics} propose instead a
-method halfway between rehearsal and pseudo-rehearsal: the authors sample randomly real images, and
+method halfway between rehearsal and pseudo-rehearsal: the authors randomly sample real images, and
 then during continual training, slightly modify them via bi-level optimization
 \citep{wang2018datasetdistillation} to minimize forgetting.
 
@@ -697,4 +700,4 @@ by a large margin during the continual training to handle the growing amount of 
 aggressively. The main drawback of these methods is that the pruning can still result in models too
 large and often need careful finetuning of hyperparameters. We propose in this chapter, a dynamic
 expansion based on the transformer architecture with almost no memory overhead contrary to
-concurrent works, that condition \citep{perez2018film} the intermediary features.
+concurrent works, that conditions \citep{perez2018film} the intermediary features.
