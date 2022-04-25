@@ -52,11 +52,7 @@ memory overhead even when faced to a large number of tasks.
 
 \section{Future Work}
 
-When discussing the future directions of the Continual Learning field, we will distinguish between
-those related to the data and those to the architectures \& losses themselves.
-
-We now discuss future directions of the Continual Learning field and how our contributions could be
-extended.
+We now discuss some future directions of the Continual Learning field:
 
 \paragraph{Time Limitation:} Current works in the literature, including this thesis, focus on using
 no rehearsal data or at least very few. The common justifications are about private data that cannot
@@ -87,11 +83,27 @@ particular task: in fact a form of compositionality could be obtained where each
 a some concept. We believe that this compositionality could speed up the learning of new tasks with
 few adaptations, and thus one may hope, with little forgetting.
 
-\paragraph{Task-specific Attention Heads}
+\paragraph{Deep Architectures} for continual learning is a fewly explored topic as most works focus
+on a fixed MLP or a ResNet-18. Initial findings remark that larger networks forget less
+\citep{ramasesh2022scalecontinual}, especially when scaling the width
+\citep{mirzadeh2022widecontinualnetworks}. Going further than simply scaling, one may wonder if the
+structure of current architectures, optimized for \iid training, have inherent flaws regarding
+continual learning.
+
+\paragraph{Beyond Gradient Descent} The vast majority of deep architectures, in all domains, are
+trained with gradient descent (including fancier optimizers as Adam or LAMB). Different update
+rules, more closely inspired from the biological brains, can be an axis of investigation, as Hebbian
+learning for continual learning \citep{taylor2020hebbiancontinual}. Moreover, instead of designing
+explicitly an update rule, it could be meta-learned. This meta-learning could aim implicitly to
+fast re-learning of past forgotten tasks \citep{he2019metacontinual,caccia2020osaka}.
 
 
-\paragraph{Large-scale training \& models} \citep{ramasesh2022scalecontinual}
+\paragraph{Second-order optimization} methods can help deep neural networks to find wide local
+minima, which could encompass multiple task local minima \citep{lee2020kroneckercontinual}. As a
+result, the parameter drift between the optimial weights of a task $t$ and $t+1$ can be minimal, and
+in turn avoiding the bulk of the forgetting. We briefly explore this direction with the
+Sharpness-Aware-Minimizer \citep{foret2020sam} in this thesis, but more works should be done on this
+topic. An important drawback of current second-order methods is obviously the higher computational
+cost they incur, thus faster alternative methods also seeking flat wide minima as
+\citet{cha2021swad}'s SWAD should be explored.
 
-\paragraph{Multi-modalities}
-
-\paragraph{Second-order optimization}
