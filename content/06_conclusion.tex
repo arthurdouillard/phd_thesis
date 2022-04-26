@@ -39,7 +39,7 @@ complexity of segmentation images, and a background shift where only classes of 
 labeled. To reduce the catastrophic forgetting of old classes, inspired by our previous POD, we
 present a multi-scale distillation loss that constrains local regions of visual features. Then, to
 tackle the background shift, we design an uncertainty-based hard pseudo-labeling loss. We show that
-despite its usefulness, our pseudo-labeling can fails for particular situations, and complement it
+despite its usefulness, our pseudo-labeling can fail for particular situations, and complement it
 with an efficient object rehearsal method.
 
 \paragraph{Dynamic Strategy with Transformers} Finally, in \autoref{chapter:dynamic}, we propose to
@@ -57,7 +57,7 @@ We now discuss some future directions of the Continual Learning field:
 \paragraph{Time Limitation:} Current works in the literature, including this thesis, focus on using
 no rehearsal data or at least very few. The common justifications are about private data that cannot
 be kept, or embedded device with little storage. However, an important part of the industry is not
-concerned by neither constraints: Private data can be siloed to avoid leakage to the public and
+concerned by neither constraints: private data can be siloed to avoid leakage to the public and
 storage is now a cheap commodity. The real constraint is time: continually learn new data should be
 significantly faster than retraining from scratch. Thus, a new more realistic setting for Continual
 Learning would impose a time budget \citep{veniat2018budgetedlearning}.
@@ -74,9 +74,9 @@ representation to new tasks is reduced. Second, an adaptation to new tasks will 
 where simply tuning a task token in a Dytox-like strategy would result in good performances.
 
 \paragraph{Mixture-of-Experts (MoE)} is a combination of multiple small models into a larger model. For
-transformers replace the MLP in the Self-Attention Block by multiple small MLPs. A routing system
-redirects each tokens/dimensions to a particular \textit{expert} MLP. Applying MoE to continual
-learning has been yet fewly explored \citep{caccia2022anytimelearning}. We hypothetize that large
+transformers, MLP in the Self-Attention Block is replaced by multiple small MLPs. A routing system
+redirects each token/dimension to a particular \textit{expert} MLP. Applying MoE to continual
+learning has been fewly explored yet \citep{caccia2022anytimelearning}. We hypothetize that large
 models could learn universal features (see previous point) that could be conditioned with
 task-specific experts. The usage of experts does not necessarily need to be exclusive to a
 particular task: in fact a form of compositionality could be obtained where each expert specializes
@@ -101,8 +101,8 @@ fast re-learning of past forgotten tasks \citep{he2019metacontinual,caccia2020os
 \paragraph{Second-order optimization} methods can help deep neural networks to find wide local
 minima, which could encompass multiple task local minima \citep{lee2020kroneckercontinual}. As a
 result, the parameter drift between the optimial weights of a task $t$ and $t+1$ can be minimal, and
-in turn avoiding the bulk of the forgetting. We briefly explore this direction with the
-Sharpness-Aware-Minimizer \citep{foret2020sam} in this thesis, but more works should be done on this
+in turn avoid the bulk of the forgetting. We briefly explore this direction with the
+Sharpness-Aware-Minimizer \citep{foret2020sam} in this thesis, but more work should be done on this
 topic. An important drawback of current second-order methods is obviously the higher computational
 cost they incur, thus faster alternative methods also seeking flat wide minima as
 \citet{cha2021swad}'s SWAD should be explored.

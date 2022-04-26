@@ -40,14 +40,23 @@ strategies (see \autoref{sec:related_structural}). Unfortunately at test-time, t
 the task to which the test sample belongs --- in order to know which parameters should be used. More
 recently, DER \citep{yan2021der} and Simple-DER \citep{li2021preserve} discarded the need for this
 task identifier by learning a single classifier on the concatenation of all produced embeddings by
-different subsets of parameters. Yet, these strategies induce dramatic memory overhead when tackling
-a large number of tasks, and thus need complex pruning as post-processing.
+different subsets of parameters. Yet, these strategies induce an important memory overhead when
+tackling a large number of tasks, and thus need complex pruning as post-processing.
 
 To improve the ease of use of continual learning frameworks for real-world applications, we aim to
-design a dynamically expandable representation (almost) `for free' by having the three following
-properties: \#1 \textbf{limited memory overhead} as the number of tasks grows, \#2 \textbf{limited
-    time overhead} at test time and \#3 \textbf{no setting-specific hyperparameters} for improved
-robustness when faced to an unknown (potentially large) number of tasks.
+design a dynamically expandable representation (almost) ``for free'' by having the three following
+properties:
+
+\begin{enumerate}
+    \item \textbf{limited memory overhead} as the number of tasks grows,
+    \item \textbf{limited time overhead} at test time,
+    \item \textbf{no setting-specific hyperparameters} for improved robustness when faced to an unknown
+          (potentially large) number of tasks.
+\end{enumerate}
+
+%\#1 \textbf{limited memory overhead} as the number of tasks grows, \#2 \textbf{limited
+%    time overhead} at test time and \#3 \textbf{no setting-specific hyperparameters} for improved
+%robustness when faced to an unknown (potentially large) number of tasks.
 
 To this end, we leverage the computer vision transformers (refer to \autoref{sec:related_cv}).
 Transformers \citep{vaswani2017transformer} offer a very interesting framework to satisfy the
@@ -537,9 +546,9 @@ classifiers reduces the forgetting defined by \citet{chaudhry2018riemannien_walk
 In this chapter, we covered our work on dynamic architectures. While in previous chapters, we aimed
 to constrain the visual features, we decided here to condition the features to specific tasks. With
 DyTox, a new dynamic strategy for continual learning based on transformer architecture, all tasks
-share a common encoding produced by self-attention layers. Then, task-specific tokens to achieve
-task-specialized embeddings through a new task-attention layer. This architecture allows us to
-dynamically process new tasks with very little memory overhead and does not require complex
+share a common encoding produced by self-attention layers. Then, task-specific tokens are used to
+produce task-specialized embeddings through a new task-attention layer. This architecture allows
+to dynamically process new tasks with very little memory overhead and does not require complex
 hyperparameter tuning. Our experiments show that our framework scales to large datasets and an
 important number of tasks efficiently while using significantly fewer parameters than concurrent
 dynamic strategies.

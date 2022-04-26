@@ -65,22 +65,22 @@ labeled. The second challenge, specific to \ac{CSS}, is the semantic shift of th
 In a traditional semantic segmentation setup, all object categories are predefined, and the
 "background" class contains pixels that do not belong to any of these classes. However, in \ac{CSS},
 the background contains pixels that do not belong to any of the \textit{current} classes. Thus, for
-a specific learning step, the background can contain both future classes, not yet seen by the model,
-as well as old classes. Thus, if nothing is done to distinguish pixels belonging to the real
-background class from old class pixels, this \textbf{background shift} phenomenon risks exacerbating
-the catastrophic forgetting even further \citep{cermelli2020modelingthebackground}. This issue also
-has an impact on the selection of the old data we want to store. Because some currently learned
-classes are annotated as background in the old data, this may degrade the performance of these
-classes if one naively treat them as background to fine-tune the current model.
+a specific learning step, the background can contain old classes as well as future classes, not yet
+seen by the model. Thus, if nothing is done to distinguish pixels belonging to the real background
+class from old class pixels, this \textbf{background shift} phenomenon risks exacerbating the
+catastrophic forgetting even further \citep{cermelli2020modelingthebackground}. This issue also has
+an impact on the selection of the old data we want to store. Because some currently learned classes
+are annotated as background in the old data, this may degrade the performance of these classes if
+one naively treat them as background to fine-tune the current model.
 
 We tackle the first challenge of catastrophic forgetting by designing a constraint enforcing a
 similar behavior between the old and current models. Specifically, we leverage intermediary
 representations of the convolutional networks to ensure that similar patterns are extracted through
 time. \textbf{This feature-based constraints, called Local POD, fully exploits the global and local
     scale necessary to semantic segmentation through a multi-scale design}. The second challenge,
-background shift, is greatly alleviated \textbf{a confidence-based pseudo-labeling strategy to
+background shift, is greatly alleviated by \textbf{a confidence-based pseudo-labeling strategy to
     retrieve old class pixels within the background}. For instance, if a current ground truth mask only
-distinguishes pixels from class \texttt{sofa} and background, our approach allows assigning old
+distinguishes pixels from class \texttt{sofa} and \texttt{background}, our approach allows assigning old
 classes to background pixels, \eg classes \texttt{person}, \texttt{dog} or \texttt{background} (the
 semantic class). We name PLOP the model exploiting those two contributions. We then propose
 \textbf{an extension called PLOPLong that aims to excel on long continual learning scenarios}. This
@@ -125,11 +125,11 @@ To sum it up, our contributions are four-folds:
           rehearsal.
 \end{itemize}
 
-Additionally, We show that our PLOP significantly outperforms state-of-the-art approaches in
+Additionally, we show that our PLOP significantly outperforms state-of-the-art approaches in
 existing scenarios and datasets for \ac{CSS}, as well as in several newly proposed challenging
 benchmarks on new datasets. Furthermore, we show that PLOPLong leads to superior performances on
-longer \ac{CSS} scenarios. Last but not least, we show that \ac{CSS} models' performance can be
-greatly improved where rehearsal learning is an option. In such cases, the proposed Object rehearsal
+longer \ac{CSS} scenarios. Last but not least, we prove that \ac{CSS} models' performance can be
+greatly improved when rehearsal learning is an option. In such cases, the proposed Object rehearsal
 allows reaching high accuracies with a small memory footprint.
 
 \section{Related Work}
@@ -155,7 +155,7 @@ mechanisms~\citep{yuan2018ocnet,zhao2018psanet,fu2019DANet,huang2019CCNet,yuan20
 and fixed-scale aggregation
 ~\citep{zhao2017PSPNet,chen2018deeplab,chen2018ZPSA,zhang2018ContextEncoding}.
 
-\paragraph{Continual Semantic segmentation}: Despite enormous progress in the two aforementioned
+\paragraph{Continual Semantic segmentation} Despite enormous progress in the two aforementioned
 areas respectively, segmentation algorithms are mostly used in an offline setting, while continual
 learning methods generally focus on image classification. Recent works extend existing continual
 learning methods \citep{li2018lwf,hou2019ucir} for specialized applications
@@ -1057,7 +1057,7 @@ preserves both long and short-range spatial statistics between pixels. This lead
 balance between rigidity and plasticity for \ac{CSS}, which in turn alleviates catastrophic
 forgetting. We then tackled background shift with an efficient uncertainty-based pseudo-labeling
 loss. It completes the partially-labeled segmentation maps, allowing the network to efficiently
-retain previously learned knowledge. Afterward, We showed that carefully designed structural changes
+retain previously learned knowledge. Afterward, we showed that carefully designed structural changes
 to the model could improve performance on long \ac{CSS} scenarios, namely a cosine normalization
 adaptation of the classifier and Local POD followed by a modified batch normalization. Finally, we
 proposed to introduce rehearsal learning to \ac{CSS}, one based on partially-labeled whole image
