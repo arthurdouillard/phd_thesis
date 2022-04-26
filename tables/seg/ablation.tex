@@ -1,0 +1,17 @@
+\begin{table}[t]
+    \centering
+    \begin{tabular}{@{}l||cc|cc@{}}
+        \toprule
+                                & \multicolumn{2}{c}{\textbf{15-5} (2 tasks)} & \multicolumn{2}{c}{\textbf{15-1} (6 tasks)}                                      \\
+        \cmidrule{2-5}
+        Model                   & \textit{all}                                & \textit{avg}                                & \textit{all}      & \textit{avg}   \\
+        \midrule
+        CE                      & 13.85                                       & 46.91                                       & \tableindent 3.99 & 19.37          \\
+        Pseudo                  & 66.19                                       & 73.07                                       & 19.74             & 44.48          \\
+        Pseudo + Local POD      & 70.29                                       & 75.13                                       & 50.41             & 64.95          \\
+        $\nu$Pseudo + Local POD & \textbf{71.43}                              & \textbf{75.70}                              & \textbf{52.31}    & \textbf{65.71} \\
+        \bottomrule
+    \end{tabular}
+    \caption{Ablations of PLOP on the Pascal-VOC 2012 dataset in 15-5 and 15-1. Scores are measured on a validation subset made of 20\% of the training set.}
+    \label{tab:seg_ablation}
+\end{table}

@@ -55,13 +55,14 @@ memory overhead even when faced to a large number of tasks.
 We now discuss some future directions of our work, both with respect to the data/benchmark and to
 the architecture/optimization process.
 
-\large{\textbf{Data \& Benchmarks}}
+\vspace{2em}
+\noindent\large{\textbf{Data \& Benchmarks}}
 
 \paragraph{Time Limitation:} Current works in the literature, including this thesis, focus on using
 no rehearsal data or at least very few. The common justifications are about private data that cannot
-be kept, or embedded device with little storage. However, an important part of the industry is not
-concerned by neither constraints: private data can be siloed to avoid leakage to the public and
-storage is now a cheap commodity. The real constraint is time: continually learn new data should be
+be kept, or embedded device with little storage. In many situations, those constraints are
+realistic. However, in other situations, given large data centers, storage capacity is less a
+problem. In that case, the main constraint is time: continually learn new data should be
 significantly faster than retraining from scratch. Thus, a new more realistic setting for Continual
 Learning would impose a time budget \citep{veniat2018budgetedlearning}.
 
@@ -77,8 +78,8 @@ because the need to adapt the representation to new tasks is reduced. Second, an
 tasks will be extremely quick, where simply tuning a task token in a Dytox-like strategy would
 result in good performances.
 
-\large{\textbf{Architecture \& Optimization}}
-
+\vspace{2em}
+\noindent\large{\textbf{Architecture \& Optimization}}
 
 \paragraph{Deep Architectures} for continual learning is a fewly explored topic as most works focus
 on a fixed MLP or a ResNet-18. Initial findings remark that larger networks forget less
@@ -86,11 +87,11 @@ on a fixed MLP or a ResNet-18. Initial findings remark that larger networks forg
 \citep{mirzadeh2022widecontinualnetworks}. Going further than simply scaling, one may wonder if the
 structure of current architectures, optimized for \iid training, have inherent flaws regarding
 continual learning. More particularly, Mixture-of-Experts (MoE) is an interesting direction for
-continual learning \citep{caccia2022anytimelearning}: Large models could learn universal features
-(see previous point) that could be conditioned with task-specific experts. The usage of experts does
-not necessarily need to be exclusive to a particular task: in fact a form of compositionality could
-be obtained where each expert specializes a some concept. We believe that this compositionality
-could speed up the learning of new tasks with few adaptations with little forgetting.
+continual learning \citep{caccia2022anytimelearning}: large models could learn universal features
+that could be conditioned with task-specific experts. The usage of experts does not necessarily need
+to be exclusive to a particular task: in fact a form of compositionality could be obtained where
+each expert specializes a some concept. We believe that this compositionality could speed up the
+learning of new tasks with few adaptations with little forgetting.
 
 \paragraph{Second-order optimization} methods can help deep neural networks to find wide local
 minima, which could encompass multiple task local minima \citep{lee2020kroneckercontinual}. As a
@@ -101,11 +102,13 @@ topic. An important drawback of current second-order methods is obviously the hi
 cost they incur, thus faster alternative methods also seeking flat wide minima such as
 \citet{cha2021swad}'s SWAD should be explored.
 
-\paragraph{Beyond Gradient Descent} The vast majority of deep architectures, in all domains, are
-trained with gradient descent (including fancier optimizers as Adam or LAMB). Different update
-rules, more closely inspired from the biological brains, can be an axis of investigation, as Hebbian
-learning for continual learning \citep{taylor2020hebbiancontinual}. Moreover, instead of designing
-explicitly an update rule, it could be meta-learned. This meta-learning could aim implicitly to
-fast re-learning of past forgotten tasks \citep{he2019metacontinual,caccia2020osaka}.
+\paragraph{Learning differently} The vast majority of deep architectures, in all domains, are
+trained with gradient descent (including fancier optimizers as Adam or LAMB). The major drawback of
+this update rule is the ``\textit{tug-of-war}'' \citep{hadsell2020embracingchange} where the
+gradient from each task pulls the solution towards its optimum. Different update rules, more closely
+inspired from the biological brains, can be an axis of investigation, as Hebbian learning for
+continual learning \citep{taylor2020hebbiancontinual}. Moreover, instead of designing explicitly an
+update rule, it could be meta-learned. This meta-learning could aim implicitly to fast re-learning
+of past forgotten tasks \citep{he2019metacontinual,caccia2020osaka}.
 
 

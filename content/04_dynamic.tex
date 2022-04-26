@@ -301,7 +301,7 @@ $\mathcal{L_\text{clf}}$, a binary-cross entropy, (2) a knowledge distillation
 \citep{hinton2015knowledge_distillation} $\mathcal{L_\text{kd}}$ applied on the probabilities, and
 (3) the divergence loss $\mathcal{L_\text{div}}$. The distillation loss helps to reduce forgetting.
 It is arguably quite naive, and more complex distillation losses
-\citep{selvaraju2017gradcam,hou2019ucir,douillard2020podnet} could further improve results. The
+\citep{selvaraju2017gradcam,hou2019ucir} could further improve results. The
 divergence loss, inspired from the ``auxiliary classifier'' of DER \citep{yan2021der}, uses the
 current last task's embedding $e_t$ to predict ($|\mcC^t| + 1$) probabilities: the current last
 task's classes $\mcC^t$ and an extra class representing all previous classes that can be encountered

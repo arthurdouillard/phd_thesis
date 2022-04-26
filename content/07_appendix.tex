@@ -26,7 +26,7 @@ the labeling cost. In that situation, a segmentation maps (made of one label per
 partially labelized: new classes are labelized, but old classes are assumed to be background.
 Moreover, our model may have encountered new classes in the past, when they were themselves
 considered as background. It's a case of concept shift, where the conditional distribution $p(y |
-      x)$ changes through time. I detail in \autoref{chapter:segmentation} the existing benchmark in
+    x)$ changes through time. I detail in \autoref{chapter:segmentation} the existing benchmark in
 \ac{CSS} and describe how we tackled this problem.
 
 \subsection{Online Learning \& Task drift detection}
@@ -41,13 +41,13 @@ rehearsal learning, often inspired by reservoir sampling \citep{knuth97tacpvol2}
 \citep{hayes2019exstream,aljundi2019taskfree}.
 
 \begin{figure}[tb]
-      \begin{center}
-            \includegraphics[width=0.6\linewidth]{images/related/loss_drift.png}
-      \end{center}
-      \caption{\textbf{Task-free detection of drift in the input distribution} by recording the
-            plateau in the loss followed by a peak. y-axis is the loss value, and x-axis the update
-            steps. Image from \citet{aljundi2019taskfree}.}
-      \label{fig:related_lossdrift}
+    \begin{center}
+        \includegraphics[width=0.6\linewidth]{images/related/loss_drift.png}
+    \end{center}
+    \caption{\textbf{Task-free detection of drift in the input distribution} by recording the
+        plateau in the loss followed by a peak. y-axis is the loss value, and x-axis the update
+        steps. Image from \citet{aljundi2019taskfree}.}
+    \label{fig:related_lossdrift}
 \end{figure}
 
 Multiple regularization methods (\autoref{sec:related_regul}) needs to do some computation between
@@ -67,7 +67,7 @@ Continual Learning aims to not forget. However, we --as humans-- often forget, b
 re-learn what was lost quicker than the first time. The goal of \ac{MCL} is therefore to recover as
 quickly as possible --sample wise-- the original performance on past tasks
 \citep{he2019metacontinual}. As the name implies, meta-learning methods, that aims to \textit{learn
-      how to learn}, such as the MAML model \citep{finn2017maml} are used to that end. Then, \ac{MCL} has
+    how to learn}, such as the MAML model \citep{finn2017maml} are used to that end. Then, \ac{MCL} has
 been extended to a more general framework where the model also has to adapt quickly to new \acf{OoD}
 tasks \citep{caccia2020osaka}.
 
@@ -172,12 +172,12 @@ ordering.
 datasets considered for PODNet: CIFAR100, ImageNet100, and ImageNet1000.
 
 {\begin{description} \setlength{\parskip}{0pt}
-      \item[CIFAR100] contains 32$\times$32-pixel images in 100 classes, with 50k images for
-            training and 10k for testing.
-      \item[ImageNet100] contains 224$\times$224-pixel images in 100 classes, with $\sim$128k images
-            for training and $\sim$5k for testing.
-      \item[ImageNet1000] contains 224$\times$224-pixel images in 1000 classes, with $\sim$1.28m
-            images for training and $\sim$50k for testing. \end{description}}
+    \item[CIFAR100] contains 32$\times$32-pixel images in 100 classes, with 50k images for training
+          and 10k for testing.
+    \item[ImageNet100] contains 224$\times$224-pixel images in 100 classes, with $\sim$128k images
+          for training and $\sim$5k for testing.
+    \item[ImageNet1000] contains 224$\times$224-pixel images in 1000 classes, with $\sim$1.28m
+          images for training and $\sim$50k for testing. \end{description}}
 
 \paragraph{Spatial-based distillation} I displayed the differences of performance between
 spatial-based distillation in \autoref{sec:podnet_ablation_pooling}
@@ -217,8 +217,8 @@ Adam optimizer and a learning rate of $10^{-5}$. Finally, following \citet{hou20
 on PODNet (\autoref{sec:podnet}), we fine-tune the classifier for 60 epochs (with the feature
 extractor frozen and a small learning rate of $10^-4$) at the end of every task (except the last
 one). We found useful to balance the bias towards the seen classes against the unseen classes. With
-the POD distillation (\autoref{sec:podnet}), we set $\lambda_1=3$  for AwA2, and $\lambda_1=15$
-for aP\&Y; with the Less-Forget distillation of \citet{hou2019ucir}, we set $\lambda_1=4$ for both
+the POD distillation (\autoref{sec:podnet}), we set $\lambda_1=3$  for AwA2, and $\lambda_1=15$ for
+aP\&Y; with the Less-Forget distillation of \citet{hou2019ucir}, we set $\lambda_1=4$ for both
 datasets. We always set $\lambda_2=10^{-3}$, moreover we apply it on L2-normalized features.
 Finally, we do not reinitialize the models between tasks: $f^t$ results from training $f^{t-1}$ on
 task $t$, etc. On the rehearsal memory limitation, we follow the strict setting of
@@ -257,19 +257,166 @@ $256\times256$ and then center cropped to $224\times224$.
 Matplotlib \citet{hunter2007matplotlib} (version 3.1.0). The CUDA version is 10.2. Experiments on
 MNIST were done with the data loaders library Continuum \citet{douillardlesort2021continuum}.
 
-The code is released at
-\href{https://github.com/arthurdouillard/incremental_learning.pytorch}{github.com/arthurdouillard/incremental\_learning.pytorch}.
-
 \paragraph{Hardware \& Training duration} We ran our experiments on 3 Titan Xp GPUs with 12 Go of
 VRAM each. Each experiment had access to 10 CPU cores of 3.90 GHz each, and used at most 3 Go of RAM
 and 8 Go of VRAM. A single experiment run on AwA2 took on average 5 hours and, on aP\&Y, 3 hours. We
 ran each experiment thrice with different random seeds (1, 2, and 3).
 
+\section{Details on PLOP}
+\label{sec:appendix_plop}
+
+We provide here more details on our Ghost model which was presented in \autoref{sec:seg_plop}.
+
+\subsection{Algorithm view of Local POD}
+
+In \autoref{algo:local_pod}, we summarize the algorithm for the proposed Local POD. The algorithm
+consists in three functions. First, \texttt{Distillation}, loops over all $L$ layers onto which we
+apply Local POD. Second, \texttt{LocalPOD}, computes the L2 distance (L.26) between POD embeddings
+of the current (L.19) and old (L.20) models. It loops over $S$ different scales (L.14) and $\Phi$
+computes the POD embedding given two features maps subsets (L.19-20) as defined in Eq. 1. $\|=$
+denotes an in-place concatenation.
+
+\begin{algorithm}
+    \caption{Local POD algorithm}
+    \label{algo:local_pod}
+    \begin{algorithmic}[1]
+        \Function{Distillation}{$f^t$, $f^{t-1}$, $x$, $S$} \State $loss \gets 0$ \For{\texttt{$l
+                    \gets 0$; $l < L$; $l{+}{+}$}} \State $\vh^t_l \gets f^t_l(\vx)$ \State $\vh^{t-1}_l \gets
+            f^{t-1}_l(\vx)$
+
+        \State $loss \gets loss + \operatorname{LocalPOD}(\vh^t_l, \vh^{t-1}_l, S)$ \EndFor \State
+        \Return $\frac{loss}{L}$ \EndFunction \\
+        \Function{LocalPOD}{$\vh^t$, $\vh^{t-1}, S$} \State $\mathbf{P}^t \gets [\,]$ \State
+        $\mathbf{P}^{t-1} \gets [\,]$
+
+        \For{\texttt{$s \gets 0$; $s < S$; $s{+}{+}$}}  \State $w \gets
+            \nicefrac{W}{2^s}$ \State $h \gets \nicefrac{H}{2^s}$
+
+        \For{\texttt{$i \gets 0$; $i < W - w$; $i{+}=w$}} \For{\texttt{$j \gets 0$; $j < H - h$;
+                $j{+}=h$}} \State $\mathbf{p}^t \gets \operatorname{\Phi}(\vh^t\texttt{[i:i+w, j:j+h]})$
+        \State $\mathbf{p}^{t-1} \gets \operatorname{\Phi}(\vh^{t-1}\texttt{[i:i+w,
+                j:j+h]})$
+
+        \State $\mathbf{P}^t \|= \mathbf{p}^t$ \State $\mathbf{P}^{t-1} \|= \mathbf{p}^{t-1}$ \EndFor \EndFor
+        \EndFor \State \Return $\left\Vert \mathbf{P}^t - \mathbf{P}^{t-1}\right\Vert^2$
+        \Comment{Eq. 5} \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Reproducibility}
+
+\noindent\textbf{Datasets:\,} We evaluate our model on three datasets Pascal-VOC
+\citep{everingham2015pascalvoc}, ADE20k \citep{zhou2017adedataset}, and Cityscapes
+\citep{cordts2016cityscapes}. VOC contains 20 classes, 10,582 training images, and 1,449 testing
+images. ADE20k has 150 classes, 20,210 training images, and 2,000 testing images. Cityscapes
+contains 2975 and 500 images for train and test, respectively. Those images represent 19 classes and
+were taken from 21 different cities. All ablations and hyperparameters tuning were done on a
+validation subset of the training set made of 20\% of the images. For Cityscapes and ADE20k, we
+resize the images to $512 \times 512$, with a center crop. An additional random horizontal flip
+augmentation is applied at training time. Cityscapes images are resized to $512 \times 1024$.
+
+\noindent\textbf{Implementation details:\,} For all experiments, we use a
+Deeplab-V3~\citep{chen2017deeplabv3} architecture with a ResNet-101~\citep{he2016resnet} backbone
+pretrained on ImageNet~\citep{deng2009imagenet}, as in~\citep{cermelli2020modelingthebackground}.
+For all datasets, we set a maximum threshold for the uncertainty measure of Eq. 7 to $\tau=1e-3$. We
+train our model for 30 and 60 epochs per CSS step on Pascal VOC and ADE, respectively, with an
+initial learning rate of $1e-2$ for the first CSS step, and $1e-3$ for all the following ones. We
+reduce the learning rate exponentially with a decay rate of $9e-1$. We use SGD optimizer with $9e-1$
+Nesterov momentum. The Local POD factor $\lambda$ is set to $1e-2$ and $5e-4$ for intermediate
+feature maps and logits, respectively. Moreover, we multiply this factor by the adaptive weighting
+$\sqrt{\nicefrac{|C^{1:t}|}{|C^{t}|}}$ introduced by \citet{hou2019ucir} that increases the strength
+of the distillation the further we are into the continual process. For all feature maps, Local POD
+is applied before ReLU, with squared pixel values, as in
+\citep{zagoruyko2016distillation_attention}. We use 3 scales for Local POD: $1$, $\nicefrac{1}{2}$,
+and $\nicefrac{1}{4}$, as adding more scales experimentally brought diminishing returns. We use a
+batch size of 24 distributed on two GPUs. Contrary to many continual models, we don't have access to
+any task id in inference, therefore our setting/strategy has to predict a class among the set of all
+seen classes ---a realist setting.
+
+\noindent\textbf{Classes ordering details:\,} For all quantitative experiments on Pascal-VOC 2012
+and ADE20k, the same class ordering was used across all evaluated models. For Pascal-VOC 2012 it
+corresponds to \lstinline![1, 2, ..., 20]! and ADE20k to \lstinline![1, 2, ..., 150]! as defined by
+\citet{cermelli2020modelingthebackground}. For class-incremental Cityscapes to \lstinline![1, 2,..., 19]!. In this case, because Cityscapes does not have \texttt{background} class, it only appears
+as ``unlabeled'' for past and future classes. For continual-domain cityscapes, the order of the
+domains/cities is the following: \texttt{aachen}, \texttt{bremen}, \texttt{darmstadt},
+\texttt{erfurt}, \texttt{hanover}, \texttt{krefeld}, \texttt{strasbourg}, \texttt{tubingen},
+\texttt{weimar}, \texttt{bochum}, \texttt{cologne}, \texttt{dusseldorf}, \texttt{hamburg},
+\texttt{jena}, \texttt{monchengladbach}, \texttt{stuttgart}, \texttt{ulm}, \texttt{zurich},
+\texttt{frankfurt}, \texttt{lindau}, and \texttt{munster}.
+
+In the main paper we showcased a boxplot featuring 20 different class orders for Pascal-VOC 2012
+15-1. For the sake of reproducibility, we provide details on these orders:
+
+\begin{adjustbox}{width=\columnwidth,center}
+    \begin{lstlisting}
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+[12, 9, 20, 7, 15, 8, 14, 16, 5, 19, 4, 1, 13, 2, 11, 17, 3, 6, 18, 5]
+[9, 12, 13, 18, 2, 11, 15, 17, 10, 8, 4, 5, 20, 16, 6, 14, 19, 1, 7, 3]
+[13, 19, 15, 17, 9, 8, 5, 20, 4, 3, 10, 11, 18, 16, 7, 12, 14, 6, 1, 2]
+[15, 3, 2, 12, 14, 18, 20, 16, 11, 1, 19, 8, 10, 7, 17, 6, 5, 13, 9, 4]
+[7, 13, 5, 11, 9, 2, 15, 12, 14, 3, 20, 1, 16, 4, 18, 8, 6, 10, 19, 17]
+[12, 9, 19, 6, 4, 10, 5, 18, 14, 15, 16, 3, 8, 7, 11, 13, 2, 20, 17, 1]
+[13, 10, 15, 8, 7, 19, 4, 3, 16, 12, 14, 11, 5, 20, 6, 2, 18, 9, 17, 1]
+[3, 14, 13, 1, 2, 11, 15, 17, 7, 8, 4, 5, 9, 16, 19, 12, 6, 18, 10, 20]
+[1, 14, 9, 5, 2, 15, 8, 20, 6, 16, 18, 7, 11, 10, 19, 3, 4, 17, 12, 13]
+[16, 13, 1, 11, 12, 18, 6, 14, 5, 3, 7, 9, 20, 19, 15, 4, 2, 10, 8, 17]
+[10, 7, 6, 19, 16, 8, 17, 1, 14, 4, 9, 3, 15, 11, 12, 2, 18, 20, 13, 5]
+[7, 5, 3, 9, 13, 12, 14, 19, 10, 2, 1, 4, 16, 8, 17, 15, 18, 6, 11, 20]
+[18, 4, 14, 17, 12, 10, 7, 3, 9, 1, 8, 15, 6, 13, 2, 5, 11, 20, 16, 19]
+[5, 4, 13, 18, 14, 10, 19, 15, 7, 9, 3, 2, 8, 16, 20, 1, 12, 11, 6, 17]
+[9, 12, 13, 18, 7, 1, 15, 17, 10, 8, 4, 5, 20, 16, 6, 14, 19, 11, 2, 3]
+[3, 14, 13, 18, 2, 11, 15, 17, 10, 8, 4, 5, 20, 16, 6, 12, 19, 1, 7, 9]
+[7, 5, 9, 1, 15, 18, 14, 3, 20, 10, 4, 19, 11, 17, 16, 12, 8, 6, 2, 13]
+[3, 14, 6, 1, 2, 11, 12, 17, 7, 20, 4, 5, 9, 16, 19, 15, 13, 18, 10, 8]
+[1, 2, 12, 14, 6, 19, 18, 17, 5, 20, 8, 4, 9, 16, 10, 3, 15, 13, 11, 7]
+\end{lstlisting}
+\end{adjustbox}
+
+In the 15-1 setting, we first learn the first fifteen classes, then increment the five remaining
+classes one by one. Note that the special class \texttt{background} (0) is always learned during the
+first task.
+
+\noindent\textbf{Hardware and Code:\,} For each experiment, we used two Titan Xp GPUs with 12 Go of
+VRAM each. The initial step $t=1$ for each setting is common to all models, therefore we re-use the
+weights trained on this step. All models took less than 2 hours to train on Pascal-VOC 2012 15-1,
+and less than 16 hours on ADE20k 100-10. We distributed the batch size equally on both GPUs. All
+models are implemented in PyTorch~\citep{paszke2017pytorch} and run with half-precision for
+efficiency reasons with Nvdia's APEX library using O1 optimization level. Our code base is based on
+\citet{cermelli2020modelingthebackground}'s code based that we modified to implement our strategy.
+
+\subsection{Additional Experiments}
+
+\noindent\textbf{Model ablation:\,} \autoref{tab:seg_ablation} shows the construction of our model
+component by component on Pascal-VOC 2012 in 15-5 and 15-1. For this experiment, we train our model
+on 80\% of the training set and evaluate on the validation set made of the remaining 20\%. We report
+the mIoU at the final task (``\textit{all}'') and the average of the mIoU after each task
+(``\textit{avg}''). We start with a crude baseline made of solely cross-entropy (CE).
+Pseudo-labeling by itself increases by a large margin performance (eg. 3.99 to 19.74 for 15-1).
+Applying Local POD reduces drastically the forgetting leading to a massive gain of performance (eg.
+19.74 to 50.41 for 15-1). Finally our adaptive factor $\nu$ based on the ratio of accepted
+pseudo-labels over the number of background pixels further increases our overall results (eg. 50.41
+to 52.31 for 15-1). The interest of $\nu$ arises when PLOP faces hard images where few pseudo-labels
+will be created due to an overall high uncertainty. In such a case, current classes will be
+over-represented, which can in turn lead to strong bias towards new classes (\textit{i.e.} the model
+will have a tendency to predict one of the new classes for every pixel). The $\nu$ factor therefore
+decreases the overall classification loss on such images, and empirical results confirm its
+effectiveness.
+
+\input{tables/seg/ablation}
+
+\noindent\textbf{Pascal-VOC 2012 Disjoint:\,} In the main paper, we reported results on Pascal-VOC
+2012 Overlap. For reasons mentioned previously, Overlap is a more realist setting than Disjoint.
+Nevertheless, for the sake of comparison, we also provide results in
+\autoref{tab:seg_voc_disjoint_sota} in the Disjoint setting. While PLOP has similar performance to
+MiB in 15-5 (the differences are not significant), it significantly outperforms previous
+state-of-the-art methods in both 19-1 and 15-1.
+
+\input{tables/seg/voc_disjoint}
 
 \section{Details on DyTox}
 \label{sec:appendix_dytox}
 
-We provide here more details on our PODNet model which was presented in \autoref{sec:dytox}.
+We provide here more details on our PODNet model which was presented in \autoref{chapter:dynamic}.
 
 %\noindent\autoref{tab:dytox_notation} summarizes the notations used along this paper.
 %\input{tables/dytox/notation}
@@ -287,51 +434,51 @@ the initial step contained half of all the classes, while for DyTox we consider 
 brings an equal amount of classes.
 
 \paragraph{Implementation} For all datasets, we train the model for 500 epochs per task with Adam
-\citep{kingma2014adam} with a learning rate of $5e^{-4}$, including 5 epochs of warmup.
-Following UCIR \citep{hou2019ucir}, PODNet (\autoref{sec:podnet}), and DER \citep{yan2021der}, at
-the end of each task (except the first) we finetuned our model for 20 epochs with a learning rate of
-$5e^{-5}$ on a balanced dataset. In DyTox, we applied the standard data augmentation of DeiT
+\citep{kingma2014adam} with a learning rate of $5e^{-4}$, including 5 epochs of warmup. Following
+UCIR \citep{hou2019ucir}, PODNet (\autoref{sec:podnet}), and DER \citep{yan2021der}, at the end of
+each task (except the first) we finetuned our model for 20 epochs with a learning rate of $5e^{-5}$
+on a balanced dataset. In DyTox, we applied the standard data augmentation of DeiT
 \citep{touvron2021deit} but we removed the pixel erasing \citep{zhong2017erasing}, MixUp
 \citep{hingyi2018mixup}, and CutMix \citep{yun2019cutmix} augmentations for fair comparison. In
-contrast, in DyTox+ we used a MixUp \citep{hingyi2018mixup} with beta distribution $\beta(0.8, 0.8)$.
-During all incremental tasks ($t>1$), the old classifiers $\operatorname{Clf}_i,\, i < t$ and the
-old task tokens $\theta_i,\, i < t$ parameters are frozen. During the finetuning phase where classes
-are rebalanced \citep{castro2018end_to_end_inc_learn,hou2019ucir,yan2021der},
-these parameters are optimized, but the SABs are frozen.
+contrast, in DyTox+ we used a MixUp \citep{hingyi2018mixup} with beta distribution $\beta(0.8,
+    0.8)$. During all incremental tasks ($t>1$), the old classifiers $\operatorname{Clf}_i,\, i < t$ and
+the old task tokens $\theta_i,\, i < t$ parameters are frozen. During the finetuning phase where
+classes are rebalanced \citep{castro2018end_to_end_inc_learn,hou2019ucir,yan2021der}, these
+parameters are optimized, but the SABs are frozen.
 
-\paragraph{Hyperparameter tuning} In contrast with previous works
-\citep{yan2021der}, we wanted stable hyperparameters, tuned for a single setting
-and then applied on all experiments. This avoids optimizing for the number of tasks, which defeats
-the purpose of continual learning \citep{farquhar2018robustcontinual}. We tuned hyperparameters for
-DyTox using a validation subset made of 10\% of the training dataset, and this only on the CIFAR100
-experiment with 10 steps. We provide in \autoref{tab:dytox_tuning} the chosen hyperparameters. Results in
-the main paper shows that those hyperparameters reach state-of-the-art on all other settings and
-notably on ImageNet.
+\paragraph{Hyperparameter tuning} In contrast with previous works \citep{yan2021der}, we wanted
+stable hyperparameters, tuned for a single setting and then applied on all experiments. This avoids
+optimizing for the number of tasks, which defeats the purpose of continual learning
+\citep{farquhar2018robustcontinual}. We tuned hyperparameters for DyTox using a validation subset
+made of 10\% of the training dataset, and this only on the CIFAR100 experiment with 10 steps. We
+provide in \autoref{tab:dytox_tuning} the chosen hyperparameters. Results in the main paper shows
+that those hyperparameters reach state-of-the-art on all other settings and notably on ImageNet.
 
 \input{tables/dytox/tuning}
 
-\paragraph{Baselines} E2E \citep{castro2018end_to_end_inc_learn} and Simple-DER \citep{li2021preserve}
-results come from their respective papers. All other baseline results are taken from the DER paper
-\citep{yan2021der}. We now further describe their contributions. iCaRL \citep{rebuffi2017icarl} uses a
-knowledge distillation loss \citep{hinton2015knowledge_distillation} and at test-time predicts using
-a k-NN from its features space. E2E \citep{castro2018end_to_end_inc_learn} learns a model with
-knowledge distillation and applies a finetuning after each step. UCIR \citep{hou2019ucir} uses cosine
-classifier and euclidean distance between the final flattened features as a distillation loss. BiC
-\citep{wu2019bias_correction} uses a knowledge distillation loss and also re-calibrates
-\citep{guo2017miscalibration} the logits of the new classes using a simple linear model trained on
-validation data. WA \citep{zhao2020weightalignement} uses a knowledge distillation loss and
-re-weights at each epoch the classifier weights associated to new classes so that they have the same
-average norm as the classifier weights of the old classes. PODNet (\autoref{sec:podnet}) uses a
-cosine classifier and a specific distillation loss (POD) applied at multiple intermediary features
-of the ResNet backbone. RPSNet \citep{rajasegaran2019rpsnet} uses knowledge distillation and
-manipulates subnetworks in its architecture, following the lottery ticket hypothesis
-\citep{frankle2019lottery_ticket}. DER \citep{yan2021der} creates a new ResNet per task. All ResNets'
-embeddings are concatenated and fed to a unique classifier. ResNets are pruned using HAT
-\citep{serra2018hat} masking procedure. Note that DER pruning has multiple hyperparameters that are
-set differently according to the settings. Furthermore, the reported parameters count, after
-pruning, in \citep{yan2021der} is an average of the count over all steps: the final parameters count
-(necessarily higher) wasn't available. Finally, Simple-DER \citep{li2021preserve} is similar to DER,
-with a simpler pruning method which doesn't require any hyperparameter tuning.
+\paragraph{Baselines} E2E \citep{castro2018end_to_end_inc_learn} and Simple-DER
+\citep{li2021preserve} results come from their respective papers. All other baseline results are
+taken from the DER paper \citep{yan2021der}. We now further describe their contributions. iCaRL
+\citep{rebuffi2017icarl} uses a knowledge distillation loss \citep{hinton2015knowledge_distillation}
+and at test-time predicts using a k-NN from its features space. E2E
+\citep{castro2018end_to_end_inc_learn} learns a model with knowledge distillation and applies a
+finetuning after each step. UCIR \citep{hou2019ucir} uses cosine classifier and euclidean distance
+between the final flattened features as a distillation loss. BiC \citep{wu2019bias_correction} uses
+a knowledge distillation loss and also re-calibrates \citep{guo2017miscalibration} the logits of the
+new classes using a simple linear model trained on validation data. WA
+\citep{zhao2020weightalignement} uses a knowledge distillation loss and re-weights at each epoch the
+classifier weights associated to new classes so that they have the same average norm as the
+classifier weights of the old classes. PODNet (\autoref{sec:podnet}) uses a cosine classifier and a
+specific distillation loss (POD) applied at multiple intermediary features of the ResNet backbone.
+RPSNet \citep{rajasegaran2019rpsnet} uses knowledge distillation and manipulates subnetworks in its
+architecture, following the lottery ticket hypothesis \citep{frankle2019lottery_ticket}. DER
+\citep{yan2021der} creates a new ResNet per task. All ResNets' embeddings are concatenated and fed
+to a unique classifier. ResNets are pruned using HAT \citep{serra2018hat} masking procedure. Note
+that DER pruning has multiple hyperparameters that are set differently according to the settings.
+Furthermore, the reported parameters count, after pruning, in \citep{yan2021der} is an average of
+the count over all steps: the final parameters count (necessarily higher) wasn't available. Finally,
+Simple-DER \citep{li2021preserve} is similar to DER, with a simpler pruning method which doesn't
+require any hyperparameter tuning.
 
 %\input{tables/dytox/cifar_plusplus}
 
@@ -340,8 +487,8 @@ with a simpler pruning method which doesn't require any hyperparameter tuning.
 Previous dynamic methods as DER \citep{yan2021der} and Simple-DER \citep{li2021preserve} shared no
 parameters between tasks until the final classifier. We proposed instead with DyTox to share the
 encoder (SABs) and the decoder (TAB) parameters across tasks, leading to a minimal memory overhead
-while also sharing common information between tasks. In \autoref{tab:dytox_alternatives}, we compare the
-impact of sharing the TAB per task --- and only maintain different tokens per task. In the first
+while also sharing common information between tasks. In \autoref{tab:dytox_alternatives}, we compare
+the impact of sharing the TAB per task --- and only maintain different tokens per task. In the first
 row, a different TAB is created per task, while in the second row the same TAB is used --- which is
 the DyTox strategy. A different TAB per task leads to better results (56\% \textit{v.s.} 52\% in
 ``Last'' accuracy) because the network can be more diverse with each TAB specialized to its
@@ -375,16 +522,16 @@ forgetting in continual learning.
 DyTox is made of two main components: the SABs and the unique TAB. The TAB structure, taking in
 input both patch tokens and a task token, is crucial to our strategy. Yet, the SAB could be of any
 kind of features extractor, based on convolutions or attentions. Following the hybrid network
-proposed in ablations by \citet{dosovitskiy2020vit}, we tried to replace the
-collection of SABs by a ResNet18. The final features of the ResNet, before global pooling, of shape
-$(W \times H \times D)$ can be seen as $W \times H$ tokens of $D$ dimension. We made a few
-modifications to this ResNet to boost its performance, namely removed the fourth and ultimate layer,
-and added a pointwise convolution with 504 output channels (so it can be divided by the 12 attention
-heads of the TAB), a batch normalization \citep{ioffe2015batchnorm}, and a ReLU activation. These
-simple modifications are sufficient for our proof of concept, and thus we also didn't tune deeply
-this model. We display in \autoref{tab:dytox_resnet} the comparison of the two backbones on CIFAR100 50
-steps: (1) with ResNet, and (2) with SABs (DyTox). Performances are slightly lower than DyTox with
-SABs, however, they are still significantly higher than previous state-of-the-art like WA
+proposed in ablations by \citet{dosovitskiy2020vit}, we tried to replace the collection of SABs by a
+ResNet18. The final features of the ResNet, before global pooling, of shape $(W \times H \times D)$
+can be seen as $W \times H$ tokens of $D$ dimension. We made a few modifications to this ResNet to
+boost its performance, namely removed the fourth and ultimate layer, and added a pointwise
+convolution with 504 output channels (so it can be divided by the 12 attention heads of the TAB), a
+batch normalization \citep{ioffe2015batchnorm}, and a ReLU activation. These simple modifications
+are sufficient for our proof of concept, and thus we also didn't tune deeply this model. We display
+in \autoref{tab:dytox_resnet} the comparison of the two backbones on CIFAR100 50 steps: (1) with
+ResNet, and (2) with SABs (DyTox). Performances are slightly lower than DyTox with SABs, however,
+they are still significantly higher than previous state-of-the-art like WA
 \citep{zhao2020weightalignement}, especially in ``Last'' accuracy. Moreover, the parameters count is
 comparable to DyTox. This experiment shows that our DyTox framework, while designed with a
 transformer backbone in mind, is also efficient on non-token-based architectures such as a ResNet.
@@ -397,19 +544,19 @@ We investigate here other approaches for \textit{conditioning} features to the d
 Residual Adapters \citep{rebuffi2017residualadapters} adds a different residual branch made of a
 pointwise convolution for each domain the model is learned (\eg CIFAR then ImageNet then SVHN). This
 model needs the task/dataset/domain identifier at test-time to determine which residual to use. For
-VQA task \citep{antol2015vqa}, FiLM \citep{perez2018film} proposes to modify the visual features using
-the the textual query.
+VQA task \citep{antol2015vqa}, FiLM \citep{perez2018film} proposes to modify the visual features
+using the the textual query.
 
 We adapt these two feature conditioning strategies for our transformer backbone architecture. We
 perform a global token pooling after the ultimate SAB, and apply for each learned task, a residual
 adapter or a FiLM. Residual adapter in our case is a MLP, and FiLM parameters are directly learned.
 As for DyTox, we forward each task-specific embedding to the respective task-specific classifier. We
-showcase the continual performance in \autoref{tab:dytox_task_cond} on CIFAR100 50 steps and ImageNet100
-10 steps. On the former dataset, smaller and easier,  the residual adapters and FiLM have similar
-performance as our TAB approach. On the other hand, as soon as the task complexity increases with
-the more detailed ImageNet100 dataset, FiLM and Residual adapter based conditioning strategies
-forget significantly more than our complete DyTox framework: TAB outperform the Residual Adapters by
-+2.98 \pp in ``Last'' top-5 accuracy and FiLM by +6.58 \pp.
+showcase the continual performance in \autoref{tab:dytox_task_cond} on CIFAR100 50 steps and
+ImageNet100 10 steps. On the former dataset, smaller and easier,  the residual adapters and FiLM
+have similar performance as our TAB approach. On the other hand, as soon as the task complexity
+increases with the more detailed ImageNet100 dataset, FiLM and Residual adapter based conditioning
+strategies forget significantly more than our complete DyTox framework: TAB outperform the Residual
+Adapters by +2.98 \pp in ``Last'' top-5 accuracy and FiLM by +6.58 \pp.
 
 \input{tables/dytox/task_cond}
 
