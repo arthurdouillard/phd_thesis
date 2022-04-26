@@ -26,8 +26,8 @@ common approach. We challenge this paradigm by outlining two drawbacks: it balan
 rigidity (not forgetting old classes) \vs plasticity (learning new classes) trade-off. Moreover,
 constraining intermediary visual features is a stronger regularization. Then, we design two
 feature-based regularizations: (1) PODNet minimizes the drift between statistics of the visual
-features between the old and new models. The design of this method explicitly reduce forgetting
-while letting enough slack to learn efficiently new classes. (2) Our second approach, Ghost, avoids
+features between the old and new models. The design of this method explicitly reduces forgetting
+while letting enough slack to efficiently learn new classes. (2) Our second approach, Ghost, avoids
 forgetting before it even happens by pre-allocating areas of the latent space for future classes by
 drawing inspiration from the zeroshot literature. For this second approach, we propose the Prescient
 Continual Learning setting where detailed attributes of each class are available. This is a
@@ -52,7 +52,10 @@ memory overhead even when faced to a large number of tasks.
 
 \section{Future Work}
 
-We now discuss some future directions of the Continual Learning field:
+We now discuss some future directions of our work, both with respect to the data/benchmark and to
+the architecture/optimization process.
+
+\large{\textbf{Data \& Benchmarks}}
 
 \paragraph{Time Limitation:} Current works in the literature, including this thesis, focus on using
 no rehearsal data or at least very few. The common justifications are about private data that cannot
@@ -65,30 +68,38 @@ Learning would impose a time budget \citep{veniat2018budgetedlearning}.
 \paragraph{Universal Representation:} A major cause of forgetting in deep neural networks is that
 they learn spurious features \citep{lesort2022spuriousfeatures}, useful for the current task, but
 that may cause interference with future tasks. Ideally, a network should learn invariants
-\citep{rame2021fishr} that generalizes better to new distributions. Recently, it has been proposed
-that self-supervision could learn more class-agnostic features and in turns reduce drastically
-forgetting \citep{gallardo2021selfsupcontinual}. We believe that universal features, trained in
-self-supervision, with a metric-based approach, on a wide diversity of modalities (RGB, depth,
-\etc), will enable better continual models. First, they would forget less because the need to adapt the
-representation to new tasks is reduced. Second, an adaptation to new tasks will be extremely quick,
-where simply tuning a task token in a Dytox-like strategy would result in good performances.
+\citep{arjovsky2019irm,rame2021fishr} that generalizes better to new distributions. Recently, it has
+been proposed that self-supervision could learn more class-agnostic features and in turns
+drastically reduce forgetting \citep{gallardo2021selfsupcontinual}. Universal
+features, trained in self-supervision, with a metric-based approach, on a wide diversity of
+modalities (RGB, depth, \etc), will enable better continual models. First, they would forget less
+because the need to adapt the representation to new tasks is reduced. Second, an adaptation to new
+tasks will be extremely quick, where simply tuning a task token in a Dytox-like strategy would
+result in good performances.
 
-\paragraph{Mixture-of-Experts (MoE)} is a combination of multiple small models into a larger model. For
-transformers, MLP in the Self-Attention Block is replaced by multiple small MLPs. A routing system
-redirects each token/dimension to a particular \textit{expert} MLP. Applying MoE to continual
-learning has been fewly explored yet \citep{caccia2022anytimelearning}. We hypothetize that large
-models could learn universal features (see previous point) that could be conditioned with
-task-specific experts. The usage of experts does not necessarily need to be exclusive to a
-particular task: in fact a form of compositionality could be obtained where each expert specializes
-a some concept. We believe that this compositionality could speed up the learning of new tasks with
-few adaptations, and thus one may hope, with little forgetting.
+\large{\textbf{Architecture \& Optimization}}
+
 
 \paragraph{Deep Architectures} for continual learning is a fewly explored topic as most works focus
 on a fixed MLP or a ResNet-18. Initial findings remark that larger networks forget less
 \citep{ramasesh2022scalecontinual}, especially when scaling the width
 \citep{mirzadeh2022widecontinualnetworks}. Going further than simply scaling, one may wonder if the
 structure of current architectures, optimized for \iid training, have inherent flaws regarding
-continual learning.
+continual learning. More particularly, Mixture-of-Experts (MoE) is an interesting direction for
+continual learning \citep{caccia2022anytimelearning}: Large models could learn universal features
+(see previous point) that could be conditioned with task-specific experts. The usage of experts does
+not necessarily need to be exclusive to a particular task: in fact a form of compositionality could
+be obtained where each expert specializes a some concept. We believe that this compositionality
+could speed up the learning of new tasks with few adaptations with little forgetting.
+
+\paragraph{Second-order optimization} methods can help deep neural networks to find wide local
+minima, which could encompass multiple task local minima \citep{lee2020kroneckercontinual}. As a
+result, the parameter drift between the optimal weights of a task $t$ and $t+1$ can be minimal, and
+in turn avoid the bulk of the forgetting. We briefly explore this direction with the
+Sharpness-Aware-Minimizer \citep{foret2020sam} in this thesis, but more work should be done on this
+topic. An important drawback of current second-order methods is obviously the higher computational
+cost they incur, thus faster alternative methods also seeking flat wide minima such as
+\citet{cha2021swad}'s SWAD should be explored.
 
 \paragraph{Beyond Gradient Descent} The vast majority of deep architectures, in all domains, are
 trained with gradient descent (including fancier optimizers as Adam or LAMB). Different update
@@ -97,13 +108,4 @@ learning for continual learning \citep{taylor2020hebbiancontinual}. Moreover, in
 explicitly an update rule, it could be meta-learned. This meta-learning could aim implicitly to
 fast re-learning of past forgotten tasks \citep{he2019metacontinual,caccia2020osaka}.
 
-
-\paragraph{Second-order optimization} methods can help deep neural networks to find wide local
-minima, which could encompass multiple task local minima \citep{lee2020kroneckercontinual}. As a
-result, the parameter drift between the optimial weights of a task $t$ and $t+1$ can be minimal, and
-in turn avoid the bulk of the forgetting. We briefly explore this direction with the
-Sharpness-Aware-Minimizer \citep{foret2020sam} in this thesis, but more work should be done on this
-topic. An important drawback of current second-order methods is obviously the higher computational
-cost they incur, thus faster alternative methods also seeking flat wide minima as
-\citet{cha2021swad}'s SWAD should be explored.
 

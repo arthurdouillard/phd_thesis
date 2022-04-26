@@ -558,11 +558,11 @@ in many real-world applications (\eg fashion product classification), due to bud
 models are released incrementally, with partial classes and training data, despite the classes being
 known from the beginning, and being well-characterized by attributes.
 
-We design a framework, nicknamed \textit{Ghost}, to exploit these class attributes estimate the
-representation of future, yet unseen, classes. We use these approximated representations to
-regularize the latent space so that forgetting could be avoided ---or at least reduced--- before
-even the introduction of disrupting new classes. This is orthogonal to the proposed PODNet strategy
-where forgetting was reduced \textit{after} a class introduction.
+We design a framework, nicknamed \textit{Ghost}, which estimates the representation of future, yet
+unseen, classes using class attributes. We use these approximated representations to regularize the
+latent space so that forgetting could be avoided ---or at least reduced--- before even the
+introduction of disrupting new classes. This is orthogonal to the proposed PODNet strategy where
+forgetting was reduced \textit{after} a class introduction.
 
 To develop our framework, we take inspiration from \acf{ZSL}
 \citep{lampert2009zeroshot,xian2019awa2}, which allows classifying examples from unseen classes by
