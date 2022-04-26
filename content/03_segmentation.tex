@@ -659,7 +659,8 @@ To ensure fair comparisons with state-of-the-art approaches, we follow the exper
 ~\citet{cermelli2020modelingthebackground} for datasets, protocol, metrics, and baseline
 implementations. Although, we also propose to evaluate on new datasets and on more challenging
 protocols. Furthermore, we explore in advanced experiments, for the first time, how rehearsal can
-improve performance in \ac{CSS}.
+improve performance in \ac{CSS}. We provide the full implementation details in the appendix
+(\autoref{sec:appendix_plop}).
 
 \paragraph{Datasets:} We evaluate our model on three datasets, summarized in
 \autoref{tab:seg_dataset_description}: Pascal-VOC \citep{everingham2015pascalvoc}, Cityscapes
@@ -709,36 +710,10 @@ constraints (PI \citep{zenke2017synaptic_intelligence}, EWC \citep{kirkpatrick20
 \citep{rebuffi2017icarl}). Moreover, unless explicitly stated otherwise, all the models (ours
 included), do not use rehearsal learning.
 
-
-\paragraph{Implementation Details:} As in \citet{cermelli2020modelingthebackground}, we use a
-Deeplab-V3 \citep{chen2017deeplabv3} architecture with a ResNet-101 \citep{he2016resnet} backbone
-pretrained on ImageNet \citep{deng2009imagenet} for all experiments and models but SDR
-\citep{michieli2021sdr} which used a Deeplab-V3+ \citep{chen2018deeplabv3plus}. For all datasets, we
-set a maximum threshold for the uncertainty measure of \autoref{eq:seg_pseudo_bis_uncertain} to
-$\tau=1e-3$. We train our model for 30, 60, and 30 epochs per \ac{CSS} step on Pascal-VOC, ADE20k,
-and Cityscapes, respectively, with an initial learning rate of $1e-2$ for the first \ac{CSS} step,
-and $1e-3$ for all the following ones. Note that for Cityscapes, the first step is longer with 50
-epochs. We reduce the learning rate exponentially with a decay rate of $9e-1$. We use SGD optimizer
-with $9e-1$ Nesterov momentum. The Local POD weighting hyperparameter $\lambda$ is set to $1e-2$ and
-$5e-4$ for intermediate feature maps and logits, respectively. Moreover, we multiply this factor by
-the adaptive weighting $\sqrt{\nicefrac{|C^{1:t}|}{|C^{t}|}}$ introduced by \citet{hou2019ucir} that
-increases the strength of the distillation the further we are into the continual process. For all
-feature maps, Local POD is applied before ReLU, with squared pixel values, as in
-\citet{zagoruyko2016distillation_attention} or PODNet (\autoref{sec:podnet}). We use 3 scales for
-Local POD: $1$, $\nicefrac{1}{2}$, and $\nicefrac{1}{4}$, as adding more scales experimentally
-brought diminishing returns. For PLOPLong only, we L2-normalize all POD embeddings before distilling
-them as also done by \autoref{sec:podnet}. Furthermore, for PLOPLong, the gradient norm-clipping is
-set at $1.0$ for Pascal-VOC and $2.0$ for Cityscapes. We use a batch size of 24 distributed on two
-12Go Titan Xp GPUs. Contrary to many continual models, we do not have access to any task id in
-inference, therefore our setting/strategy has to predict a class among the set of all seen classes
-
-
-
 \subsection{PLOP and PLOPLong experiments}
 \label{sec:seg_plop_exp}
 
 \subsubsection{Quantitative Evaluations}
-
 
 \input{tables/seg/voc}
 \input{tables/seg/cityscapes_class}

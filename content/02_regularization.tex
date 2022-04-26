@@ -531,7 +531,13 @@ factors. In \autoref{tab:podnet_ablation_memorysize}, we compared how PODNet beh
 baseline when the memory size per class $M_{\text{per}}$ changes: PODNet improvements increase as
 the memory size decrease, up to a gain of 26.20\pp\ with \ac{NME} (resp. 13.42\pp\ for CNN) with
 $M_{\text{per}} = 5$. Notice in our main experiments (\autoref{sec:podnet_quantitative_results}),
-only 20 images per class are kept in the memory. More experiments validating our model's robustness
+only 20 images per class are kept in the memory. Remark that when few images per class can be
+stored, a continual model must be rigid (to avoid forgetting old classes), while when numerous
+images can be stored, a continual model must be plastic (to learn efficiently new classes and stored
+examples). UCIR \citep{hou2019ucir} and BiC \citep{wu2019bias_correction} are respectively rigid-
+and plastic-oriented models, which can be seen from their good performance with respectively small
+and large rehearsal memory. On the other hand, PODNet excelled in all situations by efficiently
+trading rigidity and plasticity with the POD loss. More experiments validating our model's robustness
 are provided in the appendix (\autoref{sec:appendix_podnet}).
 
 
