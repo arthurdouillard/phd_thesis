@@ -231,12 +231,12 @@ each producing the task-specific embeddings $e_i$ (see \autoref{fig:dytox_model}
 %
 Rather than concatenating all embeddings $\{e_1, e_2, \dots, e_t\}$ together and feeding them to one
 classifier, we leverage \textbf{task-specific classifiers}. Each classifier $\operatorname{clf}_i$
-is made of a $\operatorname{Norm}_i$ and a linear projection parametrized by $\{W_i, b_i\}$, with
-$W_i \in \mathbb{R}^{\mcC^i \times D}$ and $b \in \mathbb{R}^{\mcC^i}$. It takes as input its
-task-specific embedding $e_i$ and returns:
+is made of a \citet{ba2016layernorm}'s Layer Norm ($\operatorname{Norm}_i$) and a linear projection
+parametrized by $\{W_i, b_i\}$, with $W_i \in \mathbb{R}^{\mcC^i \times D}$ and $b \in
+    \mathbb{R}^{\mcC^i}$. It takes as input its task-specific embedding $e_i$ and returns:
 %
 \begin{equation}
-    \hat{y}_i = \operatorname{Clf}_i(e_i) = \sigma(W_i \operatorname{Norm}_i e_i + b_i)\,,
+    \hat{y}_i = \operatorname{Clf}_i(e_i) = \sigma(W_i \operatorname{Norm}_i(e_i) + b_i)\,,
     \label{eq:dytox_ind_clf}
 \end{equation}
 %

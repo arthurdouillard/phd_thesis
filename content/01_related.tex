@@ -40,7 +40,7 @@ the highest predicted probability/confidence is chosen as the prediction. Given 
 finding the set of parameters $\theta_*$ which minimizes the loss function:
 %
 \begin{equation}
-      \theta_* = \operatorname{argmin}_{\theta} \left \{ \frac{1}{|\mathbb{D}|}\sum_{(\vx,y)\in \mathbb{D}} \mcL(f_\theta(\vx), y)\right \}\,,
+      \theta_* = \operatorname{argmin}_{\theta} \left \{ \frac{1}{|\mathbb{D}|}\sum_{(\vx,y)\in \mathbb{D}} \mcL(f_\theta(\vx), y)\right \}\,.
       \label{eq:intro_optim}
 \end{equation}
 %
@@ -288,7 +288,7 @@ where the loss is minimized respectively with respect to the old ($\mathbb{D}^{t
 dataset ($\mathbb{D}^{t}$). Evidently, the optimal parameters $\theta_*$ are different for the task
 $t$ and $t-1$. This difference results in what we call a \textit{forgetting}: $\theta_*^t$ is
 optimal for the new task $t$ but is suboptimal for the task $t-1$, therefore performance on the
-previous task is degraded ($L(f_{\theta^{t}}, \mathbb{D}^{t-1}) \gg L(f_{\theta^{t-1}},
+previous task may be degraded ($L(f_{\theta^{t}}, \mathbb{D}^{t-1}) \gg L(f_{\theta^{t-1}},
       \mathbb{D}^{t-1})$). This performance drop is actually so important that the literature names it a
 \textbf{Catastrophic Forgetting} \citep{robins1995catastrophicforgetting}. It is particularly
 critical in the context of image classification where each new task brings new classes to be
@@ -307,8 +307,8 @@ classified as described below.
 \paragraph{Class-Incremental Example} More concretely, a common benchmark in \acf{CIL} is learning
 the image classification CIFAR100 dataset \citep{krizhevskycifar100}, made of 100 classes, in
 multiple steps, each made of several new classes. During the first step $t=1$, the model $g^1 \circ
-f^1$ learns the first 10 classes $\mcC^{t=1}$. During the second step $t=2$, the model $g^2 \circ
-f^2$ is initialized from the learned parameters of the previous model $g^1 \circ f^1$ and learns the
+      f^1$ learns the first 10 classes $\mcC^{t=1}$. During the second step $t=2$, the model $g^2 \circ
+      f^2$ is initialized from the learned parameters of the previous model $g^1 \circ f^1$ and learns the
 next 10 classes $\mcC^{t=2}$., and so on, until all 100 classes are learned at the last step $t=T$.
 After each step, we evaluate the model on the testing data of all seen classes $\mcC^{1:t}$.
 \autoref{fig:related_protocol} illustrates such continual protocol, and
@@ -371,7 +371,7 @@ Average incremental accuracy is somewhat more important than simply the final ac
 model should be good after every step because in a true continual setting, there is not a ``final
 task''.
 
-Other metrics exist \citep{diaz2018continualmetrics}, including the \textbf{forgetting}
+Other metrics exist \citep{diaz2018continualmetrics}, such as \textbf{forgetting}
 \citep{chaudhry2018riemannien_walk} which records how much a model has lost performance-wise on a
 task compared to the first time it has learned it. The interest of this metric is to be agnostic of
 the absolute performance of the model used.
@@ -658,7 +658,7 @@ classifier with the cosine similarity, resulting in unit norm classifier weights
 
 \section{Positioning}
 
-Continual Learning encompasses very different benchmarks and methods. In this Ph.D thesis, we tackle
+Continual Learning encompasses very different benchmarks and methods. In this PhD thesis, we tackle
 multiple types of continual drift using different approaches. All the proposed strategies consider
 the intermediary features of a neural network to reduce catastrophic forgetting. We summarize
 below the three main chapters:

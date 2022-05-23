@@ -13,11 +13,10 @@
 While \acf{CIL}, detailed in \autoref{chapter:related}, is the most common benchmark in Continual
 Learning, there are multiple variations of benchmark regardless of which kind of shift is involved.
 
-\subsection{Multiple labels}
 \label{sec:related_multiple_labels}
 
-The main task in Continual Learning is classification of a single class per sample, however it can
-also be expanded to multiple classes per samples, \eg object detection
+\paragraph{Multiple labels} The main task in Continual Learning is classification of a single class
+per sample, however it can also be expanded to multiple classes per samples, \eg object detection
 \citep{shmelkov2017incrementalobjectdetection} and semantic segmentation
 \citep{michieli2019ilt,cermelli2020modelingthebackground}. The latter has seen recently interest
 from the community for its concrete application: hand labeling in segmentation is extremely costly,
@@ -29,16 +28,24 @@ considered as background. It's a case of concept shift, where the conditional di
     x)$ changes through time. I detail in \autoref{chapter:segmentation} the existing benchmark in
 \ac{CSS} and describe how we tackled this problem.
 
-\subsection{Online Learning \& Task drift detection}
 \label{sec:related_online_learning}
 
-In Continual Learning, a model learns for multiple epochs for each task. On the other hand, in
-Online Learning, also called Stream Learning, there are no notions of tasks nor epochs: a model must
-learn on a stream of samples incoming one by one, and which cannot be replayed by epochs
-\citep{aljundi2019notaskboundaries}. The methods to reduce forgetting described in
-\autoref{sec:related_methods} can still be applied in Online Learning. Modified versions of
-rehearsal learning, often inspired by reservoir sampling \citep{knuth97tacpvol2}, are often used
-\citep{hayes2019exstream,aljundi2019taskfree}.
+\paragraph{Online Learning \& Task drift detection} In Continual Learning, a model learns for
+multiple epochs for each task. On the other hand, in Online Learning, also called Stream Learning,
+there are no notions of tasks nor epochs: a model must learn on a stream of samples incoming one by
+one, and which cannot be replayed by epochs \citep{aljundi2019notaskboundaries}. The methods to
+reduce forgetting described in \autoref{sec:related_methods} can still be applied in Online
+Learning. Modified versions of rehearsal learning, often inspired by reservoir sampling
+\citep{knuth97tacpvol2}, are often used \citep{hayes2019exstream,aljundi2019taskfree}. Multiple
+regularization methods (\autoref{sec:related_regul}) needs to do some computation between tasks. For
+example, weight-based regularization (\autoref{sec:related_regul_weight}) must compute the
+task-specific importance weights. Because in Online Learning, there are no clear task separation, a
+heuristic must determine when doing this computation. \citet{aljundi2019taskfree}, working a stream
+of images from soap operas, proposed to analyze the loss surface to find drift in the distribution:
+at some point the model is experienced enough, and the loss starts to plateau. When a drift happens,
+the loss will usually peak. This is a sign of task-free drift of the distribution as illustrated in
+\autoref{fig:related_lossdrift}.
+
 
 \begin{figure}[tb]
     \begin{center}
@@ -50,62 +57,45 @@ rehearsal learning, often inspired by reservoir sampling \citep{knuth97tacpvol2}
     \label{fig:related_lossdrift}
 \end{figure}
 
-Multiple regularization methods (\autoref{sec:related_regul}) needs to do some computation between
-tasks. For example, weight-based regularization (\autoref{sec:related_regul_weight}) must compute
-the task-specific importance weights. Because in Online Learning, there are no clear task
-separation, a heuristic must determine when doing this computation. \citet{aljundi2019taskfree},
-working a stream of images from soap operas, proposed to analyze the loss surface to find drift in
-the distribution: at some point the model is experienced enough, and the loss starts to plateau.
-When a drift happens, the loss will usually peak. This is a sign of task-free drift of the
-distribution as illustrated in \autoref{fig:related_lossdrift}.
 
-\subsection{Continual-Meta Learning}
 \label{sec:related_meta}
+\paragraph{Continual-Meta Learning} Continual Learning aims to not forget. However, we --as humans--
+often forget, but we can also re-learn what was lost quicker than the first time. The goal of
+\ac{MCL} is therefore to recover as quickly as possible --sample wise-- the original performance on
+past tasks \citep{he2019metacontinual}. As the name implies, meta-learning methods, that aims to
+\textit{learn how to learn}, such as the MAML model \citep{finn2017maml} are used to that end. Then,
+\ac{MCL} has been extended to a more general framework where the model also has to adapt quickly to
+new \acf{OoD} tasks \citep{caccia2020osaka}. Note that \acf{MCL} is not to be confused with
+\acf{CML} where in that case meta-learning is only used during pretraining to provide better model
+initialization.
 
 
-Continual Learning aims to not forget. However, we --as humans-- often forget, but we can also
-re-learn what was lost quicker than the first time. The goal of \ac{MCL} is therefore to recover as
-quickly as possible --sample wise-- the original performance on past tasks
-\citep{he2019metacontinual}. As the name implies, meta-learning methods, that aims to \textit{learn
-    how to learn}, such as the MAML model \citep{finn2017maml} are used to that end. Then, \ac{MCL} has
-been extended to a more general framework where the model also has to adapt quickly to new \acf{OoD}
-tasks \citep{caccia2020osaka}.
-
-Note that \acf{MCL} is not to be confused with \acf{CML} where in that case meta-learning is only
-used during pretraining to provide better model initialization.
-
-\subsection{Zeroshot Continual Learning}
 \label{sec:related_zeroshot}
+\paragraph{Zeroshot Continual Learning} In Computer Vision, \acf{ZSL}
+\citep{lampert2009zeroshot,xian2019awa2} aims to classify classes that were never seen before. To do
+so, models usually exploit an external knowledge source as a word2vec embedding
+\citep{mikolov2013word2vec} trained on Wikipedia or an attribute matrix. Several works have proposed
+to unify both Continual Learning and \ac{ZSL} where the future classes that haven't been seen yet
+must be classified \citep{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}.
 
 
-In Computer Vision, \acf{ZSL} \citep{lampert2009zeroshot,xian2019awa2} aims to classify classes that
-were never seen before. To do so, models usually exploit an external knowledge source as a word2vec
-embedding \citep{mikolov2013word2vec} trained on Wikipedia or an attribute matrix. Several works
-have proposed to unify both Continual Learning and \ac{ZSL} where the future classes that haven't
-been seen yet must be classified
-\citep{lopezpaz2017gem,wei2020lifelongzeroshot,gautam2020continualzeroshot}.
-
-\subsection{Natural Language Processing}
 \label{sec:related_nlp}
+\paragraph{Natural Language Processing} Continual Learning can be applied to all modalities. After
+\acf{CV}, the most common one is \ac{NLP}. \ac{NLP} saw its "\textit{ImageNet moment}" with the
+advent of Transformers \citep{vaswani2017transformer}, and more recently with multi-tasks learning
+\citep{raffel2019t5}. Continual \ac{NLP} \citet{biesialska2020continualnlp} aims naturally to learn
+multiple tasks, but in a consecutive fashion with no --or few-- replay of the old tasks data.
+Applications can be similar to \ac{CV} with addition of new classes
+\citep{masson2019episodiclifelongnlp} or new domains (\eg medical corpus, fiction, tweets, etc.)
+\citep{gerald2021continualri}.
 
 
-Continual Learning can be applied to all modalities. After \acf{CV}, the most common one is
-\ac{NLP}. \ac{NLP} saw its "\textit{ImageNet moment}" with the advent of Transformers
-\citep{vaswani2017transformer}, and more recently with multi-tasks learning \citep{raffel2019t5}.
-Continual \ac{NLP} \citet{biesialska2020continualnlp} aims naturally to learn multiple tasks, but in
-a consecutive fashion with no --or few-- replay of the old tasks data. Applications can be similar
-to \ac{CV} with addition of new classes \citep{masson2019episodiclifelongnlp} or new domains (\eg
-medical corpus, fiction, tweets, etc.) \citep{gerald2021continualri}.
-
-\subsection{Reinforcement Learning}
 \label{sec:related_rl}
-
-
-\ac{RL} \citep{sutton1998rl} more often than not needs support from Continual Learning
-\citep{khetarpal2020continualrl}: for example as an agent evolves in an environment, it usually
-needs rehearsal learning (also known as episodic memory) \citep{mnih2013atarirl}. Overall, the
-methods originally developed for \ac{CV} (\autoref{sec:related_methods}) were then applied to both
-\ac{NLP} and \ac{RL}.
+\paragraph{Reinforcement Learning} \ac{RL} \citep{sutton1998rl} more often than not needs support
+from Continual Learning \citep{khetarpal2020continualrl}: for example as an agent evolves in an
+environment, it usually needs rehearsal learning (also known as episodic memory)
+\citep{mnih2013atarirl}. Multiple methods originally developped for continual learning in \acf{CV}
+can also be applied for \ac{RL} \citep{lesort2020continualrobotics}.
 
 
 \section{Details on PODNet}
@@ -270,11 +260,11 @@ We provide here more details on our work done in \autoref{chapter:segmentation}.
 \subsection{Algorithm view of Local POD}
 
 In \autoref{algo:local_pod}, we summarize the algorithm for the proposed Local POD. The algorithm
-consists in three functions. First, \texttt{Distillation}, loops over all $L$ layers onto which we
-apply Local POD. Second, \texttt{LocalPOD}, computes the L2 distance (L.26) between POD embeddings
-of the current (L.19) and old (L.20) models. It loops over $S$ different scales (L.14) and $\Phi$
-computes the POD embedding given two features maps subsets (L.19-20). $\|=$ denotes an in-place
-concatenation.
+consists in three functions. At first, the function \texttt{Distillation}, loops over all $L$ layers
+onto which we apply Local POD. Second, \texttt{LocalPOD}, computes the L2 distance (L.26) between
+POD embeddings of the current (L.19) and old (L.20) models. It loops over $S$ different scales
+(L.14) and $\Phi$ computes the POD embedding given two features maps subsets (L.19-20). $\|=$
+denotes an in-place concatenation.
 
 \begin{algorithm}
     \caption{Local POD algorithm}
@@ -341,16 +331,17 @@ inference, therefore our setting/strategy has to predict a class among the set o
 \noindent\textbf{Classes ordering details:\,} For all quantitative experiments on Pascal-VOC 2012
 and ADE20k, the same class ordering was used across all evaluated models. For Pascal-VOC 2012 it
 corresponds to \lstinline![1, 2, ..., 20]! and ADE20k to \lstinline![1, 2, ..., 150]! as defined by
-\citet{cermelli2020modelingthebackground}. For class-incremental Cityscapes to \lstinline![1, 2,..., 19]!. In this case, because Cityscapes does not have \texttt{background} class, it only appears
-as ``unlabeled'' for past and future classes. For continual-domain cityscapes, the order of the
+\citet{cermelli2020modelingthebackground}. For class-incremental Cityscapes to \lstinline![1, 2,...,19]!.
+In this case, because Cityscapes does not have \texttt{background} class, it only appears as
+``unlabeled'' for past and future classes. For continual-domain cityscapes, the order of the
 domains/cities is the following: \texttt{aachen}, \texttt{bremen}, \texttt{darmstadt},
 \texttt{erfurt}, \texttt{hanover}, \texttt{krefeld}, \texttt{strasbourg}, \texttt{tubingen},
 \texttt{weimar}, \texttt{bochum}, \texttt{cologne}, \texttt{dusseldorf}, \texttt{hamburg},
 \texttt{jena}, \texttt{monchengladbach}, \texttt{stuttgart}, \texttt{ulm}, \texttt{zurich},
 \texttt{frankfurt}, \texttt{lindau}, and \texttt{munster}.
 
-In the main paper we showcased a boxplot featuring 20 different class orders for Pascal-VOC 2012
-15-1. For the sake of reproducibility, we provide details on these orders:
+In \autoref{fig:seg_order_voc_15-1}, we showcased a boxplot featuring 20 different class orders for
+Pascal-VOC 2012 15-1. For the sake of reproducibility, we provide details on these orders:
 
 \begin{adjustbox}{width=\columnwidth,center}
     \begin{lstlisting}
@@ -410,17 +401,17 @@ effectiveness.
 
 \input{tables/seg/ablation}
 
-\noindent\textbf{Pascal-VOC 2012 Disjoint:\,} In the main paper, we reported results on Pascal-VOC
-2012 Overlap. In this setting, an image at task $t$ can contain past ($\mcC^{1:t-1}$), current
-($\mcC^t$), and future ($\mcC^{t+1:T}$) classes. \citet{cermelli2020modelingthebackground} also
-proposed the Disjoint setting where only past and current classes could be in the same image. We
-argue that the Disjoint setting is less realistic than the Overlap, because it should not be
-possible to exclude future classes, whose existence is yet unknown. Nevertheless, for the sake of
-comparison, we also provide results in \autoref{tab:seg_voc_disjoint_sota} in the Disjoint setting.
-While PLOP has similar performance to MiB in 15-5 (the differences are not significant), it
-significantly outperforms previous state-of-the-art methods in both 19-1 and 15-1.
+%\noindent\textbf{Pascal-VOC 2012 Disjoint:\,} In \autoref{tab:seg_voc_sota1}, we reported results on
+%Pascal-VOC 2012 Overlap. In this setting, an image at task $t$ can contain past ($\mcC^{1:t-1}$),
+%current ($\mcC^t$), and future ($\mcC^{t+1:T}$) classes. \citet{cermelli2020modelingthebackground}
+%also proposed the Disjoint setting where only past and current classes could be in the same image.
+%We argue that the Disjoint setting is less realistic than the Overlap, because it should not be
+%possible to exclude future classes, whose existence is yet unknown. Nevertheless, for the sake of
+%comparison, we also provide results in \autoref{tab:seg_voc_disjoint_sota} in the Disjoint setting.
+%While PLOP has similar performance to MiB in 15-5 (the differences are not significant), it
+%significantly outperforms previous state-of-the-art methods in both 19-1 and 15-1.
 
-\input{tables/seg/voc_disjoint}
+%\input{tables/seg/voc_disjoint}
 
 \section{Details on DyTox}
 \label{sec:appendix_dytox}
@@ -462,8 +453,9 @@ stable hyperparameters, tuned for a single setting and then applied on all exper
 optimizing for the number of tasks, which defeats the purpose of continual learning
 \citep{farquhar2018robustcontinual}. We tuned hyperparameters for DyTox using a validation subset
 made of 10\% of the training dataset, and this only on the CIFAR100 experiment with 10 steps. We
-provide in \autoref{tab:dytox_tuning} the chosen hyperparameters. Results in the main paper shows
-that those hyperparameters reach state-of-the-art on all other settings and notably on ImageNet.
+provide in \autoref{tab:dytox_tuning} the chosen hyperparameters. Results presented in
+\autoref{chapter:dynamic} shows that those hyperparameters reach state-of-the-art on all other
+settings and notably on ImageNet.
 
 \input{tables/dytox/tuning}
 
@@ -513,11 +505,10 @@ overhead and continual performance.
 
 \subsection{Patch size effect on forgetting}
 
-Our model is the first application of transformers for continual computer vision. A key component of
-the transformer architecture is the patch tokenizer. The number of patch tokens in an image is
-determined by the patch size: a larger patch size means less tokens, and vice-versa. We wondered
-about the effect of the patch size on forgetting and tested three different kind of patch sizes in
-\autoref{tab:dytox_patch_size}. Echoing results in vision transformers
+A key component of the transformer architecture is the patch tokenizer. The number of patch tokens
+in an image is determined by the patch size: a larger patch size means less tokens, and vice-versa.
+We wondered about the effect of the patch size on forgetting and tested three different kind of
+patch sizes in \autoref{tab:dytox_patch_size}. Echoing results in vision transformers
 \citep{dosovitskiy2020vit,touvron2021deit}, a smaller patch size (4 vs. 8 and 16) performs best in a
 joint training. However, the forgetting defined by \citet{chaudhry2018riemannien_walk} is relatively
 similar, with 33.15\% for a patch of size of 4, and 33.20\% for a patch size of 16. Therefore, we

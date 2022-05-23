@@ -427,7 +427,11 @@ the same backbone.
 We sample our memory images using \textit{herding selection}~\citep{rebuffi2017icarl} and perform
 the inference with two different methods: the \textit{Nearest-Mean-Examplars} (\ac{NME}) proposed
 for iCarl, and also adopted on one of the variants of UCIR~\citep{hou2019ucir}, and the ``CNN''
-method introduced for UCIR (see \autoref{sec:podnet_related}).
+method introduced for UCIR (see \autoref{sec:podnet_related}). The training procedure is identical
+for both inference scheme, their difference lies at test-time: ``CNN'' uses the
+$\operatorname{argmax}$ of all classes probabilities. ``NME'' extracts features of all data (new
+classes data and rehearsal data), builds class prototypes by averaging features per class, and
+finally predictions using a K-NN.
 %
 Please see \autoref{sec:appendix_podnet} in the appendix for the full implementation details.
 
