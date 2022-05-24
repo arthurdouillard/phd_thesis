@@ -2,7 +2,7 @@
 \label{chapter:segmentation}
 
 \begin{chapabstract}
-    In \acf{CIL},  most of the literature in focuses on image classification. In \textbf{\acf{CSS}},
+    In \acf{CIL},  most of the literature focuses on image classification. In \textbf{\acf{CSS}},
     the continual setting is the same (incremental addition of new classes), but the implications
     are wildly different. In Semantic Segmentation, an image has one label per pixel. Therefore, an
     image could contain pixels from old, current, and future classes. \\
@@ -231,7 +231,7 @@ $t$ must be able to discriminate between all the classes that have been seen so 
 $\mcC^{1:t}$.
 
 This leads us to identify two major pitfalls in \ac{CSS}: the first one, inherited from continual
-learning, is catastrophic forgetting \citet{robins1995catastrophicforgetting}. It suggests that a
+learning, is catastrophic forgetting \citep{robins1995catastrophicforgetting}. It suggests that a
 network will completely forget the old classes $\mcC^{1:t-1}$ when learning the new ones $\mcC^t$.
 
 Furthermore, catastrophic forgetting is aggravated by the second pitfall, specific to \ac{CSS}, that
@@ -240,7 +240,7 @@ they may contain either old (including the real background class, predicted in $
 classes.
 
 We define our model at step $t$ as a composition of a feature extractor $f^t(\cdot)$ (a ResNet 101
-\citet{he2016resnet} backbone and a classifier $g^t(\cdot)$. The output predicted segmentation map
+\citep{he2016resnet} backbone and a classifier $g^t(\cdot)$. The output predicted segmentation map
 can then be written $\hat{\vy}^t = g^t \circ f^t(\vx)$. We denote the intermediate features at each
 layer of the feature extractor $\vh_l^t = f_l^t(\cdot)\,,\, l \in \{1, \dots L\}$. Finally, we
 denote the set of learnable parameters of $f^t$ and $g^t$ as $\Theta^t$.
@@ -303,7 +303,7 @@ given level $l$ of the feature extractor, $s^2$ POD embeddings are computed per 
 concatenated:
 %
 \begin{equation}
-    \Psi^s(\vx) = \left[ \Phi(\vx^s_{1,1}) \| \dots \| \Phi(\vx^s_{s,s}) \right] \in \mathbb{R}^{\times (H + W) \times C}\,,
+    \Psi^s(\vx) = \left[ \Phi(\vx^s_{1,1}) \| \dots \| \Phi(\vx^s_{s,s}) \right] \in \mathbb{R}^{(H + W) \times C}\,,
     \label{eq:seg_localpod_embedding1}
 \end{equation}
 %
@@ -354,7 +354,7 @@ Formally, let $\mcN^t=\operatorname{card}(\mcC^{t})$ the cardinality of the curr
 excluding the background class. Let $\hat{\vy}^{t} \in \mathbb{R}^{W,H,1+\mcN^{1:t}}$ denotes the
 predictions of the current model (which includes the real background class, all the old classes as
 well as the current ones). We define $\tilde{\vy}^{t} \in \mathbb{R}^{W,H,1+\mcN^{1:t}}$ the target
-as step $t$, computed using the one-hot ground-truth segmentation map $\vy^{t} \in
+at step $t$, computed using the one-hot ground-truth segmentation map $\vy^{t} \in
     \mathbb{N}^{W,H,1+\mcN^t}$ at step $t$ as well as pseudo-labels extracted using the old model
 predictions $\hat{\vy}^{t-1} \in \mathbb{R}^{W,H,1+\mcN^{1:t-1}}$ as follows:
 %

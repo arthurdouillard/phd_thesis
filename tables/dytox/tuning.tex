@@ -1,18 +1,16 @@
 \begin{table}[t]
     \centering
-    \resizebox{\textwidth}{!}{%
-        \begin{tabular}{l|cc}
-            \hline
-            Hyperparameter        & Range                           & Chosen value\Tstrut\Bstrut \\
-            \hline
-            Learning rate         & $1e^{-3}$, $5e^{-4}$, $1e^{-4}$ & $5e^{-4}$\Tstrut           \\
-            Epochs                & 300, 500, 700                   & 500                        \\
-            $\lambda$             & 0.05, 0.1, 0.5                  & 0.1                        \\
-            CIFAR's patch size    & 4, 8, 16                        & 4                          \\
-            ImageNet's patch size & 14, 16                          & 16                         \\
-            \hline
-        \end{tabular}
-    }
+    \begin{tabular}{l|cc}
+        \hline
+        Hyperparameter        & Range                           & Chosen value\Tstrut\Bstrut \\
+        \hline
+        Learning rate         & $1e^{-3}$, $5e^{-4}$, $1e^{-4}$ & $5e^{-4}$\Tstrut           \\
+        Epochs                & 300, 500, 700                   & 500                        \\
+        $\lambda$             & 0.05, 0.1, 0.5                  & 0.1                        \\
+        CIFAR's patch size    & 4, 8, 16                        & 4                          \\
+        ImageNet's patch size & 14, 16                          & 16                         \\
+        \hline
+    \end{tabular}
     \caption{\textbf{Hyperparameters} that were tuned from the codebase of \citet{touvron2021deit}.
         We ran a gridsearch on CIFAR100 10 steps on a validation set made of 10\% of the training set,
         and kept fixed the chosen hyperparameters for all experiments (any number of steps and any

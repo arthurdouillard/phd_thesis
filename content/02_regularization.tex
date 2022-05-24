@@ -272,7 +272,7 @@ by \citet{zagoruyko2016distillation_attention} to allow distillation across diff
 situation in which the channel pooling responds to the very practical need to allow the comparison
 of architectures with different number of channels.
 
-As we will see in our evaluations of pooling strategies (\autoref{sec:podnet_ablation_pooling}),
+As we will see in our evaluations of pooling strategies (\autoref{tab:podnet_ablation_perceptual}),
 what proved optimal was a completely novel idea, POD-spatial, combining two poolings, each of which
 flattens one of the spatial coordinates. That relatively rigid strategy (channels and one of the
 spatial coordinates are considered in each half of the loss) makes intuitive sense in our context,
@@ -411,7 +411,7 @@ took much longer to train, we ran each experiment once.
 
 Following \citet{hou2019ucir}, for all datasets, and all compared models, we limit the memory
 $M_\textrm{per}$ to 20 images per old class. For results with different memory settings, refer to
-\autoref{sec:podnet_robustness}.
+\autoref{tab:podnet_ablation_memorysize}.
 
 \paragraph{Implementation details} For fair comparison, all compared models employ the same
 \ac{ConvNet} backbone: ResNet-32 for CIFAR100, and ResNet-18 for ImageNet. We remove the ReLU
@@ -620,7 +620,7 @@ WordNet \citep{fellbaum1998wordnet}), an associated word embedding (like Word2Ve
 \citep{mikolov2013word2vec}), or an attribute matrix. Such setting is illustrated in
 \autoref{fig:ghost_protocol}. We will shorthand the set of past and present classes $\mcC^{1:t}$ as
 the \textit{seen} classes, and the set of future classes $\mcC^{t+1:T}$ as the \textit{unseen}
-classes. We denote individual samples by a superscript $\vx^(i)$, the class label by a subscript
+classes. We denote individual samples by a superscript $\vx^i$, the class label by a subscript
 $\vx_c$, and on which parameters a loss is applied by a subscript $\mcL_\Theta$.
 
 \subsection{Model}
