@@ -10,7 +10,7 @@ contributions aiming to regularize directly the latent space of \acs{ConvNet}. T
 PODNet, aims to reduce the drift of spatial statistics between the old and new model, which in
 effect reduces drastically forgetting of old classes while enabling efficient learning of new
 classes. I show in a second part a complementary method where we avoid pre-emptively forgetting by
-allocating locations in the latent space for yet unseen future class.
+allocating locations in the latent space for yet unseen future classes.
 
 Then, I describe a recent application of \acf{CIL} to semantic segmentation. I show that
 the very nature of \acf{CSS} offer new specific challenges, namely forgetting on large
@@ -24,7 +24,7 @@ Finally, I consider a completely different approach to continual learning: dynam
 where the parameters are extended during training to adapt to new tasks. Previous works on
 this domain are hard to train and often suffer from parameter count explosion. For the
 first time in continual computer vision, we propose to use the Transformer architecture:
-the model dimension mostly fixed and shared across tasks, except for an
+the model dimension is mostly fixed and shared across tasks, except for an
 expansion of learned task tokens. With an encoder/decoder strategy where the decoder
 forward is specialized by a task token, we show state-of-the-art robustness to forgetting
 while our memory and computational complexities barely grow.
@@ -46,8 +46,7 @@ le concept d'objets en particulier.
 Malgré les grandes avancées dans le domaine des réseaux de neurones profonds, un problème important
 subsiste : comment apprendre une quantité croissante de concepts, à la manière d'un élève durant sa
 scolarité, sans oublier les précédentes connaissances. Ce problème d'apprentissage continu est
-complexe : si non traité, les réseaux de neurones oublient catastrophiquement. L'objectif de cette
-thèse était donc de résoudre de ce problème.
+complexe : si non traité, les réseaux de neurones oublient catastrophiquement.
 
 J'ai pu dans un premier temps développer plusieurs méthodes pour forcer un comportement similaire
 entre la version du modèle ayant appris de nouveaux concepts et sa précédente itération.
@@ -62,8 +61,8 @@ manière efficace de révisions d'objets.
 
 Et enfin, dans un troisième et dernier temps, je m'intéresse aux réseaux de neurones dynamiques,
 pouvant créer de nouveaux neurones à travers leur existence pour résoudre un nombre croissant de
-tâche. Les méthodes précédentes grandissent avec peu de contrôles, résultant en des modèles
-extrêmement lourd, et souvent aussi lents. Donc, en m'inspirant des récents \textit{transformers},
+tâches. Les méthodes précédentes grandissent avec peu de contrôles, résultant en des modèles
+extrêmement lourds, et souvent aussi lents. Donc, en m'inspirant des récents \textit{transformers},
 j'ai conçu une stratégie dynamique avec un coût pratiquement nul, mais ayant malgré tout des
 performances à l'état-de-l'art.
 
@@ -76,29 +75,29 @@ performances à l'état-de-l'art.
 
 Je souhaite remercier tous ceux qui m'ont aidé à réaliser cette thèse.
 
-Dans un premier temps, je dois Charles Ollion, et Tony Pinville: Matthieu pour m'avoir supervisé tout
-au long de ces trois années de thèse, pour m'avoir fait découvrir le monde de la recherche et avoir
-supporté mes avis tétus. J'ai beaucoup appris et j'en ressors grandis. Charles et Tony pour m'avoir
-fait confiance et permis de faire ce doctorat avec Heuritech. Et plus particulièrement Charles, pour
-avoir été le premier à m'initier au Deep Learning.
+Dans un premier temps : Matthieu pour m'avoir supervisé tout au long de ces trois ans de thèse,
+pour m'avoir fait découvrir le monde de la recherche et avoir supporté mes avis têtus. J'ai beaucoup
+appris et j'en sors grandi. Charles et Tony pour m'avoir fait confiance et permis de faire ce
+doctorat avec Heuritech. Et plus particulièrement Charles, pour m'avoir initié au Deep Learning.
 
-Je remercie aussi le jury de cette thèse pour avoir relu mon manuscrit et être m'accorder leur temps
-pour ma soutenance.
+Je remercie aussi le jury de cette thèse pour avoir relu mon manuscrit et m'avoir accordé leur temps
+pour cette soutenance de thèse.
 
-Je veux aussi remercier tous mes collègues dont leur discussions ont toujours été enrichissante
-aussi bien sur le plan du travail que de l'humain. Parmi les \textit{Chordettes}: Corentin Dancette,
-Rémi Cadene, Alexandre Ramé, Antoine Saporta, Guillaume Couairon, Asya Grechka, Yifu Chen et Rémy
-Sun. Chez Heuritech: Thomas Robert (pour sa gentillesse infinie), Emilien Garreau, Antoine
-Hoorelbeke, Paul Morel, Florent Mercier, et Oscar Bouvier. Et enfin aussi Timothée Lesort, Fabio
-Cermelli, Eduardo Valle et Arnaud Dapogny pour leur collaboration. Plus largement je remercie aussi
-l'ensemble de l'équipe du MLIA et Heuritech pour leur support et la bonne ambiance qu'ils ont
-apporté.
+Je veux aussi remercier tous mes collègues dont leurs discussions ont toujours été enrichissantes
+aussi bien sur le plan du travail que de l'humain (dans des parties de babyfoot endiablées). Parmi
+les \textit{Chordettes}: Corentin Dancette, Rémi Cadene, Alexandre Ramé, Antoine Saporta, Guillaume
+Couairon, Asya Grechka, Yifu Chen, Rémy Sun, et Ahmed Mazari. Chez Heuritech: Thomas Robert (pour sa
+gentillesse infinie), Emilien Garreau, Antoine Hoorelbeke, Paul Morel, Florent Mercier, et Oscar
+Bouvier. Et enfin aussi Timothée Lesort, Fabio Cermelli, Eduardo Valle et Arnaud Dapogny pour leur
+collaboration. Plus largement je remercie aussi l'ensemble de l'équipe du MLIA et Heuritech pour
+leur support et la bonne ambiance qu'ils ont apporté.
 
-Enfin, je veux remercier mes proches. A Jordan et Camille qui m'ont tant soutenu cette dernière
-année. A David, Hugo, Alexandre, Thibault et Marie-Anne, Benjamin, Florent, Sarasvati, Charlotte, et
-tous ceux avec qui j'ai pu passer de bons moments. A ma famille, Julie, mon père, ma mère, mes
-grand-parents pour leur soutien durant ces 26 ans de vie. J'insiste particulièrement sur l'éducation
-et la passion des sciences que m'ont inculqués ma mère et ma grand-mère, qui a été essentiel.
+Enfin, je veux remercier mes proches. À Jordan et Camille qui m'ont tant soutenu cette dernière
+année. À David, Hugo, Alexandre, Thibault et Marie-Anne, Florent, Sarasvati, Benjamin, Charlotte,
+et tous ceux avec qui j'ai pu passer de bons moments. À ma famille, ma sœur Julie, mon père, ma
+mère et mes grand-parents pour leur soutien durant ces 26 ans de vie. J'insiste particulièrement
+sur l'éducation et la passion des sciences transmises par ma mère et ma grand-mère. Sans cela, rien
+n'aurait été possible.
 
 
 \selectlanguage{english}
